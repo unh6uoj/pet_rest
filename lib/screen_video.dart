@@ -19,7 +19,7 @@ class _VideoScreenState extends State<VideoScreen> {
 
   TextEditingController ipCon = TextEditingController();
 
-  Socket clientSocket;
+  // Socket clientSocket;
 
   @override
   Widget build(BuildContext context) {
@@ -59,23 +59,23 @@ class _VideoScreenState extends State<VideoScreen> {
   }
 
   void connect() async {
-    Socket.connect(ipCon.text, port, timeout: Duration(seconds: 5))
-        .then((socket) {
-      setState(() {
-        clientSocket = socket;
-      });
-    });
+    // Socket.connect(ipCon.text, port, timeout: Duration(seconds: 5))
+    //     .then((socket) {
+    //   setState(() {
+    //     clientSocket = socket;
+    //   });
+    // });
 
-    print('connected!');
+    // print('connected!');
 
-    clientSocket.add(utf8.encode(sendStr));
-    await Future.delayed(Duration(seconds: 5));
+    // clientSocket.add(utf8.encode(sendStr));
+    // await Future.delayed(Duration(seconds: 5));
 
-    clientSocket.listen((List<int> event) {
-      print(event.length);
-    });
+    // clientSocket.listen((List<int> event) {
+    //   print(event.length);
+    // });
 
-    clientSocket.close();
+    // clientSocket.close();
   }
 
   void disconnect() async {}

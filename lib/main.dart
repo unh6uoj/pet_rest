@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import 'screen_home.dart';
 import 'screen_video.dart';
 
 void main() {
@@ -20,7 +21,7 @@ class MyApp extends StatelessWidget {
             ),
             body: TabBarView(
               children: [
-                Text('홈 스크린'),
+                HomeScreen(),
                 VideoScreen(),
                 Text('마이 스크린'),
               ],

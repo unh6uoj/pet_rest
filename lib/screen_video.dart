@@ -1,4 +1,5 @@
 import 'dart:collection';
+import 'dart:ffi';
 import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
@@ -21,10 +22,8 @@ class _VideoScreenState extends State<VideoScreen> {
 
   String sendStr = "";
 
-  final WebSocketChannel channel =
-      IOWebSocketChannel.connect('ws://localhost:25001');
-
-  Queue imageQueue = Queue();
+  WebSocketChannel channel =
+      IOWebSocketChannel.connect('ws://192.168.1.186:25001');
 
   TextEditingController ipCon = TextEditingController();
 
@@ -42,31 +41,29 @@ class _VideoScreenState extends State<VideoScreen> {
           builder: (context, snapshot) {
             return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 24.0),
-                child: snapshot.hasData
-                    ? Image.memory(snapshot.data as Uint8List)
-                    : Text('Websocket Disconnected'));
+                child: Container(
+                  width: 350,
+                  height: 200,
+                  // color: Colors.black,
+                  child: snapshot.hasData
+                      ? Image.memory(
+                          snapshot.data as Uint8List,
+                          gaplessPlayback: true,
+                        )
+                      // ? Text(snapshot.data.toString().length.toString())
+                      : Text('websocket disconnected.'),
+                ));
           },
         )
       ],
     )));
   }
 
-  void printData(str) {
-    Uint8List.fromList([0]);
-    print(str);
-  }
-
   void websocketConnect() {
     channel.sink.add('플러터에서 왔다.');
   }
 
-  void getImageFromWebsocket() async {
-    while (true) {
-      imageQueue.add(channel.stream);
-    }
-  }
-
   void websocketDisconnect() {
-    channel.sink.close();
+    // channel.sink.close();
   }
 }

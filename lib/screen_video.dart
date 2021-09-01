@@ -1,9 +1,12 @@
+import 'dart:collection';
 import 'dart:io';
 import 'dart:convert';
 import 'dart:async';
+import 'dart:typed_data';
 
+import 'package:web_socket_channel/io.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 class VideoScreen extends StatefulWidget {
   const VideoScreen({Key? key}) : super(key: key);
@@ -15,11 +18,15 @@ class VideoScreen extends StatefulWidget {
 class _VideoScreenState extends State<VideoScreen> {
   String serverIP = "";
   int port = 25001;
+
   String sendStr = "";
 
-  TextEditingController ipCon = TextEditingController();
+  final WebSocketChannel channel =
+      IOWebSocketChannel.connect('ws://localhost:25001');
 
-  // Socket clientSocket;
+  Queue imageQueue = Queue();
+
+  TextEditingController ipCon = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -28,55 +35,38 @@ class _VideoScreenState extends State<VideoScreen> {
             child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        infoArea(),
-        ElevatedButton(onPressed: connect, child: Text('비디오 나와라')),
-        ElevatedButton(onPressed: disconnect, child: Text('비디오 꺼져라')),
-        // Image.memory(bytes)
+        ElevatedButton(onPressed: websocketConnect, child: Text('비디오 나와라')),
+        ElevatedButton(onPressed: websocketDisconnect, child: Text('비디오 꺼져라')),
+        StreamBuilder(
+          stream: channel.stream,
+          builder: (context, snapshot) {
+            return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 24.0),
+                child: snapshot.hasData
+                    ? Image.memory(snapshot.data as Uint8List)
+                    : Text('Websocket Disconnected'));
+          },
+        )
       ],
     )));
   }
 
-  Widget infoArea() {
-    return Card(
-      child: ListTile(
-          dense: true,
-          leading: Text("Server IP"),
-          title: TextField(
-            controller: ipCon,
-            decoration: InputDecoration(
-                hintText: "서버 IP를 입력하세요.",
-                contentPadding:
-                    const EdgeInsets.symmetric(vertical: 10, horizontal: 10),
-                isDense: true,
-                enabledBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                    borderSide: BorderSide(color: Colors.green)),
-                focusedBorder: OutlineInputBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(5)),
-                    borderSide: BorderSide(color: Colors.green))),
-          )),
-    );
+  void printData(str) {
+    Uint8List.fromList([0]);
+    print(str);
   }
 
-  void connect() async {
-    // Socket.connect(ipCon.text, port, timeout: Duration(seconds: 5))
-    //     .then((socket) {
-    //   setState(() {
-    //     clientSocket = socket;
-    //   });
-    // });
-
-    // print('connected!');
-
-    // clientSocket.add(utf8.encode(sendStr));
-    // await Future.delayed(Duration(seconds: 5));
-
-    // clientSocket.listen((List<int> event) {
-    //   print(event.length);
-    // });
-
-    // clientSocket.close();
+  void websocketConnect() {
+    channel.sink.add('플러터에서 왔다.');
   }
 
-  void disconnect() async {}
+  void getImageFromWebsocket() async {
+    while (true) {
+      imageQueue.add(channel.stream);
+    }
+  }
+
+  void websocketDisconnect() {
+    channel.sink.close();
+  }
 }

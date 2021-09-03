@@ -1,6 +1,7 @@
 # pet
 
 A new Flutter project.
+여기는 메카
 
 ## Getting Started
 

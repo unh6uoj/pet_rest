@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:web_socket_channel/io.dart';
 
 import 'screen_home.dart';
 import 'screen_video.dart';
+import 'screen_info.dart';
+
+import 'package:web_socket_channel/web_socket_channel.dart';
+import 'package:web_socket_channel/io.dart';
 
 void main() {
   runApp(MyApp());
@@ -11,8 +14,11 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    WebSocketChannel channel =
+        IOWebSocketChannel.connect('ws://192.168.1.186:25001');
+
     return MaterialApp(
-      title: 'chat used firebase',
+      title: 'Pet Station',
       theme: ThemeData(primaryColor: Colors.green),
       home: DefaultTabController(
           length: 3,
@@ -23,8 +29,8 @@ class MyApp extends StatelessWidget {
             body: TabBarView(
               children: [
                 HomeScreen(),
-                VideoScreen(),
-                Text('마이 스크린'),
+                VideoScreen(channel: channel),
+                InfoScreen()
               ],
             ),
             bottomNavigationBar: TabBar(

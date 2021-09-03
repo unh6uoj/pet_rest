@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     WebSocketChannel channel =
-        IOWebSocketChannel.connect('ws://192.168.1.186:25001');
+        IOWebSocketChannel.connect('ws://192.168.0.12:25001');
 
     return MaterialApp(
       title: 'Pet Station',

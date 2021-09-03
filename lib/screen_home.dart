@@ -28,7 +28,11 @@ class _HomeScreenState extends State<HomeScreen> {
                         lineHeight: 20.0,
                         animationDuration: 2000,
                         percent: 0.9,
+<<<<<<< HEAD
                         center: Text("30.0%"),
+=======
+                        center: Text("50.0%"),
+>>>>>>> 8a7a8aa13cdc9bc28ad94c9b14907d103144c434
                         linearStrokeCap: LinearStrokeCap.roundAll,
                         progressColor: Colors.greenAccent))),
             Expanded(

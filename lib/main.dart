@@ -14,9 +14,6 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    WebSocketChannel channel =
-        IOWebSocketChannel.connect('ws://192.168.0.12:25001');
-
     return MaterialApp(
       title: 'Pet Station',
       theme: ThemeData(primaryColor: Colors.green),
@@ -27,11 +24,7 @@ class MyApp extends StatelessWidget {
               title: Text('Pet Station'),
             ),
             body: TabBarView(
-              children: [
-                HomeScreen(),
-                VideoScreen(channel: channel),
-                InfoScreen()
-              ],
+              children: [HomeScreen(), VideoScreen(), InfoScreen()],
             ),
             bottomNavigationBar: TabBar(
                 labelColor: Colors.green,

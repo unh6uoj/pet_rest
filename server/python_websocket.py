@@ -17,14 +17,6 @@ async def accept(websocket, path):
 
         await websocket.send(encoded_frame)
 
-        # buffer_size = 1000000
-
-        # send_data = [encoded_frame[i:i+buffer_size]
-        #              for i in range(0, len(encoded_frame), buffer_size)]
-
-        # for image in send_data:
-        #     await websocket.send(image)
-
 websoc_svr = websockets.serve(accept, "0.0.0.0", "25001")
 
 # waiting

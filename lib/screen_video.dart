@@ -4,46 +4,52 @@ import 'package:web_socket_channel/io.dart';
 import 'package:flutter/material.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
-class VideoScreen extends StatelessWidget {
-  const VideoScreen({Key? key, @required this.channel}) : super(key: key);
+// Provider
+import 'package:provider/provider.dart';
 
-  final WebSocketChannel? channel;
-  static bool isConnected = false;
+class VideoScreen extends StatelessWidget {
+  const VideoScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          VideoArea(channel: this.channel),
-          VideoController(channel: this.channel)
-        ],
-      ),
-    ));
+    // Provider 생성
+    // 자식 클래스에서 접근이 가능하다.
+    return ChangeNotifierProvider<WebScoketConnection>(
+        create: (_) => WebScoketConnection(),
+        child: Scaffold(
+            body: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[VideoArea(), VideoController()],
+          ),
+        )));
   }
 }
 
 class VideoArea extends StatefulWidget {
-  const VideoArea({Key? key, @required this.channel}) : super(key: key);
-  final WebSocketChannel? channel;
+  const VideoArea({Key? key}) : super(key: key);
 
   @override
-  _VideoAreaState createState() =>
-      _VideoAreaState(this.channel as WebSocketChannel);
+  _VideoAreaState createState() => _VideoAreaState();
 }
 
 class _VideoAreaState extends State<VideoArea> {
-  final WebSocketChannel channel;
+  _VideoAreaState();
 
-  _VideoAreaState(this.channel);
   @override
   Widget build(BuildContext context) {
     return Container(
-        child: VideoScreen.isConnected
-            ? StreamBuilder(
-                stream: channel.stream,
+        width: 300,
+        height: 250,
+        // watch() 함수를 통해 데이터 접근
+        // watch()는 UI를 바로 업데이트 함
+        child: context.watch<WebScoketConnection>().isVideoConnect
+            ? Container(
+                child: StreamBuilder(
+                // read() 함수를 통해 데이터 접근
+                // read()는 UI업데이트 하지 않음. 여기선 stream으로 값을 받아오기 때문에
+                // UI업데이트는 자동으로 된다.
+                stream: context.read<WebScoketConnection>().channel.stream,
                 builder: (context, snapshot) {
                   return Padding(
                       padding: const EdgeInsets.symmetric(vertical: 24.0),
@@ -57,23 +63,21 @@ class _VideoAreaState extends State<VideoArea> {
                                 true, // gaplessPlayback을 true로 하지 않으면 이미지 변경 될 때 마다 깜빡깜빡 한다.
                           )));
                 },
-              )
-            : Text("no"));
+              ))
+            : Container());
   }
 }
 
 class VideoController extends StatefulWidget {
-  const VideoController({Key? key, @required this.channel}) : super(key: key);
-  final WebSocketChannel? channel;
+  const VideoController({Key? key}) : super(key: key);
 
   @override
-  _VideoControllerState createState() =>
-      _VideoControllerState(this.channel as WebSocketChannel);
+  _VideoControllerState createState() => _VideoControllerState();
 }
 
 class _VideoControllerState extends State<VideoController> {
-  final WebSocketChannel channel;
-  _VideoControllerState(this.channel);
+  _VideoControllerState();
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -82,31 +86,39 @@ class _VideoControllerState extends State<VideoController> {
         children: <Widget>[
           ElevatedButton(
               style: ElevatedButton.styleFrom(primary: Colors.green),
-              onPressed: websocketConnect,
+              onPressed: () {
+                context.read<WebScoketConnection>().webScoketConnect();
+              },
               child: Text('비디오 나와라')),
           ElevatedButton(
               style: ElevatedButton.styleFrom(primary: Colors.green),
-              onPressed: () {},
+              onPressed: () {
+                context.read<WebScoketConnection>().webSocketDisconnect();
+              },
               child: Text('비디오 꺼져라')),
         ],
       ),
     );
   }
+}
 
-  void websocketConnect() async {
-    // 서버로 데이터 보내는 부분
-    this.channel.sink.add('플러터에서 왔다.');
+// ChangeNotifier Provider Class 생성
+class WebScoketConnection extends ChangeNotifier {
+  late WebSocketChannel channel;
+  bool isVideoConnect = false;
 
-    setState(() {
-      VideoScreen.isConnected = true;
-    });
+  void webScoketConnect() async {
+    channel = IOWebSocketChannel.connect('ws://192.168.1.192:25001');
+    channel.sink.add('플러터에서 왔다.');
+
+    isVideoConnect = true;
+
+    notifyListeners();
   }
 
-  void websocketDisconnect() {
-    // channel.sink.close();
-
-    setState(() {
-      VideoScreen.isConnected = false;
-    });
+  void webSocketDisconnect() {
+    isVideoConnect = false;
+    channel.sink.close();
+    notifyListeners();
   }
 }

@@ -24,26 +24,22 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Padding(
                     padding: EdgeInsets.all(15.0),
                     child: new LinearPercentIndicator(
+                        center: Text("50.0%"),
                         animation: true,
                         lineHeight: 20.0,
                         animationDuration: 2000,
                         percent: 0.9,
-<<<<<<< HEAD
-                        center: Text("30.0%"),
-=======
-                        center: Text("50.0%"),
->>>>>>> 8a7a8aa13cdc9bc28ad94c9b14907d103144c434
                         linearStrokeCap: LinearStrokeCap.roundAll,
                         progressColor: Colors.greenAccent))),
             Expanded(
                 child: Padding(
                     padding: EdgeInsets.all(15.0),
                     child: new LinearPercentIndicator(
+                        center: Text("90.0%"),
                         animation: true,
                         lineHeight: 20.0,
                         animationDuration: 2000,
                         percent: 0.9,
-                        center: Text("90.0%"),
                         linearStrokeCap: LinearStrokeCap.roundAll,
                         progressColor: Colors.greenAccent)))
           ]),

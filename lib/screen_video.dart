@@ -106,7 +106,7 @@ class _VideoControllerState extends State<VideoController> {
 
 // Provider Class 생성
 // ChangeNotifier를 상속 받음.
-// ChangeNotifier는 notiftListeners()함수를 통해 데이터가 변경된 것을 바로 알려줄 수 있다.
+// ChangeNotifier는 notifyListeners()함수를 통해 데이터가 변경된 것을 바로 알려줄 수 있다.
 class WebScoketConnection extends ChangeNotifier {
   late WebSocketChannel channel;
   bool isVideoConnect = false;

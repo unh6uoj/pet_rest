@@ -87,12 +87,14 @@ class _VideoControllerState extends State<VideoController> {
           ElevatedButton(
               style: ElevatedButton.styleFrom(primary: Colors.green),
               onPressed: () {
+                // provider 데이터 접근
                 context.read<WebScoketConnection>().webScoketConnect();
               },
               child: Text('비디오 나와라')),
           ElevatedButton(
               style: ElevatedButton.styleFrom(primary: Colors.green),
               onPressed: () {
+                // provider 데이터 접근
                 context.read<WebScoketConnection>().webSocketDisconnect();
               },
               child: Text('비디오 꺼져라')),
@@ -102,7 +104,9 @@ class _VideoControllerState extends State<VideoController> {
   }
 }
 
-// ChangeNotifier Provider Class 생성
+// Provider Class 생성
+// ChangeNotifier를 상속 받음.
+// ChangeNotifier는 notiftListeners()함수를 통해 데이터가 변경된 것을 바로 알려줄 수 있다.
 class WebScoketConnection extends ChangeNotifier {
   late WebSocketChannel channel;
   bool isVideoConnect = false;
@@ -110,7 +114,6 @@ class WebScoketConnection extends ChangeNotifier {
   void webScoketConnect() async {
     channel = IOWebSocketChannel.connect('ws://192.168.1.192:25001');
     channel.sink.add('플러터에서 왔다.');
-
     isVideoConnect = true;
 
     notifyListeners();
@@ -119,6 +122,7 @@ class WebScoketConnection extends ChangeNotifier {
   void webSocketDisconnect() {
     isVideoConnect = false;
     channel.sink.close();
+
     notifyListeners();
   }
 }

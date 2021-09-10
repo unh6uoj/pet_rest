@@ -114,7 +114,7 @@ class WebScoketConnection extends ChangeNotifier {
   bool isVideoConnect = false;
 
   void webScoketConnect() async {
-    channel = IOWebSocketChannel.connect('ws://192.168.1.192:25001');
+    channel = IOWebSocketChannel.connect('ws://192.168.1.135:25001');
     channel.sink.add('플러터에서 왔다.');
     isVideoConnect = true;
 

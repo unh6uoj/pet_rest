@@ -4,8 +4,12 @@ import 'screen_home.dart';
 import 'screen_video.dart';
 import 'screen_info.dart';
 
-import 'package:web_socket_channel/web_socket_channel.dart';
+// WebScoket
 import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
+// Provider
+import 'package:provider/provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -24,7 +28,12 @@ class MyApp extends StatelessWidget {
               title: Text('Pet Station'),
             ),
             body: TabBarView(
-              children: [HomeScreen(), VideoScreen(), InfoScreen()],
+              children: [
+                ChangeNotifierProvider<LoadCellWebScoket>(
+                    create: (_) => LoadCellWebScoket(), child: HomeScreen()),
+                VideoScreen(),
+                InfoScreen()
+              ],
             ),
             bottomNavigationBar: TabBar(
                 labelColor: Colors.green,
@@ -45,5 +54,41 @@ class MyApp extends StatelessWidget {
                 ]),
           )),
     );
+  }
+}
+
+// Provider Class 생성
+// ChangeNotifier를 상속 받음.
+// ChangeNotifier는 notifyListeners()함수를 통해 데이터가 변경된 것을 바로 알려줄 수 있다.
+class LoadCellWebScoket extends ChangeNotifier {
+  late WebSocketChannel channel;
+  bool isLoadCellConnect = false;
+  double loadCellData = 0.0;
+
+  LoadCellWebScoket() {
+    webScoketConnect();
+  }
+
+  double setLoadCellData(double inputData) {
+    this.loadCellData = inputData;
+
+    notifyListeners();
+
+    return this.loadCellData;
+  }
+
+  void webScoketConnect() async {
+    channel = IOWebSocketChannel.connect('ws://192.168.1.135:25003');
+    channel.sink.add('플러터에서 왔다.');
+    isLoadCellConnect = true;
+
+    notifyListeners();
+  }
+
+  void webSocketDisconnect() {
+    isLoadCellConnect = false;
+    channel.sink.close();
+
+    notifyListeners();
   }
 }

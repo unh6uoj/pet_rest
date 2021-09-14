@@ -13,8 +13,6 @@ async def accept(websocket, path):
     while True:
         ret, frame = cap.read()
 ####
-
-
         encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 60]
         encoded_frame = cv2.imencode('.jpg', frame, encode_param)[1].tobytes()
 

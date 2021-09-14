@@ -11,7 +11,7 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 // Provider
 import 'package:provider/provider.dart';
 
-void main() {
+Future<void> main() async {
   runApp(MyApp());
 }
 

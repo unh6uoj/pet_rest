@@ -83,21 +83,23 @@ class _Row2State extends State<Row2> {
   @override
   Widget build(BuildContext context) {
     return Row(children: <Widget>[
-      // 사료, 물 잔량
-      context.watch<LoadCellWebScoket>().isLoadCellConnect
-          ? StreamBuilder(
-              stream: context.read<LoadCellWebScoket>().channel.stream,
-              builder: (context, snapshot) {
-                context.read<LoadCellWebScoket>().loadCellDataFood =
-                    double.parse(snapshot.data as String);
-                return Expanded(
-                    //child: Text(snapshot.data as String));
-                    child: PercentBar(
-                        isLinear: true,
-                        data: double.parse(snapshot.data as String)));
-              },
-            )
-          : Expanded(child: PercentBar(isLinear: true, data: 0.8)),
+      StreamBuilder(
+        stream: context.read<LoadCellWebScoket>().channel.stream,
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            context.read<LoadCellWebScoket>().loadCellDataFood =
+                double.parse(snapshot.data as String);
+          }
+
+          return snapshot.hasData
+              ? Expanded(
+                  //child: Text(snapshot.data as String));
+                  child: PercentBar(
+                      isLinear: true,
+                      data: double.parse(snapshot.data as String)))
+              : Expanded(child: PercentBar(isLinear: true, data: 0.8));
+        },
+      ),
       Expanded(child: PercentBar(isLinear: true, data: 0.8))
     ]);
   }

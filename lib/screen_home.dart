@@ -88,21 +88,16 @@ class _Row2State extends State<Row2> {
           ? StreamBuilder(
               stream: context.read<LoadCellWebScoket>().channel.stream,
               builder: (context, snapshot) {
+                context.read<LoadCellWebScoket>().loadCellDataFood =
+                    double.parse(snapshot.data as String);
                 return Expanded(
+                    //child: Text(snapshot.data as String));
                     child: PercentBar(
                         isLinear: true,
-                        setData: context
-                            .watch<LoadCellWebScoket>()
-                            .setLoadCellData(
-                                double.parse(snapshot.data as String)),
                         data: double.parse(snapshot.data as String)));
               },
             )
-          : Expanded(
-              child: PercentBar(
-              isLinear: true,
-              data: 0.8,
-            )),
+          : Expanded(child: PercentBar(isLinear: true, data: 0.8)),
       Expanded(child: PercentBar(isLinear: true, data: 0.8))
     ]);
   }
@@ -110,7 +105,7 @@ class _Row2State extends State<Row2> {
 
 // 퍼센트 바
 class PercentBar extends StatefulWidget {
-  const PercentBar({Key? key, this.isLinear, @required this.data, setData})
+  const PercentBar({Key? key, this.isLinear, @required this.data})
       : super(key: key);
 
   final bool? isLinear;
@@ -132,6 +127,7 @@ class _PercentBarState extends State<PercentBar> {
   Widget build(BuildContext context) {
     // 최대 칼로리
     const double maxCalorie = 100;
+    double foodData = context.watch<LoadCellWebScoket>().loadCellDataFood;
     // 선형/비선형 퍼센트 바 반환
     return this.isLinear
         // 선형 퍼센트 바
@@ -140,14 +136,12 @@ class _PercentBarState extends State<PercentBar> {
             padding: EdgeInsets.all(5.0),
             child: LinearPercentIndicator(
                 animation: true,
-                animateFromLastPercent: true, // 이전 퍼센트에서 애니메이션 시작
-                animationDuration: 500,
+                animateFromLastPercent: true, // 이전 퍼센트에서 애니메이션 재생
+                animationDuration: 1000,
                 lineHeight: 20.0,
-                percent: context.read<LoadCellWebScoket>().loadCellData,
-                center: Text(
-                    (context.read<LoadCellWebScoket>().loadCellData * 100)
-                            .toString() +
-                        "%"),
+                percent: foodData,
+                center:
+                    Text((foodData * 100).toStringAsFixed(1).toString() + "%"),
                 linearStrokeCap: LinearStrokeCap.roundAll,
                 progressColor: Colors.lightGreen[500]))
 
@@ -156,16 +150,13 @@ class _PercentBarState extends State<PercentBar> {
             margin: EdgeInsets.symmetric(vertical: 15.0),
             padding: EdgeInsets.all(5.0),
             child: CircularPercentIndicator(
-                radius: 120.0,
-                lineWidth: 13.0,
                 animation: true,
-                animateFromLastPercent: true, // 이전 퍼센트에서 애니메이션 시작
-                percent:
-                    (context.read<LoadCellWebScoket>().loadCellData * 100) /
-                        maxCalorie,
-                center: new Text(
-                    context.read<LoadCellWebScoket>().loadCellData.toString() +
-                        "cal",
+                animateFromLastPercent: true, // 이전 퍼센트에서 애니메이션 재생
+                animationDuration: 1000,
+                radius: 120.0,
+                lineWidth: 15.0,
+                percent: (this.data * 100) / maxCalorie,
+                center: new Text(this.data.toString() + "cal",
                     style: new TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 20.0)),
                 footer: new Text("강아지 운동량",

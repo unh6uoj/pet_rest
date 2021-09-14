@@ -63,18 +63,11 @@ class MyApp extends StatelessWidget {
 class LoadCellWebScoket extends ChangeNotifier {
   late WebSocketChannel channel;
   bool isLoadCellConnect = false;
-  double loadCellData = 0.0;
+  double loadCellDataFood = 0.0;
+  double loadCellDataWater = 0.0;
 
   LoadCellWebScoket() {
     webScoketConnect();
-  }
-
-  double setLoadCellData(double inputData) {
-    this.loadCellData = inputData;
-
-    notifyListeners();
-
-    return this.loadCellData;
   }
 
   void webScoketConnect() async {

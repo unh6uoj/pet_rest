@@ -31,7 +31,8 @@ class MyApp extends StatelessWidget {
               children: [
                 ChangeNotifierProvider<LoadCellWebScoket>(
                     create: (_) => LoadCellWebScoket(), child: HomeScreen()),
-                VideoScreen(),
+                ChangeNotifierProvider(
+                    create: (_) => VideoWebSocket(), child: VideoScreen()),
                 InfoScreen()
               ],
             ),
@@ -60,9 +61,42 @@ class MyApp extends StatelessWidget {
 // Provider Class 생성
 // ChangeNotifier를 상속 받음.
 // ChangeNotifier는 notifyListeners()함수를 통해 데이터가 변경된 것을 바로 알려줄 수 있다.
+class VideoWebSocket extends ChangeNotifier {
+  late WebSocketChannel channel;
+  bool isVideoOn = false;
+
+  VideoWebSocket() {
+    webScoketConnect();
+  }
+
+  void videoOn() {
+    isVideoOn = true;
+
+    notifyListeners();
+  }
+
+  void videoOff() {
+    isVideoOn = false;
+
+    notifyListeners();
+  }
+
+  void webScoketConnect() async {
+    channel = IOWebSocketChannel.connect('ws://192.168.1.135:25001');
+    channel.sink.add('플러터에서 왔다, 비디오');
+
+    notifyListeners();
+  }
+
+  void webSocketDisconnect() {
+    channel.sink.close();
+
+    notifyListeners();
+  }
+}
+
 class LoadCellWebScoket extends ChangeNotifier {
   late WebSocketChannel channel;
-  bool isLoadCellConnect = false;
   double loadCellDataFood = 0.0;
   double loadCellDataWater = 0.0;
 
@@ -72,14 +106,12 @@ class LoadCellWebScoket extends ChangeNotifier {
 
   void webScoketConnect() async {
     channel = IOWebSocketChannel.connect('ws://192.168.1.135:25003');
-    channel.sink.add('플러터에서 왔다.');
-    isLoadCellConnect = true;
+    channel.sink.add('플러터에서 왔다, 로드셀');
 
     notifyListeners();
   }
 
   void webSocketDisconnect() {
-    isLoadCellConnect = false;
     channel.sink.close();
 
     notifyListeners();

@@ -86,6 +86,9 @@ class _Row2State extends State<Row2> {
       StreamBuilder(
         stream: context.read<LoadCellWebScoket>().channel.stream,
         builder: (context, snapshot) {
+          // provider로 데이터를 넘기는 부분
+          // streambuilder에서 다른 위젯으로 데이터가 안넘어감
+          // 수정 요함ㅠ
           if (snapshot.hasData) {
             context.read<LoadCellWebScoket>().loadCellDataFood =
                 double.parse(snapshot.data as String);
@@ -96,6 +99,8 @@ class _Row2State extends State<Row2> {
                   //child: Text(snapshot.data as String));
                   child: PercentBar(
                       isLinear: true,
+                      // 다른 위젯으로 streambuilder 데이터가 잘 넘어가지 않는 문제
+                      // 이 부분 없어도 무방
                       data: double.parse(snapshot.data as String)))
               : Expanded(child: PercentBar(isLinear: true, data: 0.8));
         },
@@ -111,7 +116,7 @@ class PercentBar extends StatefulWidget {
       : super(key: key);
 
   final bool? isLinear;
-  final double? data;
+  final double? data; // data 변수 지금 상태에선 사용 x
 
   @override
   _PercentBarState createState() =>

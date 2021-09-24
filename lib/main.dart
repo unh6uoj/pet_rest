@@ -82,7 +82,7 @@ class VideoWebSocket extends ChangeNotifier {
   }
 
   void webScoketConnect() async {
-    channel = IOWebSocketChannel.connect('ws://192.168.1.135:25001');
+    channel = IOWebSocketChannel.connect('ws://192.168.0.21:25001');
     channel.sink.add('플러터에서 왔다, 비디오');
 
     notifyListeners();
@@ -105,7 +105,7 @@ class LoadCellWebScoket extends ChangeNotifier {
   }
 
   void webScoketConnect() async {
-    channel = IOWebSocketChannel.connect('ws://192.168.1.135:25003');
+    channel = IOWebSocketChannel.connect('ws://192.168.0.21:25003');
     channel.sink.add('플러터에서 왔다, 로드셀');
 
     notifyListeners();

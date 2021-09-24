@@ -39,11 +39,11 @@ class HomeScreen extends StatelessWidget {
                 // 사료, 물 급여 버튼
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(primary: Colors.green),
-                    onPressed: () {},
+                    onPressed: context.read<LoadCellProvider>().sendFood,
                     child: Text('밥주기!')),
                 ElevatedButton(
                     style: ElevatedButton.styleFrom(primary: Colors.green),
-                    onPressed: () {},
+                    onPressed: context.read<LoadCellProvider>().sendWater,
                     child: Text('물주기!'))
               ]),
 
@@ -84,13 +84,13 @@ class _Row2State extends State<Row2> {
   Widget build(BuildContext context) {
     return Row(children: <Widget>[
       StreamBuilder(
-        stream: context.read<LoadCellWebScoket>().channel.stream,
+        stream: context.read<LoadCellProvider>().channel.stream,
         builder: (context, snapshot) {
           // provider로 데이터를 넘기는 부분
           // streambuilder에서 다른 위젯으로 데이터가 안넘어감
           // 수정 요함ㅠ
           if (snapshot.hasData) {
-            context.read<LoadCellWebScoket>().loadCellDataFood =
+            context.read<LoadCellProvider>().loadCellDataFood =
                 double.parse(snapshot.data as String);
           }
 
@@ -134,7 +134,7 @@ class _PercentBarState extends State<PercentBar> {
   Widget build(BuildContext context) {
     // 최대 칼로리
     const double maxCalorie = 100;
-    double foodData = context.watch<LoadCellWebScoket>().loadCellDataFood;
+    double foodData = context.watch<LoadCellProvider>().loadCellDataFood;
     // 선형/비선형 퍼센트 바 반환
     return this.isLinear
         // 선형 퍼센트 바

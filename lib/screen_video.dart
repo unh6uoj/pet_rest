@@ -44,9 +44,9 @@ class _VideoAreaState extends State<VideoArea> {
           // read() 함수를 통해 데이터 접근
           // read()는 UI업데이트 하지 않음. 여기선 stream으로 값을 받아오기 때문에
           // UI업데이트는 자동으로 된다.
-          stream: context.read<VideoWebSocket>().channel.stream,
+          stream: context.read<VideoProvider>().channel.stream,
           builder: (context, snapshot) {
-            return snapshot.hasData && context.watch<VideoWebSocket>().isVideoOn
+            return snapshot.hasData && context.watch<VideoProvider>().isVideoOn
                 ? Padding(
                     padding: const EdgeInsets.symmetric(vertical: 24.0),
                     child: Container(
@@ -78,26 +78,25 @@ class _VideoControllerState extends State<VideoController> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          ElevatedButton(
+    return context.watch<VideoProvider>().isVideoOn
+        ? Container(
+            child: ElevatedButton(
               style: ElevatedButton.styleFrom(primary: Colors.green),
               onPressed: () {
                 // provider 데이터 접근
-                context.read<VideoWebSocket>().videoOn();
+                context.read<VideoProvider>().videoOff();
               },
-              child: Text('비디오 나와라')),
-          ElevatedButton(
-              style: ElevatedButton.styleFrom(primary: Colors.green),
-              onPressed: () {
-                // provider 데이터 접근
-                context.read<VideoWebSocket>().videoOff();
-              },
-              child: Text('비디오 꺼져라')),
-        ],
-      ),
-    );
+              child: Text('비디오 꺼져라'),
+            ),
+          )
+        : Container(
+            child: ElevatedButton(
+                style: ElevatedButton.styleFrom(primary: Colors.green),
+                onPressed: () {
+                  // provider 데이터 접근
+                  context.read<VideoProvider>().videoOn();
+                },
+                child: Text('비디오 나와라')),
+          );
   }
 }

@@ -26,14 +26,13 @@ class MyApp extends StatelessWidget {
           child: Scaffold(
             appBar: AppBar(
               title: Text('Pet Station'),
-              backgroundColor: Colors.green,
+              backgroundColor: Colors.green[300],
             ),
             body: TabBarView(
               children: [
-                ChangeNotifierProvider<LoadCellProvider>(
-                    create: (_) => LoadCellProvider(), child: HomeScreen()),
-                ChangeNotifierProvider<VideoProvider>(
-                    create: (_) => VideoProvider(), child: VideoScreen()),
+                ChangeNotifierProvider<HomeProvider>(
+                    create: (_) => HomeProvider(), child: HomeScreen()),
+                VideoScreen(),
                 InfoScreen()
               ],
             ),
@@ -43,15 +42,15 @@ class MyApp extends StatelessWidget {
                 tabs: [
                   Tab(
                     icon: Icon(Icons.home_outlined),
-                    text: 'Home',
+                    text: '홈',
                   ),
                   Tab(
-                    icon: Icon(Icons.camera_alt_outlined),
-                    text: 'Video',
+                    icon: Icon(Icons.list_alt),
+                    text: '로그',
                   ),
                   Tab(
                     icon: Icon(Icons.person_outline),
-                    text: 'My',
+                    text: '정보',
                   )
                 ]),
           )),
@@ -62,12 +61,45 @@ class MyApp extends StatelessWidget {
 // Provider Class 생성
 // ChangeNotifier를 상속 받음.
 // ChangeNotifier는 notifyListeners()함수를 통해 데이터가 변경된 것을 바로 알려줄 수 있다.
-class VideoProvider extends ChangeNotifier {
-  late WebSocketChannel channel;
+class HomeProvider extends ChangeNotifier {
+  late WebSocketChannel videoChannel;
+  late WebSocketChannel loadcellChannel;
+
   bool isVideoOn = false;
 
-  VideoProvider() {
-    webScoketConnect();
+  double loadCellDataFood = 0.0;
+  double loadCellDataWater = 0.0;
+
+  HomeProvider() {
+    loadCellWebScoketConnect();
+    videoWebSocketConnect();
+  }
+
+  void loadCellWebScoketConnect() async {
+    this.loadcellChannel =
+        IOWebSocketChannel.connect('ws://192.168.1.132:25003');
+    this.loadcellChannel.sink.add('mortor init');
+
+    notifyListeners();
+  }
+
+  void videoWebSocketConnect() async {
+    this.videoChannel = IOWebSocketChannel.connect('ws://192.168.1.132:25001');
+    this.videoChannel.sink.add('video init');
+
+    notifyListeners();
+  }
+
+  void videoWebSocketDisconnect() {
+    this.videoChannel.sink.close();
+
+    notifyListeners();
+  }
+
+  void loadCellWebSocketDisconnect() {
+    this.loadcellChannel.sink.close();
+
+    notifyListeners();
   }
 
   void videoOn() {
@@ -82,51 +114,14 @@ class VideoProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  void webScoketConnect() async {
-    channel = IOWebSocketChannel.connect('ws://192.168.0.21:25001');
-    channel.sink.add('video init');
-
-    notifyListeners();
-  }
-
-  void webSocketDisconnect() {
-    channel.sink.close();
-
-    notifyListeners();
-  }
-}
-
-class LoadCellProvider extends ChangeNotifier {
-  WebSocketChannel channel =
-      IOWebSocketChannel.connect('ws://192.168.1.132:25003');
-  double loadCellDataFood = 0.0;
-  double loadCellDataWater = 0.0;
-
-  // LoadCellProvider() {
-  //   webScoketConnect();
-  // }
-
-  // void webScoketConnect() async {
-  //   this.channel = IOWebSocketChannel.connect('ws://192.168.1.132:25003');
-  //   this.channel.sink.add('mortor init');
-
-  //   notifyListeners();
-  // }
-
-  void webSocketDisconnect() {
-    this.channel.sink.close();
-
-    notifyListeners();
-  }
-
   void sendFood() {
-    this.channel.sink.add('food');
+    this.loadcellChannel.sink.add('food');
     print('food 보냄');
     notifyListeners();
   }
 
   void sendWater() {
-    this.channel.sink.add('water');
+    this.loadcellChannel.sink.add('water');
     print('water 보냄');
     notifyListeners();
   }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'dart:typed_data';
 import 'package:pet/main.dart';
 
 // persent_indicator
@@ -12,107 +13,95 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // 요소들을 세로로 나란히 배치하기 위한 레이아웃
-    return Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-
-        // 요소들 생성
-        children: <Widget>[
-          // 첫번째 가로줄
-          Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                // 사료, 물 이미지
-                Image(image: AssetImage('images/pet_food.png'), width: 150),
-                Image(image: AssetImage('images/pet_water.png'), width: 150)
-              ]),
-
-          // 두번째 가로줄
-          Row2(),
-
-          // 세번째 가로줄
-          Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: <Widget>[
-                // 사료, 물 급여 버튼
-                ElevatedButton(
-                    style: ElevatedButton.styleFrom(primary: Colors.green),
-                    onPressed: context.read<LoadCellProvider>().sendFood,
-                    child: Text('밥주기!')),
-                ElevatedButton(
-                    style: ElevatedButton.styleFrom(primary: Colors.green),
-                    onPressed: context.read<LoadCellProvider>().sendWater,
-                    child: Text('물주기!'))
-              ]),
-
-          // 중간 여백
-          Container(height: 30),
-
-          // 네번째 가로줄
-          Row(children: <Widget>[
-            // 운동량
-            Expanded(child: PercentBar(isLinear: false, data: 0.7))
-          ]),
-
-          // 다섯번째 가로줄
-          Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: <Widget>[
-                // 공 던지기 버튼
-                ElevatedButton(
-                    style: ElevatedButton.styleFrom(primary: Colors.green),
-                    onPressed: () {},
-                    child: Text('공 던지기!'))
-              ])
-        ]);
+    return Center(
+        child: SingleChildScrollView(
+            scrollDirection: Axis.vertical,
+            child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: <Widget>[
+                  VideoArea(),
+                  HomeDataCard(name: '밥'),
+                  HomeDataCard(name: '물'),
+                ])));
   }
 }
 
-// 일단 이름 이렇게 해놓음
-// 추후에 수정 요함
-class Row2 extends StatefulWidget {
-  const Row2({Key? key}) : super(key: key);
+class VideoArea extends StatefulWidget {
+  const VideoArea({Key? key}) : super(key: key);
 
   @override
-  _Row2State createState() => _Row2State();
+  _VideoAreaState createState() => _VideoAreaState();
 }
 
-class _Row2State extends State<Row2> {
+class _VideoAreaState extends State<VideoArea> {
+  _VideoAreaState();
+
   @override
   Widget build(BuildContext context) {
-    return Row(children: <Widget>[
-      StreamBuilder(
-        stream: context.read<LoadCellProvider>().channel.stream,
-        builder: (context, snapshot) {
-          // provider로 데이터를 넘기는 부분
-          // streambuilder에서 다른 위젯으로 데이터가 안넘어감
-          // 수정 요함ㅠ
-          if (snapshot.hasData) {
-            context.read<LoadCellProvider>().loadCellDataFood =
-                double.parse(snapshot.data as String);
-          }
+    return Container(
+        height: 340,
+        // watch() 함수를 통해 데이터 접근
+        // watch()는 UI를 바로 업데이트 함
+        child: Container(
+            child: StreamBuilder(
+          // read() 함수를 통해 데이터 접근
+          // read()는 UI업데이트 하지 않음. 여기선 stream으로 값을 받아오기 때문에
+          // UI업데이트는 자동으로 된다.
+          stream: context.read<HomeProvider>().videoChannel.stream,
+          builder: (context, snapshot) {
+            return snapshot.hasData && context.watch<HomeProvider>().isVideoOn
+                ? Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 24.0),
+                    child: FractionallySizedBox(
+                        child: Container(
+                            color: Colors.black,
+                            child: Image.memory(
+                              snapshot.data as Uint8List,
+                              gaplessPlayback:
+                                  true, // gaplessPlayback을 true로 하지 않으면 이미지 변경 될 때 마다 깜빡깜빡 한다.
+                            ))))
+                : Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 24.0),
+                    child: FractionallySizedBox(
+                        widthFactor: 1,
+                        child: Container(
+                            color: Colors.black,
+                            child: Icon(
+                              Icons.play_arrow,
+                              size: 75,
+                              color: Colors.white,
+                            ))));
+          },
+        )));
+  }
+}
 
-          return snapshot.hasData
-              ? Expanded(
-                  //child: Text(snapshot.data as String));
-                  child: PercentBar(
-                      isLinear: true,
-                      // 다른 위젯으로 streambuilder 데이터가 잘 넘어가지 않는 문제
-                      // 이 부분 없어도 무방
-                      data: double.parse(snapshot.data as String)))
-              : Expanded(child: PercentBar(isLinear: true, data: 0.8));
-        },
-      ),
-      Expanded(child: PercentBar(isLinear: true, data: 0.8))
-    ]);
+class HomeDataCard extends StatelessWidget {
+  const HomeDataCard({Key? key, this.name}) : super(key: key);
+
+  final String? name;
+
+  @override
+  Widget build(BuildContext context) {
+    return FractionallySizedBox(
+        widthFactor: 0.95,
+        child: Padding(
+            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            child: Card(
+                color: Colors.grey[200],
+                child: Column(
+                  children: [
+                    Text(this.name as String),
+                    PercentBar(isLinear: false, data: 0.0)
+                  ],
+                ))));
   }
 }
 
 // 퍼센트 바
 class PercentBar extends StatefulWidget {
-  const PercentBar({Key? key, this.isLinear, @required this.data})
+  const PercentBar({Key? key, this.isLinear = true, @required this.data})
       : super(key: key);
 
   final bool? isLinear;
@@ -134,7 +123,7 @@ class _PercentBarState extends State<PercentBar> {
   Widget build(BuildContext context) {
     // 최대 칼로리
     const double maxCalorie = 100;
-    double foodData = context.watch<LoadCellProvider>().loadCellDataFood;
+    double foodData = context.watch<HomeProvider>().loadCellDataFood;
     // 선형/비선형 퍼센트 바 반환
     return this.isLinear
         // 선형 퍼센트 바
@@ -166,9 +155,6 @@ class _PercentBarState extends State<PercentBar> {
                 center: new Text(this.data.toString() + "cal",
                     style: new TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 20.0)),
-                footer: new Text("강아지 운동량",
-                    style: new TextStyle(
-                        fontWeight: FontWeight.bold, fontSize: 17.0)),
                 circularStrokeCap: CircularStrokeCap.round,
                 progressColor: Colors.lightGreen[500]));
   }

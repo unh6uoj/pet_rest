@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'screen_home.dart';
-import 'screen_video.dart';
+import 'screen_log.dart';
 import 'screen_info.dart';
 
 // WebScoket
@@ -29,10 +29,11 @@ class MyApp extends StatelessWidget {
               backgroundColor: Colors.green[300],
             ),
             body: TabBarView(
+              physics: NeverScrollableScrollPhysics(),
               children: [
                 ChangeNotifierProvider<HomeProvider>(
                     create: (_) => HomeProvider(), child: HomeScreen()),
-                VideoScreen(),
+                LogScreen(),
                 InfoScreen()
               ],
             ),

@@ -12,7 +12,6 @@ class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    // 요소들을 세로로 나란히 배치하기 위한 레이아웃
     return Center(
         child: SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -92,7 +91,7 @@ class HomeDataCard extends StatelessWidget {
                 color: Colors.grey[200],
                 child: Column(
                   children: [
-                    Text(this.name as String),
+                    const ListTile(leading: Icon(Icons.star)),
                     PercentBar(isLinear: false, data: 0.0)
                   ],
                 ))));

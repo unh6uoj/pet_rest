@@ -84,7 +84,7 @@ class VideoProvider extends ChangeNotifier {
 
   void webScoketConnect() async {
     channel = IOWebSocketChannel.connect('ws://192.168.0.21:25001');
-    channel.sink.add('플러터에서 왔다, 비디오');
+    channel.sink.add('video init');
 
     notifyListeners();
   }
@@ -97,32 +97,37 @@ class VideoProvider extends ChangeNotifier {
 }
 
 class LoadCellProvider extends ChangeNotifier {
-  late WebSocketChannel channel;
+  WebSocketChannel channel =
+      IOWebSocketChannel.connect('ws://192.168.1.132:25003');
   double loadCellDataFood = 0.0;
   double loadCellDataWater = 0.0;
 
-  LoadCellProvider() {
-    webScoketConnect();
-  }
+  // LoadCellProvider() {
+  //   webScoketConnect();
+  // }
 
-  void webScoketConnect() async {
-    channel = IOWebSocketChannel.connect('ws://192.168.0.21:25003');
-    channel.sink.add('food');
+  // void webScoketConnect() async {
+  //   this.channel = IOWebSocketChannel.connect('ws://192.168.1.132:25003');
+  //   this.channel.sink.add('mortor init');
 
-    notifyListeners();
-  }
+  //   notifyListeners();
+  // }
 
   void webSocketDisconnect() {
-    channel.sink.close();
+    this.channel.sink.close();
 
     notifyListeners();
   }
 
   void sendFood() {
     this.channel.sink.add('food');
+    print('food 보냄');
+    notifyListeners();
   }
 
   void sendWater() {
     this.channel.sink.add('water');
+    print('water 보냄');
+    notifyListeners();
   }
 }

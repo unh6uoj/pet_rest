@@ -10,22 +10,24 @@ async def accept(websocket, path):
     geared = Motor(20, 16)
     servo = Servo(17)
     
-    try:
-        data_rcv = await websocket.recv()
-        print(data_rcv)
-    except:
-        print('error')
+    while True:
+        try:
+            print('wait...')
+            data_rcv = await websocket.recv()
+            print(data_rcv)
+        except:
+            print('error')
 
-    if data_rcv == "food":
-        geared.forward()
-        time.sleep(2)
-        geared.stop()
-    
-    elif data_rcv == "water":
-        servo.value = 0.6
-        time.sleep(1)
-        servo.value = -0.2
-        time.sleep(1)
+        if data_rcv == "food":
+            geared.forward()
+            time.sleep(2)
+            geared.stop()
+        
+        elif data_rcv == "water":
+            servo.value = 0.6
+            time.sleep(1)
+            servo.value = -0.2
+            time.sleep(1)
 
 websoc_svr = websockets.serve(accept, "0.0.0.0", "25003")
 

@@ -5,8 +5,9 @@ class LogScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-        child: Column(
+    return Scaffold(
+        body: SingleChildScrollView(
+            child: Column(
       children: <Widget>[
         Container(
           width: 400,
@@ -39,6 +40,6 @@ class LogScreen extends StatelessWidget {
           color: Colors.blueGrey[600],
         ),
       ],
-    ));
+    )));
   }
 }

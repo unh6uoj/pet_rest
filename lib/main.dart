@@ -19,15 +19,16 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      color: Colors.lightGreen[50],
       title: 'Pet Station',
       theme: ThemeData(primaryColor: Colors.green),
       home: DefaultTabController(
           length: 3,
           child: Scaffold(
             appBar: AppBar(
-              title: Text('Pet Station'),
-              backgroundColor: Colors.green[300],
-            ),
+                title: Text('Pet Station'),
+                backgroundColor: Colors.green[300],
+                leading: Icon(Icons.menu)),
             body: TabBarView(
               physics: NeverScrollableScrollPhysics(),
               children: [

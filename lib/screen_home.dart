@@ -12,16 +12,42 @@ class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
   @override
   Widget build(BuildContext context) {
-    return Center(
-        child: SingleChildScrollView(
+    return Scaffold(
+        body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: <Widget>[
                   VideoArea(),
-                  HomeDataCard(name: '밥'),
-                  HomeDataCard(name: '물'),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                          child: HomeDataCard(
+                        name: '밥',
+                        isLinear: false,
+                      )),
+                      Expanded(
+                          child: HomeDataCard(
+                        name: '물',
+                        isLinear: false,
+                      )),
+                    ],
+                  ),
+                  Row(
+                    children: <Widget>[
+                      Expanded(
+                          child: HomeDataCard(
+                        name: '밥',
+                        isLinear: false,
+                      )),
+                      Expanded(
+                          child: HomeDataCard(
+                        name: '물',
+                        isLinear: false,
+                      )),
+                    ],
+                  ),
                 ])));
   }
 }
@@ -77,22 +103,36 @@ class _VideoAreaState extends State<VideoArea> {
 }
 
 class HomeDataCard extends StatelessWidget {
-  const HomeDataCard({Key? key, this.name}) : super(key: key);
+  const HomeDataCard({Key? key, this.name, this.isLinear}) : super(key: key);
 
   final String? name;
+  final bool? isLinear;
 
   @override
   Widget build(BuildContext context) {
     return FractionallySizedBox(
-        widthFactor: 0.95,
+        widthFactor: 1,
         child: Padding(
-            padding: EdgeInsets.fromLTRB(0, 10, 0, 10),
+            padding: EdgeInsets.symmetric(horizontal: 2),
             child: Card(
-                color: Colors.grey[200],
+                shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(15)),
+                color: Colors.green[50],
                 child: Column(
                   children: [
-                    const ListTile(leading: Icon(Icons.star)),
-                    PercentBar(isLinear: false, data: 0.0)
+                    SizedBox(height: 20),
+                    Text(
+                      this.name as String,
+                      textScaleFactor: 1.3,
+                    ),
+                    PercentBar(isLinear: this.isLinear, data: 0.0),
+                    this.name == '밥'
+                        ? ElevatedButton(
+                            onPressed: context.read<HomeProvider>().sendFood,
+                            child: Text(this.name as String))
+                        : ElevatedButton(
+                            onPressed: context.read<HomeProvider>().sendWater,
+                            child: Text(this.name as String))
                   ],
                 ))));
   }
@@ -148,10 +188,10 @@ class _PercentBarState extends State<PercentBar> {
                 animation: true,
                 animateFromLastPercent: true, // 이전 퍼센트에서 애니메이션 재생
                 animationDuration: 1000,
-                radius: 120.0,
-                lineWidth: 15.0,
+                radius: 100.0,
+                lineWidth: 12.0,
                 percent: (this.data * 100) / maxCalorie,
-                center: new Text(this.data.toString() + "cal",
+                center: new Text(this.data.toString(),
                     style: new TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 20.0)),
                 circularStrokeCap: CircularStrokeCap.round,

@@ -65,7 +65,7 @@ class MyApp extends StatelessWidget {
 // ChangeNotifier는 notifyListeners()함수를 통해 데이터가 변경된 것을 바로 알려줄 수 있다.
 class HomeProvider extends ChangeNotifier {
   late WebSocketChannel videoChannel;
-  late WebSocketChannel loadcellChannel;
+  late WebSocketChannel motorChannel;
 
   bool isVideoOn = false;
 
@@ -73,14 +73,13 @@ class HomeProvider extends ChangeNotifier {
   double loadCellDataWater = 0.0;
 
   HomeProvider() {
-    loadCellWebScoketConnect();
-    videoWebSocketConnect();
+    motorWebScoketConnect();
+    // videoWebSocketConnect();
   }
 
-  void loadCellWebScoketConnect() async {
-    this.loadcellChannel =
-        IOWebSocketChannel.connect('ws://192.168.1.132:25003');
-    this.loadcellChannel.sink.add('mortor init');
+  void motorWebScoketConnect() async {
+    this.motorChannel = IOWebSocketChannel.connect('ws://192.168.1.132:25005');
+    this.motorChannel.sink.add('mortor init');
 
     notifyListeners();
   }
@@ -99,14 +98,17 @@ class HomeProvider extends ChangeNotifier {
   }
 
   void loadCellWebSocketDisconnect() {
-    this.loadcellChannel.sink.close();
+    this.motorChannel.sink.close();
 
     notifyListeners();
   }
 
   void videoOn() {
+    videoWebSocketConnect();
+
     isVideoOn = true;
 
+    this.videoChannel.sink.add('on');
     print('video on');
 
     notifyListeners();
@@ -115,26 +117,27 @@ class HomeProvider extends ChangeNotifier {
   void videoOff() {
     isVideoOn = false;
 
-    print('video off');
     this.videoChannel.sink.add('off');
+    videoWebSocketDisconnect();
+    print('video off');
 
     notifyListeners();
   }
 
   void sendFood() {
-    this.loadcellChannel.sink.add('food');
+    this.motorChannel.sink.add('food');
     print('food 보냄');
     notifyListeners();
   }
 
   void sendWater() {
-    this.loadcellChannel.sink.add('water');
+    this.motorChannel.sink.add('water');
     print('water 보냄');
     notifyListeners();
   }
 
   void sendBall() {
-    this.loadcellChannel.sink.add('ball');
+    this.motorChannel.sink.add('ball');
     print('ball 보냄');
     notifyListeners();
   }

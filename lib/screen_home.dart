@@ -58,39 +58,36 @@ class _VideoAreaState extends State<VideoArea> {
         height: 340,
         // watch() 함수를 통해 데이터 접근
         // watch()는 UI를 바로 업데이트 함
-        child: Container(
-            child: StreamBuilder(
-          // read() 함수를 통해 데이터 접근
-          // read()는 UI업데이트 하지 않음. 여기선 stream으로 값을 받아오기 때문에
-          // UI업데이트는 자동으로 된다.
-          stream: context.read<HomeProvider>().videoChannel.stream,
-          builder: (context, snapshot) {
-            return snapshot.hasData && context.watch<HomeProvider>().isVideoOn
-                ? Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 24.0),
-                    child: FractionallySizedBox(
-                        child: ElevatedButton(
-                            onPressed: context.watch<HomeProvider>().videoOff,
-                            // color: Colors.black,
-                            child: Image.memory(
-                              snapshot.data as Uint8List,
-                              gaplessPlayback:
-                                  true, // gaplessPlayback을 true로 하지 않으면 이미지 변경 될 때 마다 깜빡깜빡 한다.
-                            ))))
-                : Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 24.0),
-                    child: FractionallySizedBox(
-                        widthFactor: 1,
-                        child: Container(
-                            color: Colors.black,
-                            child: IconButton(
-                              onPressed: context.watch<HomeProvider>().videoOn,
-                              icon: Icon(Icons.play_arrow),
-                              iconSize: 75,
-                              color: Colors.white,
-                            ))));
-          },
-        )));
+        child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 24.0),
+            child: FractionallySizedBox(
+                widthFactor: 1,
+                child: Container(
+                  child: context.read<HomeProvider>().isVideoOn
+                      ? StreamBuilder(
+                          // read() 함수를 통해 데이터 접근
+                          // read()는 UI업데이트 하지 않음. 여기선 stream으로 값을 받아오기 때문에
+                          // UI업데이트는 자동으로 된다.
+                          stream:
+                              context.read<HomeProvider>().videoChannel.stream,
+                          builder: (context, snapshot) {
+                            return ElevatedButton(
+                                onPressed:
+                                    context.watch<HomeProvider>().videoOff,
+                                style: ElevatedButton.styleFrom(
+                                    primary: Colors.white),
+                                child: Image.memory(
+                                  snapshot.data as Uint8List,
+                                  gaplessPlayback:
+                                      true, // gaplessPlayback을 true로 하지 않으면 이미지 변경 될 때 마다 깜빡깜빡 한다.
+                                ));
+                          })
+                      : ElevatedButton(
+                          onPressed: context.watch<HomeProvider>().videoOn,
+                          style: ElevatedButton.styleFrom(
+                              primary: Colors.grey[400]),
+                          child: Icon(Icons.play_arrow)),
+                ))));
   }
 }
 

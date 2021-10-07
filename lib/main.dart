@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
           child: Scaffold(
             appBar: AppBar(
                 title: Text('Pet Station'),
-                backgroundColor: Colors.green[300],
+                backgroundColor: Colors.green[500],
                 leading: Icon(Icons.menu)),
             body: TabBarView(
               physics: NeverScrollableScrollPhysics(),
@@ -107,11 +107,16 @@ class HomeProvider extends ChangeNotifier {
   void videoOn() {
     isVideoOn = true;
 
+    print('video on');
+
     notifyListeners();
   }
 
   void videoOff() {
     isVideoOn = false;
+
+    print('video off');
+    this.videoChannel.sink.add('off');
 
     notifyListeners();
   }
@@ -125,6 +130,12 @@ class HomeProvider extends ChangeNotifier {
   void sendWater() {
     this.loadcellChannel.sink.add('water');
     print('water 보냄');
+    notifyListeners();
+  }
+
+  void sendBall() {
+    this.loadcellChannel.sink.add('ball');
+    print('ball 보냄');
     notifyListeners();
   }
 }

@@ -34,20 +34,10 @@ class HomeScreen extends StatelessWidget {
                       )),
                     ],
                   ),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                          child: HomeDataCard(
-                        name: '밥',
-                        isLinear: false,
-                      )),
-                      Expanded(
-                          child: HomeDataCard(
-                        name: '물',
-                        isLinear: false,
-                      )),
-                    ],
-                  ),
+                  HomeDataCard(
+                    name: '공',
+                    isLinear: false,
+                  )
                 ])));
   }
 }
@@ -79,8 +69,9 @@ class _VideoAreaState extends State<VideoArea> {
                 ? Padding(
                     padding: const EdgeInsets.symmetric(vertical: 24.0),
                     child: FractionallySizedBox(
-                        child: Container(
-                            color: Colors.black,
+                        child: ElevatedButton(
+                            onPressed: context.watch<HomeProvider>().videoOff,
+                            // color: Colors.black,
                             child: Image.memory(
                               snapshot.data as Uint8List,
                               gaplessPlayback:
@@ -92,9 +83,10 @@ class _VideoAreaState extends State<VideoArea> {
                         widthFactor: 1,
                         child: Container(
                             color: Colors.black,
-                            child: Icon(
-                              Icons.play_arrow,
-                              size: 75,
+                            child: IconButton(
+                              onPressed: context.watch<HomeProvider>().videoOn,
+                              icon: Icon(Icons.play_arrow),
+                              iconSize: 75,
                               color: Colors.white,
                             ))));
           },
@@ -116,23 +108,48 @@ class HomeDataCard extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 2),
             child: Card(
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)),
-                color: Colors.green[50],
+                    borderRadius: BorderRadius.circular(20)),
+                color: Colors.green[400],
                 child: Column(
-                  children: [
+                  children: <Widget>[
                     SizedBox(height: 20),
                     Text(
                       this.name as String,
                       textScaleFactor: 1.3,
+                      style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    PercentBar(isLinear: this.isLinear, data: 0.0),
-                    this.name == '밥'
-                        ? ElevatedButton(
-                            onPressed: context.read<HomeProvider>().sendFood,
-                            child: Text(this.name as String))
-                        : ElevatedButton(
-                            onPressed: context.read<HomeProvider>().sendWater,
-                            child: Text(this.name as String))
+                    PercentBar(isLinear: this.isLinear, data: 0.5),
+                    if (this.name == '밥')
+                      ElevatedButton(
+                        onPressed: context.read<HomeProvider>().sendFood,
+                        child: Text(this.name as String,
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black)),
+                        style: ElevatedButton.styleFrom(
+                          primary: Colors.grey[300],
+                        ),
+                      )
+                    else if (this.name == '물')
+                      ElevatedButton(
+                          onPressed: context.read<HomeProvider>().sendWater,
+                          child: Text(this.name as String,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black)),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.grey[200],
+                          ))
+                    else
+                      ElevatedButton(
+                          onPressed: context.read<HomeProvider>().sendBall,
+                          child: Text(this.name as String,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.black)),
+                          style: ElevatedButton.styleFrom(
+                            primary: Colors.grey[200],
+                          ))
                   ],
                 ))));
   }
@@ -175,8 +192,7 @@ class _PercentBarState extends State<PercentBar> {
                 animationDuration: 1000,
                 lineHeight: 20.0,
                 percent: foodData,
-                center:
-                    Text((foodData * 100).toStringAsFixed(1).toString() + "%"),
+                center: Text((foodData * 100).toStringAsFixed(1).toString()),
                 linearStrokeCap: LinearStrokeCap.roundAll,
                 progressColor: Colors.lightGreen[500]))
 
@@ -190,11 +206,12 @@ class _PercentBarState extends State<PercentBar> {
                 animationDuration: 1000,
                 radius: 100.0,
                 lineWidth: 12.0,
+                backgroundColor: Colors.white70,
                 percent: (this.data * 100) / maxCalorie,
                 center: new Text(this.data.toString(),
                     style: new TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 20.0)),
                 circularStrokeCap: CircularStrokeCap.round,
-                progressColor: Colors.lightGreen[500]));
+                progressColor: Colors.lightGreen[700]));
   }
 }

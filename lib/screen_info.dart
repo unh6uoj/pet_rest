@@ -9,22 +9,7 @@ class InfoScreen extends StatelessWidget {
         body: Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: [LoadCellInfo()],
       ),
     ));
-  }
-}
-
-class LoadCellInfo extends StatefulWidget {
-  const LoadCellInfo({Key? key}) : super(key: key);
-
-  @override
-  _LoadCellInfoState createState() => _LoadCellInfoState();
-}
-
-class _LoadCellInfoState extends State<LoadCellInfo> {
-  @override
-  Widget build(BuildContext context) {
-    return Container();
   }
 }

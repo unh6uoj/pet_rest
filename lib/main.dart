@@ -26,13 +26,14 @@ class MyApp extends StatelessWidget {
           child: Scaffold(
             appBar: AppBar(
               title: Text('Pet Station'),
+              backgroundColor: Colors.green,
             ),
             body: TabBarView(
               children: [
-                ChangeNotifierProvider<LoadCellWebScoket>(
-                    create: (_) => LoadCellWebScoket(), child: HomeScreen()),
-                ChangeNotifierProvider(
-                    create: (_) => VideoWebSocket(), child: VideoScreen()),
+                ChangeNotifierProvider<LoadCellProvider>(
+                    create: (_) => LoadCellProvider(), child: HomeScreen()),
+                ChangeNotifierProvider<VideoProvider>(
+                    create: (_) => VideoProvider(), child: VideoScreen()),
                 InfoScreen()
               ],
             ),
@@ -41,15 +42,15 @@ class MyApp extends StatelessWidget {
                 indicatorColor: Colors.green,
                 tabs: [
                   Tab(
-                    icon: Icon(Icons.home),
+                    icon: Icon(Icons.home_outlined),
                     text: 'Home',
                   ),
                   Tab(
-                    icon: Icon(Icons.video_camera_front),
+                    icon: Icon(Icons.camera_alt_outlined),
                     text: 'Video',
                   ),
                   Tab(
-                    icon: Icon(Icons.people),
+                    icon: Icon(Icons.person_outline),
                     text: 'My',
                   )
                 ]),
@@ -61,11 +62,11 @@ class MyApp extends StatelessWidget {
 // Provider Class 생성
 // ChangeNotifier를 상속 받음.
 // ChangeNotifier는 notifyListeners()함수를 통해 데이터가 변경된 것을 바로 알려줄 수 있다.
-class VideoWebSocket extends ChangeNotifier {
+class VideoProvider extends ChangeNotifier {
   late WebSocketChannel channel;
   bool isVideoOn = false;
 
-  VideoWebSocket() {
+  VideoProvider() {
     webScoketConnect();
   }
 
@@ -95,12 +96,12 @@ class VideoWebSocket extends ChangeNotifier {
   }
 }
 
-class LoadCellWebScoket extends ChangeNotifier {
+class LoadCellProvider extends ChangeNotifier {
   late WebSocketChannel channel;
   double loadCellDataFood = 0.0;
   double loadCellDataWater = 0.0;
 
-  LoadCellWebScoket() {
+  LoadCellProvider() {
     webScoketConnect();
   }
 
@@ -115,5 +116,13 @@ class LoadCellWebScoket extends ChangeNotifier {
     channel.sink.close();
 
     notifyListeners();
+  }
+
+  void sendFood() {
+    this.channel.sink.add('food');
+  }
+
+  void sendWater() {
+    this.channel.sink.add('water');
   }
 }

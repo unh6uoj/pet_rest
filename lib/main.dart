@@ -15,6 +15,15 @@ import 'package:provider/provider.dart';
 
 Future<void> main() async {
   runApp(MyApp());
+
+  // DBHelper().createData(History(id: 0, date: '1', activity: 'asd'));
+  // DBHelper().createData(History(id: 1, date: '1', activity: '2134123'));
+  // DBHelper().createData(History(id: 2, date: '2', activity: 'sdaf'));
+  // DBHelper().createData(History(id: 3, date: '2', activity: '21321'));
+  // DBHelper().createData(History(id: 4, date: '2', activity: '4241'));
+  // DBHelper().createData(History(id: 5, date: '3', activity: '21321'));
+  // DBHelper().createData(History(id: 6, date: '3', activity: 'sdfasdf'));
+  // DBHelper().createData(History(id: 7, date: '3', activity: 'sdfasf'));
 }
 
 class MyApp extends StatelessWidget {

@@ -9,6 +9,7 @@ class InfoScreen extends StatelessWidget {
         body: Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
+        
       ),
     ));
   }

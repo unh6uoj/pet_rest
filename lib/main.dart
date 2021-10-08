@@ -119,14 +119,8 @@ class HomeProvider extends ChangeNotifier {
 
     isVideoOn = true;
 
-<<<<<<< HEAD
-  void webScoketConnect() async {
-    channel = IOWebSocketChannel.connect('ws://192.168.0.21:25003');
-    channel.sink.add('플러터에서 왔다, 로드셀');
-=======
     this.videoChannel.sink.add('on');
     print('video on');
->>>>>>> 03309485dc3b78bf5cec2c83664313ba72646934
 
     notifyListeners();
   }

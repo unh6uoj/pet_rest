@@ -10,6 +10,10 @@ class History {
   late String activity;
 
   History({required this.id, required this.date, required this.activity});
+
+  String get_date() {
+    return this.date;
+  }
 }
 
 class DBHelper {
@@ -28,10 +32,10 @@ class DBHelper {
 
     return await openDatabase(path, version: 1, onCreate: (db, version) async {
       await db.execute('''
-          CREATE TABLE $tableName(
+          CREATE TABLE $tableName (
             id INTEGER PRIMARY KEY,
             date TEXT,
-            activity TEXT,
+            activity TEXT
           )
         ''');
     }, onUpgrade: (db, oldVersion, newVersion) {});
@@ -40,8 +44,9 @@ class DBHelper {
   //Create
   createData(History history) async {
     final db = await database;
-    var res = await db
-        .rawInsert('INSERT INTO $tableName(date) VALUES(?)', [history.date]);
+    var res = await db.rawInsert(
+        'INSERT INTO $tableName(date, activity) VALUES(?, ?)',
+        [history.date, history.activity]);
     return res;
   }
 

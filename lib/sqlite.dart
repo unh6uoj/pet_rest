@@ -1,36 +1,88 @@
-import 'package:flutter/material.dart';
+import 'dart:io';
+
+import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
-import 'dart:async';
 
 class History {
-  int? id = 0;
-  String? date = "";
-  String? activity = "";
+  late int id;
+  late String date;
+  late String activity;
 
-  History({this.id, this.date, this.activity});
-
-  Map<String, dynamic> toMap() {
-    return {'id': id, 'date': date, 'activity': activity};
-  }
+  History({required this.id, required this.date, required this.activity});
 }
 
-class HistoryDBHelper {
-  HistoryDBHelper._();
-  static final HistoryDBHelper _db = HistoryDBHelper._();
-  factory HistoryDBHelper() => _db;
+class DBHelper {
+  DBHelper._();
+  static final DBHelper _db = DBHelper._();
+  factory DBHelper() => _db;
 
-  // 작업중
+  static Database? _database;
+  Future<Database> get database async => _database ??= await initDB();
 
-  final Future<Database> database = getDatabasesPath().then((String path) {
-    return openDatabase(
-      join(path, 'database.db'),
-      onCreate: (db, version) {
-        return db.execute(
-          "CREATE TABLE user_history(id INTEGER PRIMARY KEY, date TEXT, activity TEXT)",
-        );
-      },
-      version: 1,
-    );
-  });
+  String tableName = 'user_history';
+
+  initDB() async {
+    Directory documentsDirectory = await getApplicationDocumentsDirectory();
+    String path = join(documentsDirectory.path, 'PetStation.db');
+
+    return await openDatabase(path, version: 1, onCreate: (db, version) async {
+      await db.execute('''
+          CREATE TABLE $tableName(
+            id INTEGER PRIMARY KEY,
+            date TEXT,
+            activity TEXT,
+          )
+        ''');
+    }, onUpgrade: (db, oldVersion, newVersion) {});
+  }
+
+  //Create
+  createData(History history) async {
+    final db = await database;
+    var res = await db
+        .rawInsert('INSERT INTO $tableName(date) VALUES(?)', [history.date]);
+    return res;
+  }
+
+  //Read
+  get(int id) async {
+    final db = await database;
+    var res = await db.rawQuery('SELECT * FROM $tableName WHERE id = ?', [id]);
+    return res.isNotEmpty
+        ? History(
+            id: res.first['id'] as int,
+            date: res.first['date'] as String,
+            activity: res.first['activity'] as String)
+        : Null;
+  }
+
+  //Read All
+  Future<List<History>> getAllHistorys() async {
+    final db = await database;
+    var res = await db.rawQuery('SELECT * FROM $tableName');
+    List<History> list = res.isNotEmpty
+        ? res
+            .map((c) => History(
+                id: c['id'] as int,
+                date: c['date'] as String,
+                activity: c['activity'] as String))
+            .toList()
+        : [];
+
+    return list;
+  }
+
+  //Delete
+  deleteHistory(int id) async {
+    final db = await database;
+    var res = db.rawDelete('DELETE FROM $tableName WHERE id = ?', [id]);
+    return res;
+  }
+
+  //Delete All
+  deleteAllHistorys() async {
+    final db = await database;
+    db.rawDelete('DELETE FROM $tableName');
+  }
 }

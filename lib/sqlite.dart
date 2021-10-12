@@ -10,10 +10,6 @@ class History {
   late String activity;
 
   History({required this.id, required this.date, required this.activity});
-
-  String get_date() {
-    return this.date;
-  }
 }
 
 class DBHelper {

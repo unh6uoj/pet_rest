@@ -16,58 +16,63 @@ import 'package:provider/provider.dart';
 Future<void> main() async {
   runApp(MyApp());
 
+  // DBHelper().deleteAllHistorys();
   // DBHelper().createData(History(id: 0, date: '1', activity: 'asd'));
   // DBHelper().createData(History(id: 1, date: '1', activity: '2134123'));
   // DBHelper().createData(History(id: 2, date: '2', activity: 'sdaf'));
   // DBHelper().createData(History(id: 3, date: '2', activity: '21321'));
   // DBHelper().createData(History(id: 4, date: '2', activity: '4241'));
-  // DBHelper().createData(History(id: 5, date: '3', activity: '21321'));
-  // DBHelper().createData(History(id: 6, date: '3', activity: 'sdfasdf'));
-  // DBHelper().createData(History(id: 7, date: '3', activity: 'sdfasf'));
+  // DBHelper().createData(History(id: 5, date: '3', activity: 'qq'));
+  // DBHelper().createData(History(id: 6, date: '3', activity: 'qqqq'));
+  // DBHelper().createData(History(id: 7, date: '3', activity: 'qqqqqq'));
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      color: Colors.lightGreen[50],
-      title: 'Pet Station',
-      theme: ThemeData(primaryColor: Colors.green),
-      home: DefaultTabController(
-          length: 3,
-          child: Scaffold(
-            appBar: AppBar(
-                title: Text('Pet Station'),
-                backgroundColor: Colors.green[500],
-                leading: Icon(Icons.menu)),
-            body: TabBarView(
-              physics: NeverScrollableScrollPhysics(),
-              children: [
-                ChangeNotifierProvider<HomeProvider>(
-                    create: (_) => HomeProvider(), child: HomeScreen()),
-                LogScreen(),
-                InfoScreen()
-              ],
-            ),
-            bottomNavigationBar: TabBar(
-                labelColor: Colors.green,
-                indicatorColor: Colors.green,
-                tabs: [
-                  Tab(
-                    icon: Icon(Icons.home_outlined),
-                    text: '홈',
-                  ),
-                  Tab(
-                    icon: Icon(Icons.list_alt),
-                    text: '로그',
-                  ),
-                  Tab(
-                    icon: Icon(Icons.person_outline),
-                    text: '정보',
-                  )
-                ]),
-          )),
-    );
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (context) => HomeProvider(),
+          ),
+          ChangeNotifierProvider(
+            create: (context) => LogProvider(),
+          )
+        ],
+        child: MaterialApp(
+          color: Colors.lightGreen[50],
+          title: 'Pet Station',
+          theme: ThemeData(primaryColor: Colors.green),
+          home: DefaultTabController(
+              length: 3,
+              child: Scaffold(
+                appBar: AppBar(
+                    title: Text('Pet Station'),
+                    backgroundColor: Colors.green[500],
+                    leading: Icon(Icons.menu)),
+                body: TabBarView(
+                  physics: NeverScrollableScrollPhysics(),
+                  children: [HomeScreen(), LogScreen(), InfoScreen()],
+                ),
+                bottomNavigationBar: TabBar(
+                    labelColor: Colors.green,
+                    indicatorColor: Colors.green,
+                    tabs: [
+                      Tab(
+                        icon: Icon(Icons.home_outlined),
+                        text: '홈',
+                      ),
+                      Tab(
+                        icon: Icon(Icons.list_alt),
+                        text: '로그',
+                      ),
+                      Tab(
+                        icon: Icon(Icons.person_outline),
+                        text: '정보',
+                      )
+                    ]),
+              )),
+        ));
   }
 }
 
@@ -86,6 +91,7 @@ class HomeProvider extends ChangeNotifier {
   HomeProvider() {
     motorWebScoketConnect();
     // videoWebSocketConnect();
+    print('home');
   }
 
   void motorWebScoketConnect() async {
@@ -151,5 +157,20 @@ class HomeProvider extends ChangeNotifier {
     this.motorChannel.sink.add('ball');
     print('ball 보냄');
     notifyListeners();
+  }
+}
+
+class LogProvider extends ChangeNotifier {
+  late List<History> histList;
+
+  LogProvider() {
+    // getAllData();
+    print('log');
+  }
+
+  Future<List<History>> getAllData() {
+    Future<List<History>> data = DBHelper().getAllHistorys();
+
+    return data;
   }
 }

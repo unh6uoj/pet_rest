@@ -44,10 +44,11 @@ class _HistoryListViewState extends State<HistoryListView> {
   @override
   Widget build(BuildContext context) {
     context.watch<LogProvider>().getAllData().then((value) => setState(() {
+          histRows = [];
           histDatas = value;
         }));
     return ListView.builder(
-        itemCount: histDatas!.length,
+        itemCount: histDatas!.length - 1,
         itemBuilder: (BuildContext context, int index) {
           if (histDatas![index].date == histDatas![index + 1].date) {
             return HistoryBox(

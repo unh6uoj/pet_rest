@@ -6,7 +6,7 @@ import 'package:path/path.dart';
 
 class History {
   late int id;
-  late String date;
+  late String date; // 현재 날자 > 이번달 > [[id, date, act], [dsfsdf]]
   late String activity;
 
   History({required this.id, required this.date, required this.activity});

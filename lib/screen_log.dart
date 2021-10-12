@@ -40,33 +40,48 @@ class HistoryListView extends StatefulWidget {
 
 class _HistoryListViewState extends State<HistoryListView> {
   List<Widget> histRows = [];
+  List<Widget> histCards = [];
   List<History>? histDatas;
+  String curDate = '';
+
+  @override
+  void initState() {
+    super.initState();
+
+    WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {
+      Provider.of<LogProvider>(context, listen: false)
+          .getAllData()
+          .then((value) => setState(() {
+                histRows = [];
+                histDatas = value;
+              }));
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
-    context.watch<LogProvider>().getAllData().then((value) => setState(() {
-          histRows = [];
-          histDatas = value;
-        }));
-    return ListView.builder(
-        itemCount: histDatas!.length - 1,
-        itemBuilder: (BuildContext context, int index) {
-          if (histDatas![index].date == histDatas![index + 1].date) {
-            return HistoryBox(
-                histRowList: histRows, date: histDatas![index].date);
-          }
-          histRows.add(Row(
-            children: <Widget>[
-              Expanded(
-                child: Text(histDatas![index].date),
-              ),
-              Expanded(
-                child: Text(histDatas![index].activity),
-              )
-            ],
-          ));
+    print(histDatas!.length.toString());
 
-          return Container();
-        });
+    for (int i = 0; i < histDatas!.length; i++) {
+      histRows.add(Row(
+        children: <Widget>[
+          Expanded(
+            child: Text(histDatas![i].date),
+          ),
+          Expanded(
+            child: Text(histDatas![i].activity),
+          )
+        ],
+      ));
+
+      if (histDatas![i].date != curDate) {
+        histCards
+            .add(HistoryBox(histRowList: histRows, date: histDatas![i].date));
+        histRows = [];
+        curDate = histDatas![i].date;
+      }
+    }
+    return ListView(children: histCards);
   }
 }
 

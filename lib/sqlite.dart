@@ -75,21 +75,21 @@ class DBHelper {
   }
 
   // 특정 달로 검색
-  Future<List<History>> getHistorysByMonth() async {
-    final db = await database;
-    var res = await db.rawQuery('SELECT * FROM $tableName WHERE date');
+  // Future<List<History>> getHistorysByMonth() async {
+  //   final db = await database;
+  //   var res = await db.rawQuery('SELECT * FROM $tableName WHERE date');
 
-    List<History> list = res.isNotEmpty
-        ? res
-            .map((c) => History(
-                id: c['id'] as int,
-                date: c['date'] as String,
-                activity: c['activity'] as String))
-            .toList()
-        : [];
+  //   List<History> list = res.isNotEmpty
+  //       ? res
+  //           .map((c) => History(
+  //               id: c['id'] as int,
+  //               date: c['date'] as String,
+  //               activity: c['activity'] as String))
+  //           .toList()
+  //       : [];
 
-    return list;
-  }
+  //   return list;
+  // }
 
   // id로 데이터 삭제
   deleteHistory(int id) async {

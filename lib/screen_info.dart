@@ -11,9 +11,12 @@ class InfoScreen extends StatelessWidget {
             backgroundColor: Colors.green[500],
             leading: Icon(Icons.menu)),
         body: Center(
+            child: SingleChildScrollView(
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-          ),
-        ));
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                TextButton(onPressed: () {}, child: Text('앱 설정'))
+              ]),
+        )));
   }
 }

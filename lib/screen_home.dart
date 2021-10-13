@@ -60,8 +60,6 @@ class _VideoAreaState extends State<VideoArea> {
   Widget build(BuildContext context) {
     return Container(
         height: 340,
-        // watch() 함수를 통해 데이터 접근
-        // watch()는 UI를 바로 업데이트 함
         child: Padding(
             padding: const EdgeInsets.symmetric(vertical: 24.0),
             child: FractionallySizedBox(
@@ -88,9 +86,12 @@ class _VideoAreaState extends State<VideoArea> {
                           })
                       : ElevatedButton(
                           onPressed: context.watch<HomeProvider>().videoOn,
-                          style: ElevatedButton.styleFrom(
-                              primary: Colors.grey[400]),
-                          child: Icon(Icons.play_arrow)),
+                          style:
+                              ElevatedButton.styleFrom(primary: Colors.black),
+                          child: Icon(
+                            Icons.play_arrow,
+                            size: 72,
+                          )),
                 ))));
   }
 }

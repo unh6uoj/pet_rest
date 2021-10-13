@@ -40,9 +40,7 @@ class HistoryListView extends StatefulWidget {
 
 class _HistoryListViewState extends State<HistoryListView> {
   List<Widget> histRows = [];
-  List<Widget> histCards = [];
-  List<History>? histDatas;
-  String curDate = '';
+  List<History> histDatas = [];
 
   @override
   void initState() {
@@ -60,25 +58,65 @@ class _HistoryListViewState extends State<HistoryListView> {
 
   @override
   Widget build(BuildContext context) {
-    print(histDatas!.length.toString());
+    String curDate = histDatas[0].date;
 
-    for (int i = 0; i < histDatas!.length; i++) {
+    List<Widget> histCards = [];
+    histRows = [];
+
+    // 날짜 삽입(header)
+    histRows.add(Row(
+      children: <Widget>[
+        Expanded(
+          child: SizedBox(
+              height: 30,
+              child: Text(
+                histDatas[0].date,
+                style: TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+              )),
+        ),
+      ],
+    ));
+
+    for (int i = 0; i < histDatas.length; i++) {
+      if (histDatas[i].date != curDate) {
+        histCards.add(HistoryBox(histRowList: histRows));
+        histRows = [];
+
+        // 날짜 삽입(header)
+        histRows.add(Row(
+          children: <Widget>[
+            Expanded(
+              child: SizedBox(
+                  height: 30,
+                  child: Text(
+                    histDatas[i].date,
+                    style: TextStyle(
+                      fontSize: 15,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  )),
+            ),
+          ],
+        ));
+        curDate = histDatas[i].date;
+      }
+
       histRows.add(Row(
         children: <Widget>[
+          // Expanded(
+          //   child: Text(histDatas[i].date),
+          // ),
           Expanded(
-            child: Text(histDatas![i].date),
-          ),
-          Expanded(
-            child: Text(histDatas![i].activity),
+            child: Text(histDatas[i].activity),
           )
         ],
       ));
 
-      if (histDatas![i].date != curDate) {
-        histCards
-            .add(HistoryBox(histRowList: histRows, date: histDatas![i].date));
-        histRows = [];
-        curDate = histDatas![i].date;
+      if (i == histDatas.length - 1) {
+        histCards.add(HistoryBox(histRowList: histRows));
       }
     }
     return ListView(children: histCards);
@@ -86,30 +124,28 @@ class _HistoryListViewState extends State<HistoryListView> {
 }
 
 class HistoryBox extends StatefulWidget {
-  HistoryBox({Key? key, required this.histRowList, required this.date})
-      : super(key: key);
+  const HistoryBox({Key? key, required this.histRowList}) : super(key: key);
 
-  List<Widget> histRowList;
-  final String? date;
+  final List<Widget> histRowList;
 
   @override
-  _HistoryBoxState createState() =>
-      _HistoryBoxState(histRowList: histRowList, date: date);
+  _HistoryBoxState createState() => _HistoryBoxState(histRowList: histRowList);
 }
 
 class _HistoryBoxState extends State<HistoryBox> {
-  List<Widget>? histRowList;
-  final String? date;
+  final List<Widget>? histRowList;
 
-  _HistoryBoxState({this.histRowList, this.date});
+  _HistoryBoxState({this.histRowList});
 
   @override
   Widget build(BuildContext context) {
     return FractionallySizedBox(
         widthFactor: 0.9,
         child: Container(
+            padding: EdgeInsets.all(10),
+            margin: EdgeInsets.only(bottom: 10),
             decoration: BoxDecoration(
-              color: Colors.green,
+              color: Colors.green[100],
               borderRadius: BorderRadius.circular(10),
             ),
             child: Column(

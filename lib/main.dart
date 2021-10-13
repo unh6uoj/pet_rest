@@ -25,6 +25,8 @@ Future<void> main() async {
   // DBHelper().createData(History(id: 5, date: '3', activity: 'qq'));
   // DBHelper().createData(History(id: 6, date: '3', activity: 'qqqq'));
   // DBHelper().createData(History(id: 7, date: '3', activity: 'qqqqqq'));
+  // DBHelper().createData(
+  //     History(id: 7, date: DBHelper().getCurDateTime(), activity: 'qqqqqq'));
 }
 
 class MyApp extends StatelessWidget {
@@ -46,10 +48,6 @@ class MyApp extends StatelessWidget {
           home: DefaultTabController(
               length: 3,
               child: Scaffold(
-                appBar: AppBar(
-                    title: Text('Pet Station'),
-                    backgroundColor: Colors.green[500],
-                    leading: Icon(Icons.menu)),
                 body: TabBarView(
                   physics: NeverScrollableScrollPhysics(),
                   children: [HomeScreen(), LogScreen(), InfoScreen()],

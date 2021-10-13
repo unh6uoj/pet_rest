@@ -37,7 +37,7 @@ class DBHelper {
     }, onUpgrade: (db, oldVersion, newVersion) {});
   }
 
-  //Create
+  // 데이터 생성
   createData(History history) async {
     final db = await database;
     var res = await db.rawInsert(
@@ -46,7 +46,7 @@ class DBHelper {
     return res;
   }
 
-  //Read
+  // id로 하나 검색
   get(int id) async {
     final db = await database;
     var res = await db.rawQuery('SELECT * FROM $tableName WHERE id = ?', [id]);
@@ -58,7 +58,7 @@ class DBHelper {
         : Null;
   }
 
-  //Read All
+  // 모든 데이터 검색
   Future<List<History>> getAllHistorys() async {
     final db = await database;
     var res = await db.rawQuery('SELECT * FROM $tableName');
@@ -74,16 +74,39 @@ class DBHelper {
     return list;
   }
 
-  //Delete
+  // 특정 달로 검색
+  Future<List<History>> getHistorysByMonth() async {
+    final db = await database;
+    var res = await db.rawQuery('SELECT * FROM $tableName WHERE date');
+
+    List<History> list = res.isNotEmpty
+        ? res
+            .map((c) => History(
+                id: c['id'] as int,
+                date: c['date'] as String,
+                activity: c['activity'] as String))
+            .toList()
+        : [];
+
+    return list;
+  }
+
+  // id로 데이터 삭제
   deleteHistory(int id) async {
     final db = await database;
     var res = db.rawDelete('DELETE FROM $tableName WHERE id = ?', [id]);
     return res;
   }
 
-  //Delete All
+  // 모든 데이터 삭제
   deleteAllHistorys() async {
     final db = await database;
     db.rawDelete('DELETE FROM $tableName');
+  }
+
+  String getCurDateTime() {
+    return DateTime.fromMillisecondsSinceEpoch(
+            DateTime.now().millisecondsSinceEpoch)
+        .toString();
   }
 }

@@ -10,24 +10,26 @@ import 'package:table_calendar/table_calendar.dart';
 // Provider
 import 'package:provider/provider.dart';
 
-String curDate = '';
-
 class LogScreen extends StatelessWidget {
   const LogScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+            title: Text('기록'),
+            backgroundColor: Colors.green[500],
+            leading: Icon(Icons.menu)),
         body: Column(children: <Widget>[
-      TableCalendar(
-        firstDay: DateTime.utc(2010, 10, 16),
-        lastDay: DateTime.utc(2030, 3, 14),
-        focusedDay: DateTime.now(),
-      ),
-      Expanded(
-        child: HistoryListView(),
-      )
-    ]));
+          TableCalendar(
+            firstDay: DateTime.utc(2010, 10, 16),
+            lastDay: DateTime.utc(2030, 3, 14),
+            focusedDay: DateTime.now(),
+          ),
+          Expanded(
+            child: HistoryListView(),
+          )
+        ]));
   }
 }
 
@@ -56,12 +58,9 @@ class _HistoryListViewState extends State<HistoryListView> {
     });
   }
 
-  @override
-  Widget build(BuildContext context) {
-    String curDate = histDatas[0].date;
-
-    List<Widget> histCards = [];
-    histRows = [];
+  void addCardHeader(String date) {
+    // 문자열 나누기
+    List splitedDate = date.split(" ");
 
     // 날짜 삽입(header)
     histRows.add(Row(
@@ -70,7 +69,7 @@ class _HistoryListViewState extends State<HistoryListView> {
           child: SizedBox(
               height: 30,
               child: Text(
-                histDatas[0].date,
+                splitedDate[0],
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,
@@ -79,28 +78,24 @@ class _HistoryListViewState extends State<HistoryListView> {
         ),
       ],
     ));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> histCards = [];
+    String curDate = histDatas[0].date;
+
+    histRows = [];
+
+    addCardHeader(curDate);
 
     for (int i = 0; i < histDatas.length; i++) {
       if (histDatas[i].date != curDate) {
         histCards.add(HistoryBox(histRowList: histRows));
         histRows = [];
 
-        // 날짜 삽입(header)
-        histRows.add(Row(
-          children: <Widget>[
-            Expanded(
-              child: SizedBox(
-                  height: 30,
-                  child: Text(
-                    histDatas[i].date,
-                    style: TextStyle(
-                      fontSize: 15,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  )),
-            ),
-          ],
-        ));
+        addCardHeader(histDatas[i].date);
+
         curDate = histDatas[i].date;
       }
 

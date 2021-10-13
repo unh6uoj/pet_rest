@@ -13,6 +13,10 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+            title: Text('홈'),
+            backgroundColor: Colors.green[500],
+            leading: Icon(Icons.menu)),
         body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Column(

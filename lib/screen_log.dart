@@ -11,7 +11,7 @@ import 'package:table_calendar/table_calendar.dart';
 import 'package:provider/provider.dart';
 
 class LogScreen extends StatelessWidget {
-  const LogScreen({Key? key}) : super(key: key);
+  LogScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -21,15 +21,43 @@ class LogScreen extends StatelessWidget {
             backgroundColor: Colors.green[500],
             leading: Icon(Icons.menu)),
         body: Column(children: <Widget>[
-          TableCalendar(
-            firstDay: DateTime.utc(2010, 10, 16),
-            lastDay: DateTime.utc(2030, 3, 14),
-            focusedDay: DateTime.now(),
-          ),
+          CalendarArea(),
           Expanded(
             child: HistoryListView(),
           )
         ]));
+  }
+}
+
+class CalendarArea extends StatefulWidget {
+  const CalendarArea({Key? key}) : super(key: key);
+
+  @override
+  _CalendarAreaState createState() => _CalendarAreaState();
+}
+
+class _CalendarAreaState extends State<CalendarArea> {
+  CalendarFormat _calendarFormat = CalendarFormat.month;
+
+  @override
+  Widget build(BuildContext context) {
+    return TableCalendar(
+      firstDay: DateTime.utc(2010, 10, 16),
+      lastDay: DateTime.utc(2030, 3, 14),
+      focusedDay: DateTime.now(),
+      calendarFormat: _calendarFormat,
+      availableCalendarFormats: const {
+        CalendarFormat.month: 'Month',
+        CalendarFormat.twoWeeks: 'TwoWeek',
+      },
+      onFormatChanged: (format) {
+        setState(() {
+          _calendarFormat = format;
+        });
+      },
+      formatAnimationCurve: Curves.easeInOutCirc,
+      formatAnimationDuration: Duration(milliseconds: 300),
+    );
   }
 }
 
@@ -73,7 +101,7 @@ class _HistoryListViewState extends State<HistoryListView> {
                 if (histDatas[i].date != curDate) {
                   // 리스트에 그냥 add하면 setState가 호출되지 않는다.
                   // 이렇게 새로운 리스트를 생성 해야한다.
-                  // ...은 리스트의 모든 요소를 가져온다
+                  // ...은 리스트의 모든 요소를 가져온다.
                   histBoxs = [...histBoxs, (HistoryBox(histRowList: histRows))];
                   histRows = [];
 

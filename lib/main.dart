@@ -26,7 +26,11 @@ Future<void> main() async {
   // DBHelper().createData(History(id: 6, date: '3', activity: 'qqqq'));
   // DBHelper().createData(History(id: 7, date: '3', activity: 'qqqqqq'));
   // DBHelper().createData(
-  //     History(id: 7, date: DBHelper().getCurDateTime(), activity: 'qqqqqq'));
+  //     History(id: 0, date: '2021-10-12 11:11:11:123', activity: '물주기'));
+  // DBHelper().createData(
+  //     History(id: 1, date: DBHelper().getCurDateTime(), activity: '물주기'));
+  // DBHelper().createData(
+  //     History(id: 0, date: DBHelper().getCurDateTime(), activity: '물주기'));
 }
 
 class MyApp extends StatelessWidget {

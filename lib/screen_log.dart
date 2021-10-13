@@ -42,19 +42,23 @@ class _CalendarAreaState extends State<CalendarArea> {
   @override
   Widget build(BuildContext context) {
     return TableCalendar(
+      // calendar 날짜 정의
       firstDay: DateTime.utc(2010, 10, 16),
       lastDay: DateTime.utc(2030, 3, 14),
       focusedDay: DateTime.now(),
+      // calendar format 정의
       calendarFormat: _calendarFormat,
       availableCalendarFormats: const {
-        CalendarFormat.month: 'Month',
-        CalendarFormat.twoWeeks: 'TwoWeek',
+        CalendarFormat.month: '한달',
+        CalendarFormat.twoWeeks: '2주',
       },
+      // calendar format 변경 시 setState
       onFormatChanged: (format) {
         setState(() {
           _calendarFormat = format;
         });
       },
+      // foramt변경 animation
       formatAnimationCurve: Curves.easeInOutCirc,
       formatAnimationDuration: Duration(milliseconds: 300),
     );
@@ -92,22 +96,28 @@ class _HistoryListViewState extends State<HistoryListView> {
         .then((value) => setState(() {
               histRows = [];
               histDatas = value;
-              curDate = value[0].date;
+              curDate = histDatas[histDatas.length - 1].date.split(" ")[0];
 
+              // 첫 번째 box header넣기
               addBoxHeader(curDate);
 
               // 가져온 데이터들을 나눠주는 부분
-              for (int i = 0; i < histDatas.length; i++) {
-                if (histDatas[i].date != curDate) {
+              for (int i = histDatas.length - 1; i >= 0; i--) {
+                // date값은 milliseconds 단위로 들어있기 때문에 미리 일별로 나눠줘야 한다.
+                String dbDate = histDatas[i].date.split(" ")[0];
+                String dbTime = histDatas[i].date.split(" ")[1];
+                String dbActivity = histDatas[i].activity;
+
+                if (dbDate != curDate) {
                   // 리스트에 그냥 add하면 setState가 호출되지 않는다.
                   // 이렇게 새로운 리스트를 생성 해야한다.
                   // ...은 리스트의 모든 요소를 가져온다.
                   histBoxs = [...histBoxs, (HistoryBox(histRowList: histRows))];
                   histRows = [];
 
-                  addBoxHeader(histDatas[i].date);
+                  addBoxHeader(dbDate);
 
-                  curDate = histDatas[i].date;
+                  curDate = dbDate;
                 }
 
                 histRows.add(Row(
@@ -116,13 +126,16 @@ class _HistoryListViewState extends State<HistoryListView> {
                     //   child: Text(histDatas[i].date),
                     // ),
                     Expanded(
-                      child: Text(histDatas[i].activity),
+                      child: Text(dbActivity),
+                    ),
+                    Expanded(
+                      child: Text(dbTime),
                     )
                   ],
                 ));
 
-                if (i == histDatas.length - 1) {
-                  histBoxs.add(HistoryBox(histRowList: histRows));
+                if (i == 0) {
+                  histBoxs = [...histBoxs, (HistoryBox(histRowList: histRows))];
                 }
               }
             }));
@@ -132,9 +145,6 @@ class _HistoryListViewState extends State<HistoryListView> {
   }
 
   void addBoxHeader(String date) {
-    // 문자열 나누기
-    List splitedDate = date.split(" ");
-
     // 날짜 삽입(header)
     histRows.add(Row(
       children: <Widget>[
@@ -142,7 +152,7 @@ class _HistoryListViewState extends State<HistoryListView> {
           child: SizedBox(
               height: 30,
               child: Text(
-                splitedDate[0],
+                date,
                 style: TextStyle(
                   fontSize: 15,
                   fontWeight: FontWeight.bold,

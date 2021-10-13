@@ -111,7 +111,7 @@ class HomeDataCard extends StatelessWidget {
             child: Card(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)),
-                color: Colors.green[400],
+                color: Colors.green[100],
                 child: Column(
                   children: <Widget>[
                     SizedBox(height: 20),
@@ -129,7 +129,7 @@ class HomeDataCard extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black)),
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.grey[300],
+                          primary: Colors.grey[200],
                         ),
                       )
                     else if (this.name == '물')

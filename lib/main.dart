@@ -138,12 +138,20 @@ class HomeProvider extends ChangeNotifier {
   void sendFood() {
     this.motorChannel.sink.add('food');
     print('food 보냄');
+
+    DBHelper().createData(
+        History(date: DBHelper().getCurDateTime(), activity: '밥주기'));
+
     notifyListeners();
   }
 
   void sendWater() {
     this.motorChannel.sink.add('water');
     print('water 보냄');
+
+    DBHelper().createData(
+        History(date: DBHelper().getCurDateTime(), activity: '물주기'));
+
     notifyListeners();
   }
 

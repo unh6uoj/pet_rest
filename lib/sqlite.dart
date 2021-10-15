@@ -5,11 +5,11 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class History {
-  late int id;
+  late int? id;
   late String date;
   late String activity;
 
-  History({required this.id, required this.date, required this.activity});
+  History({this.id, required this.date, required this.activity});
 }
 
 class DBHelper {
@@ -29,7 +29,7 @@ class DBHelper {
     return await openDatabase(path, version: 1, onCreate: (db, version) async {
       await db.execute('''
           CREATE TABLE $tableName (
-            id INTEGER PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
             date TEXT,
             activity TEXT
           )

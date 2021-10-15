@@ -117,7 +117,7 @@ class _HistoryListViewState extends State<HistoryListView> {
               for (int i = histDatas.length - 1; i >= 0; i--) {
                 // date값은 milliseconds 단위로 들어있기 때문에 미리 일별로 나눠줘야 한다.
                 String dbDate = histDatas[i].date.split(" ")[0];
-                String dbTime = histDatas[i].date.split(" ")[1];
+                String dbTime = histDatas[i].date.split(" ")[1].split(".")[0];
                 String dbActivity = histDatas[i].activity;
 
                 if (dbDate != curDate) {
@@ -137,9 +137,9 @@ class _HistoryListViewState extends State<HistoryListView> {
 
                 histRows.add(Row(
                   children: <Widget>[
-                    // Expanded(
-                    //   child: Text(histDatas[i].date),
-                    // ),
+                    SizedBox(
+                      width: 10,
+                    ),
                     Expanded(
                       child: Text(dbActivity),
                     ),
@@ -162,6 +162,7 @@ class _HistoryListViewState extends State<HistoryListView> {
     // WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {});
   }
 
+  // 이 함수는 histRows에 HeaderRow를 더해주는 기능이다.
   void addBoxHeader(String date) {
     // 날짜 삽입(header)
     histRows.add(Row(

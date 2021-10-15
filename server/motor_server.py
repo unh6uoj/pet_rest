@@ -29,6 +29,8 @@ async def accept(websocket, path):
             time.sleep(1)
             servo.value = -0.2
             time.sleep(1)
+        elif data_rcv == "ball":
+            pass
 
 websoc_svr = websockets.serve(accept, "0.0.0.0", "25005")
 

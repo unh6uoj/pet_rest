@@ -63,10 +63,10 @@ class _VideoAreaState extends State<VideoArea> {
     return Container(
         height: 340,
         child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24.0),
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: FractionallySizedBox(
-                widthFactor: 1,
-                child: Container(
+              widthFactor: 1,
+              child: Container(
                   child: context.read<HomeProvider>().isVideoOn
                       ? StreamBuilder(
                           // read() 함수를 통해 데이터 접근
@@ -76,7 +76,7 @@ class _VideoAreaState extends State<VideoArea> {
                               context.read<HomeProvider>().videoChannel.stream,
                           builder: (context, snapshot) {
                             return ElevatedButton(
-                                onPressed:
+                                onPressed: () =>
                                     context.watch<HomeProvider>().videoOff,
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.white),
@@ -86,15 +86,15 @@ class _VideoAreaState extends State<VideoArea> {
                                       true, // gaplessPlayback을 true로 하지 않으면 이미지 변경 될 때 마다 깜빡깜빡 한다.
                                 ));
                           })
-                      : ElevatedButton(
-                          onPressed: context.watch<HomeProvider>().videoOn,
-                          style:
-                              ElevatedButton.styleFrom(primary: Colors.black),
-                          child: Icon(
-                            Icons.play_arrow,
-                            size: 72,
-                          )),
-                ))));
+                      : Container(
+                          color: Colors.black,
+                          child: IconButton(
+                            onPressed: context.watch<HomeProvider>().videoOn,
+                            icon: Icon(Icons.play_arrow),
+                            color: Colors.white,
+                            iconSize: 72,
+                          ))),
+            )));
   }
 }
 
@@ -122,7 +122,9 @@ class HomeDataCard extends StatelessWidget {
                       textScaleFactor: 1.3,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    PercentBar(isLinear: this.isLinear, data: 0.3),
+                    PercentBar(
+                      isLinear: this.isLinear,
+                    ),
                     if (this.name == '밥')
                       ElevatedButton(
                         onPressed: context.read<HomeProvider>().sendFood,
@@ -161,23 +163,19 @@ class HomeDataCard extends StatelessWidget {
 
 // 퍼센트 바
 class PercentBar extends StatefulWidget {
-  const PercentBar({Key? key, this.isLinear = true, @required this.data})
-      : super(key: key);
+  const PercentBar({Key? key, this.isLinear = true}) : super(key: key);
 
   final bool? isLinear;
-  final double? data;
 
   @override
-  _PercentBarState createState() =>
-      _PercentBarState(this.isLinear as bool, this.data as double);
+  _PercentBarState createState() => _PercentBarState(this.isLinear as bool);
 }
 
 class _PercentBarState extends State<PercentBar> {
   // 데이터 전달받기
   final bool isLinear;
-  double data;
 
-  _PercentBarState(this.isLinear, this.data);
+  _PercentBarState(this.isLinear);
 
   @override
   Widget build(BuildContext context) {

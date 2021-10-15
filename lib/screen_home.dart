@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'dart:typed_data';
 import 'package:pet/main.dart';
+
+import 'dart:typed_data';
+
+// drawer
+import 'package:pet/drawer.dart';
 
 // persent_indicator
 import 'package:percent_indicator/percent_indicator.dart';
@@ -13,10 +17,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            title: Text('홈'),
-            backgroundColor: Colors.green[500],
-            leading: Icon(Icons.menu)),
+        appBar: AppBar(title: Text('홈'), backgroundColor: Colors.green[500]),
+        drawer: myDrawer,
         body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Column(
@@ -120,7 +122,7 @@ class HomeDataCard extends StatelessWidget {
                       textScaleFactor: 1.3,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    PercentBar(isLinear: this.isLinear, data: 0.5),
+                    PercentBar(isLinear: this.isLinear, data: 0.3),
                     if (this.name == '밥')
                       ElevatedButton(
                         onPressed: context.read<HomeProvider>().sendFood,
@@ -163,7 +165,7 @@ class PercentBar extends StatefulWidget {
       : super(key: key);
 
   final bool? isLinear;
-  final double? data; // data 변수 지금 상태에선 사용 x
+  final double? data;
 
   @override
   _PercentBarState createState() =>
@@ -209,8 +211,8 @@ class _PercentBarState extends State<PercentBar> {
                 radius: 100.0,
                 lineWidth: 12.0,
                 backgroundColor: Colors.white70,
-                percent: (this.data * 100) / maxCalorie,
-                center: new Text(this.data.toString(),
+                percent: foodData,
+                center: new Text((foodData * 100).toString() + '%',
                     style: new TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 20.0)),
                 circularStrokeCap: CircularStrokeCap.round,

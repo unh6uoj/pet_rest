@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:pet/main.dart';
 
+// drawer
+import 'package:pet/drawer.dart';
+
 // sqlite
 import 'package:pet/sqlite.dart';
 
@@ -16,10 +19,8 @@ class LogScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            title: Text('기록'),
-            backgroundColor: Colors.green[500],
-            leading: Icon(Icons.menu)),
+        appBar: AppBar(title: Text('기록'), backgroundColor: Colors.green[500]),
+        drawer: myDrawer,
         body: Column(children: <Widget>[
           CalendarArea(),
           Expanded(
@@ -82,7 +83,7 @@ class _HistoryListViewState extends State<HistoryListView> {
 
   // histRow가 포함되는 위젯
   // 일일별로 하나의 Box
-  List<Widget> histBoxs = [];
+  List<Widget> histBoxes = [];
 
   // 현재 가져오고 있는 날짜 데이터
   String curDate = '';
@@ -112,7 +113,10 @@ class _HistoryListViewState extends State<HistoryListView> {
                   // 리스트에 그냥 add하면 setState가 호출되지 않는다.
                   // 이렇게 새로운 리스트를 생성 해야한다.
                   // ...은 리스트의 모든 요소를 가져온다.
-                  histBoxs = [...histBoxs, (HistoryBox(histRowList: histRows))];
+                  histBoxes = [
+                    ...histBoxes,
+                    (HistoryBox(histRowList: histRows))
+                  ];
                   histRows = [];
 
                   addBoxHeader(dbDate);
@@ -135,7 +139,10 @@ class _HistoryListViewState extends State<HistoryListView> {
                 ));
 
                 if (i == 0) {
-                  histBoxs = [...histBoxs, (HistoryBox(histRowList: histRows))];
+                  histBoxes = [
+                    ...histBoxes,
+                    (HistoryBox(histRowList: histRows))
+                  ];
                 }
               }
             }));
@@ -165,7 +172,7 @@ class _HistoryListViewState extends State<HistoryListView> {
 
   @override
   Widget build(BuildContext context) {
-    return ListView(children: histBoxs);
+    return ListView(children: histBoxes);
   }
 }
 

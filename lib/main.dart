@@ -17,14 +17,6 @@ Future<void> main() async {
   runApp(MyApp());
 
   // DBHelper().deleteAllHistorys();
-  // DBHelper().createData(History(id: 0, date: '1', activity: 'asd'));
-  // DBHelper().createData(History(id: 1, date: '1', activity: '2134123'));
-  // DBHelper().createData(History(id: 2, date: '2', activity: 'sdaf'));
-  // DBHelper().createData(History(id: 3, date: '2', activity: '21321'));
-  // DBHelper().createData(History(id: 4, date: '2', activity: '4241'));
-  // DBHelper().createData(History(id: 5, date: '3', activity: 'qq'));
-  // DBHelper().createData(History(id: 6, date: '3', activity: 'qqqq'));
-  // DBHelper().createData(History(id: 7, date: '3', activity: 'qqqqqq'));
   // DBHelper().createData(
   //     History(id: 0, date: '2021-10-12 11:11:11:123', activity: '물주기'));
   // DBHelper().createData(

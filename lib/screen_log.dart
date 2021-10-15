@@ -9,6 +9,8 @@ import 'package:pet/sqlite.dart';
 
 // Calendar
 import 'package:table_calendar/table_calendar.dart';
+// 한글 달력 출력을 위한 패키지
+import 'package:intl/date_symbol_data_local.dart';
 
 // Provider
 import 'package:provider/provider.dart';
@@ -41,8 +43,17 @@ class _CalendarAreaState extends State<CalendarArea> {
   CalendarFormat _calendarFormat = CalendarFormat.month;
 
   @override
+  void initState() {
+    // 한글 달력 출력을 위한 함수
+    initializeDateFormatting();
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return TableCalendar(
+      // 한글
+      locale: 'ko-KR',
       // calendar 날짜 정의
       firstDay: DateTime.utc(2010, 10, 16),
       lastDay: DateTime.utc(2030, 3, 14),

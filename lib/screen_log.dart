@@ -15,18 +15,24 @@ import 'package:intl/date_symbol_data_local.dart';
 // Provider
 import 'package:provider/provider.dart';
 
+// getx
+import 'package:get/get.dart';
+
 class LogScreen extends StatelessWidget {
   LogScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // final LogScreenController logScreenController =
+    //     Get.put(LogScreenController());
+
     return Scaffold(
         appBar: AppBar(title: Text('기록'), backgroundColor: Colors.green[500]),
         drawer: myDrawer,
         body: Column(children: <Widget>[
           CalendarArea(),
           Expanded(
-            child: HistoryListView(),
+            child: HistoryList(),
           )
         ]));
   }
@@ -70,6 +76,9 @@ class _CalendarAreaState extends State<CalendarArea> {
           _calendarFormat = format;
         });
       },
+      onPageChanged: (datetime) {
+        print(datetime.toString());
+      },
       // foramt변경 animation
       formatAnimationCurve: Curves.easeInOutCirc,
       formatAnimationDuration: Duration(milliseconds: 300),
@@ -77,95 +86,62 @@ class _CalendarAreaState extends State<CalendarArea> {
   }
 }
 
-class HistoryListView extends StatefulWidget {
-  const HistoryListView({Key? key}) : super(key: key);
+class HistoryList extends StatelessWidget {
+  final logScreenController = Get.put(LogScreenController());
+
+  HistoryList({Key? key}) : super(key: key) {
+    logScreenController.getDataByMonth('2021-10-18').then((value) {
+      logScreenController.setHistoryBox(value);
+    });
+  }
 
   @override
-  _HistoryListViewState createState() => _HistoryListViewState();
+  Widget build(BuildContext context) {
+    return Obx(() => ListView(children: logScreenController.resultBoxes));
+  }
 }
 
-class _HistoryListViewState extends State<HistoryListView> {
-  // sqlite에서 받아온 데이터 저장
-  List<History> histDatas = [];
+class HistoryBox extends StatelessWidget {
+  HistoryBox({Key? key, required this.histRowList}) : super(key: key);
 
-  // 각 데이터들이 들어갈 Row위젯
-  // 하단의 Box가 생성될 때 초기화
-  List<Widget> histRows = [];
-
-  // histRow가 포함되는 위젯
-  // 일일별로 하나의 Box
-  List<Widget> histBoxes = [];
-
-  // 현재 가져오고 있는 날짜 데이터
-  String curDate = '';
+  final histRowList;
 
   @override
-  void initState() {
-    super.initState();
+  Widget build(BuildContext context) {
+    return FractionallySizedBox(
+        widthFactor: 0.9,
+        child: Container(
+            padding: EdgeInsets.all(10),
+            margin: EdgeInsets.only(bottom: 10),
+            decoration: BoxDecoration(
+              color: Colors.green[100],
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Column(children: histRowList)));
+  }
+}
 
-    Provider.of<LogProvider>(context, listen: false)
-        .getAllData()
-        .then((value) => setState(() {
-              histRows = [];
-              histDatas = value;
-              curDate = histDatas[histDatas.length - 1].date.split(" ")[0];
+class LogScreenController extends GetxController {
+  var resultBoxes = <HistoryBox>[].obs;
 
-              // 첫 번째 box header넣기
-              addBoxHeader(curDate);
+  // 모든 데이터 가져오기
+  Future<List<History>> getAllData() {
+    Future<List<History>> data = DBHelper().getAllHistorys();
 
-              // 가져온 데이터들을 나눠주는 부분
-              for (int i = histDatas.length - 1; i >= 0; i--) {
-                // date값은 milliseconds 단위로 들어있기 때문에 미리 일별로 나눠줘야 한다.
-                String dbDate = histDatas[i].date.split(" ")[0];
-                String dbTime = histDatas[i].date.split(" ")[1].split(".")[0];
-                String dbActivity = histDatas[i].activity;
+    return data;
+  }
 
-                if (dbDate != curDate) {
-                  // 리스트에 그냥 add하면 setState가 호출되지 않는다.
-                  // 이렇게 새로운 리스트를 생성 해야한다.
-                  // ...은 리스트의 모든 요소를 가져온다.
-                  histBoxes = [
-                    ...histBoxes,
-                    (HistoryBox(histRowList: histRows))
-                  ];
-                  histRows = [];
+  // 달별 데이터 가져오기
+  Future<List<History>> getDataByMonth(curDate) {
+    Future<List<History>> data = DBHelper().getHistorysByMonth(curDate);
 
-                  addBoxHeader(dbDate);
-
-                  curDate = dbDate;
-                }
-
-                histRows.add(Row(
-                  children: <Widget>[
-                    SizedBox(
-                      width: 10,
-                    ),
-                    Expanded(
-                      child: Text(dbActivity),
-                    ),
-                    Expanded(
-                      child: Text(dbTime),
-                    )
-                  ],
-                ));
-
-                if (i == 0) {
-                  histBoxes = [
-                    ...histBoxes,
-                    (HistoryBox(histRowList: histRows))
-                  ];
-                }
-              }
-            }));
-
-    // 위젯이 만들어지면 실행됨
-    // WidgetsBinding.instance!.addPostFrameCallback((timeStamp) {});
+    return data;
   }
 
   // 이 함수는 histRows에 HeaderRow를 더해주는 기능이다.
-  void addBoxHeader(String date) {
+  List<Row> addBoxHeader(List<Row> targetRows, String date) {
     // 날짜 삽입(header)
-    histRows.add(Row(
+    targetRows.add(Row(
       children: <Widget>[
         Expanded(
           child: SizedBox(
@@ -180,41 +156,54 @@ class _HistoryListViewState extends State<HistoryListView> {
         ),
       ],
     ));
+
+    return targetRows;
   }
 
-  @override
-  Widget build(BuildContext context) {
-    return ListView(children: histBoxes);
+  //
+  List<Row> addBoxRow(List<Row> targetRows, String date, String activity) {
+    targetRows.add(Row(
+      children: <Widget>[
+        SizedBox(
+          width: 10,
+        ),
+        Expanded(
+          child: Text(activity),
+        ),
+        Expanded(
+          child: Text(date),
+        )
+      ],
+    ));
+
+    return targetRows;
   }
-}
 
-class HistoryBox extends StatefulWidget {
-  const HistoryBox({Key? key, required this.histRowList}) : super(key: key);
+  // 데이터를 받아 일별 카드 형식으로 나누기
+  setHistoryBox(historyDatas) {
+    List<Row> rows = [];
 
-  final List<Widget> histRowList;
+    resultBoxes.clear();
 
-  @override
-  _HistoryBoxState createState() => _HistoryBoxState(histRowList: histRowList);
-}
+    String curDate = historyDatas[historyDatas.length - 1].date.split(" ")[0];
+    // 첫 번째 box header넣기
+    rows = addBoxHeader(rows, curDate);
 
-class _HistoryBoxState extends State<HistoryBox> {
-  final List<Widget>? histRowList;
+    Iterable reversedHistoryDatas = historyDatas.reversed;
+    reversedHistoryDatas.forEach((history) {
+      String dbDate = history.date.split(" ")[0];
+      String dbTime = history.date.split(" ")[1].split(".")[0];
+      String dbActivity = history.activity;
 
-  _HistoryBoxState({this.histRowList});
+      if (dbDate != curDate) {
+        resultBoxes.add(HistoryBox(histRowList: rows));
+        rows = [];
 
-  @override
-  Widget build(BuildContext context) {
-    return FractionallySizedBox(
-        widthFactor: 0.9,
-        child: Container(
-            padding: EdgeInsets.all(10),
-            margin: EdgeInsets.only(bottom: 10),
-            decoration: BoxDecoration(
-              color: Colors.green[100],
-              borderRadius: BorderRadius.circular(10),
-            ),
-            child: Column(
-              children: histRowList as List<Widget>,
-            )));
+        rows = addBoxHeader(rows, dbDate);
+        curDate = dbDate;
+      }
+
+      rows = addBoxRow(rows, dbDate, dbActivity);
+    });
   }
 }

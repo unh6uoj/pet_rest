@@ -13,12 +13,15 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 // Provider
 import 'package:provider/provider.dart';
 
+// getx
+import 'package:get/get.dart';
+
 Future<void> main() async {
   runApp(MyApp());
 
   // DBHelper().deleteAllHistorys();
   // DBHelper().createData(
-  //     History(id: 0, date: '2021-10-12 11:11:11:123', activity: '물주기'));
+  //     History(id: 0, date: '2021-09-12 11:11:11:123', activity: '물주기'));
   // DBHelper().createData(
   //     History(id: 1, date: DBHelper().getCurDateTime(), activity: '물주기'));
   // DBHelper().createData(
@@ -32,12 +35,9 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider(
             create: (context) => HomeProvider(),
-          ),
-          ChangeNotifierProvider(
-            create: (context) => LogProvider(),
           )
         ],
-        child: MaterialApp(
+        child: GetMaterialApp(
           color: Colors.lightGreen[50],
           title: 'Pet Station',
           theme: ThemeData(primaryColor: Colors.green),
@@ -84,8 +84,6 @@ class HomeProvider extends ChangeNotifier {
 
   HomeProvider() {
     motorWebScoketConnect();
-    // videoWebSocketConnect();
-    print('home');
   }
 
   void motorWebScoketConnect() async {
@@ -159,20 +157,5 @@ class HomeProvider extends ChangeNotifier {
     this.motorChannel.sink.add('ball');
     print('ball 보냄');
     notifyListeners();
-  }
-}
-
-class LogProvider extends ChangeNotifier {
-  late List<History> histList;
-
-  LogProvider() {
-    // getAllData();
-    print('log');
-  }
-
-  Future<List<History>> getAllData() {
-    Future<List<History>> data = DBHelper().getAllHistorys();
-
-    return data;
   }
 }

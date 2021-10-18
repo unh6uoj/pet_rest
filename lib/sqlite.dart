@@ -75,9 +75,12 @@ class DBHelper {
   }
 
   // 특정 달로 검색
-  Future<List<History>> getHistorysByMonth(String date) async {
+  Future<List<History>> getHistorysByMonth(String curDate) async {
     final db = await database;
-    var res = await db.rawQuery('SELECT * FROM $tableName WHERE date');
+    var res = await db.rawQuery(
+        'SELECT * FROM $tableName WHERE date >= datetime(' +
+            curDate +
+            ', "start of month")');
 
     List<History> list = res.isNotEmpty
         ? res

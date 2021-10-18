@@ -19,9 +19,12 @@ import 'package:get/get.dart';
 Future<void> main() async {
   runApp(MyApp());
 
-  // DBHelper().deleteAllHistorys();
-  // DBHelper().createData(
-  //     History(id: 0, date: '2021-09-12 11:11:11:123', activity: '물주기'));
+  // DBHelper().createData(History(date: '2021-10-12 11:11:11', activity: '물주기'));
+  // DBHelper().createData(History(date: '2021-10-12 12:11:11', activity: '물주기'));
+  // DBHelper().createData(History(date: '2021-10-13 11:11:11', activity: '물주기'));
+  // DBHelper().createData(History(date: '2021-10-15 11:11:11', activity: '물주기'));
+  // DBHelper().createData(History(date: '2021-09-12 11:11:11', activity: '물주기'));
+  // DBHelper().createData(History(date: '2021-09-12 11:11:11', activity: '물주기'));
   // DBHelper().createData(
   //     History(id: 1, date: DBHelper().getCurDateTime(), activity: '물주기'));
   // DBHelper().createData(

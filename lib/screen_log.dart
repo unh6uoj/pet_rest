@@ -57,6 +57,9 @@ class _CalendarAreaState extends State<CalendarArea> {
 
   @override
   Widget build(BuildContext context) {
+    final LogScreenController logScreenController =
+        Get.put(LogScreenController());
+
     return TableCalendar(
       // 한글
       locale: 'ko-KR',
@@ -77,7 +80,13 @@ class _CalendarAreaState extends State<CalendarArea> {
         });
       },
       onPageChanged: (datetime) {
-        print(datetime.toString());
+        logScreenController.curCalendarDate = datetime.toString().split(".")[0];
+
+        logScreenController
+            .getDataByMonth(logScreenController.curCalendarDate)
+            .then((value) {
+          logScreenController.setHistoryBox(value);
+        });
       },
       // foramt변경 animation
       formatAnimationCurve: Curves.easeInOutCirc,
@@ -90,7 +99,9 @@ class HistoryList extends StatelessWidget {
   final logScreenController = Get.put(LogScreenController());
 
   HistoryList({Key? key}) : super(key: key) {
-    logScreenController.getDataByMonth('2021-10-18').then((value) {
+    logScreenController
+        .getDataByMonth(logScreenController.curCalendarDate)
+        .then((value) {
       logScreenController.setHistoryBox(value);
     });
   }
@@ -122,6 +133,7 @@ class HistoryBox extends StatelessWidget {
 }
 
 class LogScreenController extends GetxController {
+  var curCalendarDate = DateTime.now().toString().split(" ")[0];
   var resultBoxes = <HistoryBox>[].obs;
 
   // 모든 데이터 가져오기
@@ -190,6 +202,8 @@ class LogScreenController extends GetxController {
     rows = addBoxHeader(rows, curDate);
 
     Iterable reversedHistoryDatas = historyDatas.reversed;
+
+    History last = reversedHistoryDatas.last;
     reversedHistoryDatas.forEach((history) {
       String dbDate = history.date.split(" ")[0];
       String dbTime = history.date.split(" ")[1].split(".")[0];
@@ -204,6 +218,10 @@ class LogScreenController extends GetxController {
       }
 
       rows = addBoxRow(rows, dbDate, dbActivity);
+
+      if (history == last) {
+        resultBoxes.add(HistoryBox(histRowList: rows));
+      }
     });
   }
 }

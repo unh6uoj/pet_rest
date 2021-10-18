@@ -76,7 +76,6 @@ class DBHelper {
 
   // 특정 달로 검색
   Future<List<History>> getHistorysByMonth(String curDate) async {
-    print(curDate);
     final db = await database;
     var res = await db.rawQuery(
         'SELECT * FROM $tableName WHERE DATE(date) BETWEEN DATE("' +
@@ -84,9 +83,6 @@ class DBHelper {
             '", "start of month") AND DATE("' +
             curDate +
             '", "start of month", "+1 month", "-1 day")');
-
-    print(res);
-    print('=============================');
 
     List<History> list = res.isNotEmpty
         ? res

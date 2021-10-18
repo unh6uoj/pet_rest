@@ -99,16 +99,16 @@ class HistoryList extends StatelessWidget {
   final logScreenController = Get.put(LogScreenController());
 
   HistoryList({Key? key}) : super(key: key) {
-    logScreenController
-        .getDataByMonth(logScreenController.curCalendarDate)
-        .then((value) {
+    logScreenController.getDataByMonth(DateTime.now().toString()).then((value) {
       logScreenController.setHistoryBox(value);
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return Obx(() => ListView(children: logScreenController.resultBoxes));
+    return Obx(() => logScreenController.resultBoxes.length != 0
+        ? ListView(children: logScreenController.resultBoxes)
+        : Center(child: Text('데이터가 없습니다.')));
   }
 }
 
@@ -172,7 +172,7 @@ class LogScreenController extends GetxController {
     return targetRows;
   }
 
-  //
+  // targetRows로 들어온 List에 Row 추가
   List<Row> addBoxRow(List<Row> targetRows, String date, String activity) {
     targetRows.add(Row(
       children: <Widget>[
@@ -205,20 +205,30 @@ class LogScreenController extends GetxController {
 
     History last = reversedHistoryDatas.last;
     reversedHistoryDatas.forEach((history) {
+      // 데이터 나누기
+      // 날짜 (YYYY-MM-DD)
       String dbDate = history.date.split(" ")[0];
+      // 시간 (HH:MM:SS)
       String dbTime = history.date.split(" ")[1].split(".")[0];
+      // 활동
       String dbActivity = history.activity;
 
+      // 현재 가져온 db의 날짜와 이전 날짜가 다르다면
       if (dbDate != curDate) {
+        // HistoryBox생성 후에 result에 넣기
         resultBoxes.add(HistoryBox(histRowList: rows));
+        // row 초기화
         rows = [];
 
+        // header 넣기
         rows = addBoxHeader(rows, dbDate);
         curDate = dbDate;
       }
 
-      rows = addBoxRow(rows, dbDate, dbActivity);
+      rows = addBoxRow(rows, dbTime, dbActivity);
 
+      // 리스트 마지막 값은 다음 날짜와 비교가 불가능 하기 때문에
+      // 리스트의 마지막 element가 있다면 HistoryBox 추가
       if (history == last) {
         resultBoxes.add(HistoryBox(histRowList: rows));
       }

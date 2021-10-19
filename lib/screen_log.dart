@@ -32,28 +32,53 @@ class HistoryListView extends StatefulWidget {
 }
 
 class _HistoryListViewState extends State<HistoryListView> {
+  String curDate = '1';
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
         future: DBHelper().getAllHistorys(),
         builder: (BuildContext context, AsyncSnapshot<List<History>> snapshot) {
           if (snapshot.hasData) {
+            List<Widget> histRowList = [];
             return ListView.builder(
                 itemCount: snapshot.data!.length,
                 itemBuilder: (BuildContext context, int index) {
                   History item = snapshot.data![index];
-
-                  return Dismissible(
-                      key: UniqueKey(),
-                      onDismissed: (direction) {
-                        DBHelper().deleteHistory(item.id);
-                        setState(
-                          () {},
-                        );
-                      },
-                      child: Center(
-                        child: Text(item.activity),
-                      ));
+                  if (curDate != item.date) {
+                    curDate = item.date;
+                    histRowList = [];
+                    return FractionallySizedBox(
+                        widthFactor: 0.9,
+                        child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              children: histRowList,
+                            )));
+                  }
+                  histRowList.add(
+                    Row(
+                      children: <Widget>[
+                        Expanded(child: Text(item.activity)),
+                        Expanded(child: Text(item.date))
+                      ],
+                    ),
+                  );
+                  if (index == snapshot.data!.length - 1) {
+                    return FractionallySizedBox(
+                        widthFactor: 0.9,
+                        child: Container(
+                            decoration: BoxDecoration(
+                              color: Colors.green,
+                              borderRadius: BorderRadius.circular(10),
+                            ),
+                            child: Column(
+                              children: histRowList,
+                            )));
+                  }
+                  return Container();
                 });
           } else {
             return (Center(child: CircularProgressIndicator()));

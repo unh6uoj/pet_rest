@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 Drawer myDrawer = Drawer(
     child: ListView(
+  physics: const NeverScrollableScrollPhysics(),
   padding: EdgeInsets.zero,
   children: [
     const DrawerHeader(

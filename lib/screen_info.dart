@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:pet/drawer.dart';
 
+// screen
 import 'route_setting.dart';
+import 'route_app_info.dart';
 
 // getx
 import 'package:get/get.dart';
@@ -17,24 +18,30 @@ class InfoScreen extends StatelessWidget {
         drawer: myDrawer,
         body: SingleChildScrollView(
             child: Column(children: <Widget>[
-          SettingButton(),
+          ButtonForInfoScreen(name: '설정', screen: SettingScreen()),
+          ButtonForInfoScreen(name: '공지사항', screen: AppInfoScreen()),
+          ButtonForInfoScreen(name: '앱 정보', screen: AppInfoScreen()),
         ])));
   }
 }
 
-class SettingButton extends StatelessWidget {
-  const SettingButton({Key? key}) : super(key: key);
+class ButtonForInfoScreen extends StatelessWidget {
+  ButtonForInfoScreen({Key? key, required this.name, required this.screen})
+      : super(key: key);
+
+  final String name;
+  final StatelessWidget screen;
 
   @override
   Widget build(BuildContext context) {
     return FractionallySizedBox(
       widthFactor: 1,
       child: InkWell(
-        onTap: () => Get.to(SettingScreen()),
+        onTap: () => Get.to(screen),
         child: Container(
             decoration: BoxDecoration(
-                border: Border.symmetric(
-                    horizontal: BorderSide(color: Colors.grey, width: 0.5))),
+                border:
+                    Border(bottom: BorderSide(color: Colors.grey, width: 0.5))),
             height: 60,
             child: Row(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -43,7 +50,7 @@ class SettingButton extends StatelessWidget {
                 Expanded(
                     flex: 3,
                     child: Text(
-                      '설정',
+                      name,
                       textAlign: TextAlign.left,
                       style: TextStyle(fontSize: 20),
                     )),

@@ -109,11 +109,14 @@ class VideoArea extends StatelessWidget {
 
 class HomeDataCard extends StatelessWidget {
   const HomeDataCard(
-      {Key? key, this.name, this.isLinear, required this.sendFunc})
+      {Key? key,
+      required this.name,
+      required this.isLinear,
+      required this.sendFunc})
       : super(key: key);
 
-  final String? name;
-  final bool? isLinear;
+  final String name;
+  final bool isLinear;
   final sendFunc;
 
   @override
@@ -121,34 +124,64 @@ class HomeDataCard extends StatelessWidget {
     return FractionallySizedBox(
         widthFactor: 1,
         child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 2),
-            child: Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(15)),
-                color: Colors.green[100],
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(height: 20),
-                    Text(
-                      this.name as String,
-                      textScaleFactor: 1.3,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    PercentBar(
-                      isLinear: this.isLinear,
-                    ),
-                    ElevatedButton(
-                      onPressed: this.sendFunc,
-                      child: Text(this.name as String,
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black)),
-                      style: ElevatedButton.styleFrom(
-                        primary: Colors.grey[200],
-                      ),
-                    )
-                  ],
-                ))));
+            padding: EdgeInsets.all(5),
+            child: InkWell(
+                onTap: () => Get.bottomSheet(
+                    BottomSheetForSendData(name: name, sendFunc: sendFunc)),
+                child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.green[100],
+                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                        boxShadow: [
+                          BoxShadow(
+                              spreadRadius: 0.5,
+                              blurRadius: 0.5,
+                              offset: Offset(0, 3),
+                              color: Colors.grey.withOpacity(0.4))
+                        ]),
+                    child: Column(
+                      // crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                            padding: EdgeInsets.all(5),
+                            child: Text(
+                              name,
+                              textScaleFactor: 1.3,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            )),
+                        PercentBar(
+                          isLinear: this.isLinear,
+                        ),
+                      ],
+                    )))));
+  }
+}
+
+class BottomSheetForSendData extends StatelessWidget {
+  const BottomSheetForSendData(
+      {Key? key, required this.name, required this.sendFunc})
+      : super(key: key);
+
+  final String name;
+  final sendFunc;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        height: 120,
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(15))),
+        child: Column(
+          children: <Widget>[
+            Padding(
+                padding: EdgeInsets.all(10),
+                child: Text(this.name + '을 보낼까요?',
+                    style: TextStyle(fontSize: 20))),
+            TextButton(onPressed: () => this.sendFunc, child: Text('넹'))
+            // ElevatedButton(onPressed: () => this.sendFunc, child: Text('보내기'), style: ButtonStyle(backgroundColor: Colors.green[200])),
+          ],
+        ));
   }
 }
 

@@ -43,7 +43,8 @@ class HomeScreen extends StatelessWidget {
                   HomeDataCard(
                     name: '공',
                     isLinear: false,
-                  )
+                  ),
+                  AudioButton()
                 ])));
   }
 }
@@ -112,7 +113,7 @@ class HomeDataCard extends StatelessWidget {
             padding: EdgeInsets.symmetric(horizontal: 2),
             child: Card(
                 shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
+                    borderRadius: BorderRadius.circular(15)),
                 color: Colors.green[100],
                 child: Column(
                   children: <Widget>[
@@ -215,5 +216,14 @@ class _PercentBarState extends State<PercentBar> {
                         fontWeight: FontWeight.bold, fontSize: 20.0)),
                 circularStrokeCap: CircularStrokeCap.round,
                 progressColor: Colors.lightGreen[700]));
+  }
+}
+
+class AudioButton extends StatelessWidget {
+  const AudioButton({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return FloatingActionButton(onPressed: () {});
   }
 }

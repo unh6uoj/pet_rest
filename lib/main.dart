@@ -7,6 +7,10 @@ import 'screen_info.dart';
 // getx
 import 'package:get/get.dart';
 
+// firebase
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+
 Future<void> main() async {
   runApp(MyApp());
 }
@@ -14,6 +18,14 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    Firebase.initializeApp().whenComplete(() {
+      final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+
+      _firebaseMessaging.getToken().then((token) {
+        print(token); // Print the Token in Console
+      });
+    });
+
     return GetMaterialApp(
       color: Colors.lightGreen[50],
       title: 'Pet Station',

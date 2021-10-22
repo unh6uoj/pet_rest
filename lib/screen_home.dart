@@ -6,14 +6,25 @@ import 'dart:typed_data';
 // drawer
 import 'package:pet/drawer.dart';
 
+// WebScoket
+import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
+
 // persent_indicator
 import 'package:percent_indicator/percent_indicator.dart';
 
-// Provider
-import 'package:provider/provider.dart';
+// getx
+import 'package:get/get.dart';
+
+// sqlite
+import 'sqlite.dart';
 
 class HomeScreen extends StatelessWidget {
-  const HomeScreen({Key? key}) : super(key: key);
+  final HomeScreenController homeScreenController =
+      Get.put(HomeScreenController());
+
+  HomeScreen({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -32,31 +43,30 @@ class HomeScreen extends StatelessWidget {
                           child: HomeDataCard(
                         name: '밥',
                         isLinear: false,
+                        sendFunc: homeScreenController.sendFood,
                       )),
                       Expanded(
                           child: HomeDataCard(
                         name: '물',
                         isLinear: false,
+                        sendFunc: homeScreenController.sendFood,
                       )),
                     ],
                   ),
                   HomeDataCard(
                     name: '공',
                     isLinear: false,
-                  )
+                    sendFunc: homeScreenController.sendFood,
+                  ),
                 ])));
   }
 }
 
-class VideoArea extends StatefulWidget {
-  const VideoArea({Key? key}) : super(key: key);
+class VideoArea extends StatelessWidget {
+  VideoArea({Key? key}) : super(key: key);
 
-  @override
-  _VideoAreaState createState() => _VideoAreaState();
-}
-
-class _VideoAreaState extends State<VideoArea> {
-  _VideoAreaState();
+  final HomeScreenController homeScreenController =
+      Get.put(HomeScreenController());
 
   @override
   Widget build(BuildContext context) {
@@ -67,17 +77,16 @@ class _VideoAreaState extends State<VideoArea> {
             child: FractionallySizedBox(
               widthFactor: 1,
               child: Container(
-                  child: context.read<HomeProvider>().isVideoOn
+                  child: homeScreenController.isVideoOn
                       ? StreamBuilder(
                           // read() 함수를 통해 데이터 접근
                           // read()는 UI업데이트 하지 않음. 여기선 stream으로 값을 받아오기 때문에
                           // UI업데이트는 자동으로 된다.
                           stream:
-                              context.read<HomeProvider>().videoChannel.stream,
+                              homeScreenController.videoChannel.value.stream,
                           builder: (context, snapshot) {
                             return ElevatedButton(
-                                onPressed: () =>
-                                    context.watch<HomeProvider>().videoOff,
+                                onPressed: () => homeScreenController.videoOff,
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.white),
                                 child: Image.memory(
@@ -89,7 +98,7 @@ class _VideoAreaState extends State<VideoArea> {
                       : Container(
                           color: Colors.black,
                           child: IconButton(
-                            onPressed: context.watch<HomeProvider>().videoOn,
+                            onPressed: homeScreenController.videoOn,
                             icon: Icon(Icons.play_arrow),
                             color: Colors.white,
                             iconSize: 72,
@@ -99,65 +108,80 @@ class _VideoAreaState extends State<VideoArea> {
 }
 
 class HomeDataCard extends StatelessWidget {
-  const HomeDataCard({Key? key, this.name, this.isLinear}) : super(key: key);
+  const HomeDataCard(
+      {Key? key,
+      required this.name,
+      required this.isLinear,
+      required this.sendFunc})
+      : super(key: key);
 
-  final String? name;
-  final bool? isLinear;
+  final String name;
+  final bool isLinear;
+  final sendFunc;
 
   @override
   Widget build(BuildContext context) {
     return FractionallySizedBox(
         widthFactor: 1,
         child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 2),
-            child: Card(
-                shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(20)),
-                color: Colors.green[100],
-                child: Column(
-                  children: <Widget>[
-                    SizedBox(height: 20),
-                    Text(
-                      this.name as String,
-                      textScaleFactor: 1.3,
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    PercentBar(
-                      isLinear: this.isLinear,
-                    ),
-                    if (this.name == '밥')
-                      ElevatedButton(
-                        onPressed: context.read<HomeProvider>().sendFood,
-                        child: Text(this.name as String,
-                            style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                color: Colors.black)),
-                        style: ElevatedButton.styleFrom(
-                          primary: Colors.grey[200],
+            padding: EdgeInsets.all(5),
+            child: InkWell(
+                onTap: () => Get.bottomSheet(
+                    BottomSheetForSendData(name: name, sendFunc: sendFunc)),
+                child: Container(
+                    decoration: BoxDecoration(
+                        color: Colors.green[100],
+                        borderRadius: BorderRadius.all(Radius.circular(15)),
+                        boxShadow: [
+                          BoxShadow(
+                              spreadRadius: 0.5,
+                              blurRadius: 0.5,
+                              offset: Offset(0, 3),
+                              color: Colors.grey.withOpacity(0.4))
+                        ]),
+                    child: Column(
+                      // crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Padding(
+                            padding: EdgeInsets.all(5),
+                            child: Text(
+                              name,
+                              textScaleFactor: 1.3,
+                              style: TextStyle(fontWeight: FontWeight.bold),
+                            )),
+                        PercentBar(
+                          isLinear: this.isLinear,
                         ),
-                      )
-                    else if (this.name == '물')
-                      ElevatedButton(
-                          onPressed: context.read<HomeProvider>().sendWater,
-                          child: Text(this.name as String,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black)),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.grey[200],
-                          ))
-                    else
-                      ElevatedButton(
-                          onPressed: context.read<HomeProvider>().sendBall,
-                          child: Text(this.name as String,
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  color: Colors.black)),
-                          style: ElevatedButton.styleFrom(
-                            primary: Colors.grey[200],
-                          ))
-                  ],
-                ))));
+                      ],
+                    )))));
+  }
+}
+
+class BottomSheetForSendData extends StatelessWidget {
+  const BottomSheetForSendData(
+      {Key? key, required this.name, required this.sendFunc})
+      : super(key: key);
+
+  final String name;
+  final sendFunc;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        height: 120,
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(15))),
+        child: Column(
+          children: <Widget>[
+            Padding(
+                padding: EdgeInsets.all(10),
+                child: Text(this.name + '을 보낼까요?',
+                    style: TextStyle(fontSize: 20))),
+            TextButton(onPressed: () => this.sendFunc, child: Text('넹'))
+            // ElevatedButton(onPressed: () => this.sendFunc, child: Text('보내기'), style: ButtonStyle(backgroundColor: Colors.green[200])),
+          ],
+        ));
   }
 }
 
@@ -177,11 +201,14 @@ class _PercentBarState extends State<PercentBar> {
 
   _PercentBarState(this.isLinear);
 
+  final HomeScreenController homeScreenController =
+      Get.put(HomeScreenController());
+
   @override
   Widget build(BuildContext context) {
     // 최대 칼로리
     const double maxCalorie = 100;
-    double foodData = context.watch<HomeProvider>().loadCellDataFood;
+    double foodData = homeScreenController.loadCellDataFood;
     // 선형/비선형 퍼센트 바 반환
     return this.isLinear
         // 선형 퍼센트 바
@@ -215,5 +242,70 @@ class _PercentBarState extends State<PercentBar> {
                         fontWeight: FontWeight.bold, fontSize: 20.0)),
                 circularStrokeCap: CircularStrokeCap.round,
                 progressColor: Colors.lightGreen[700]));
+  }
+}
+
+class HomeScreenController extends GetxController {
+  var motorChannel;
+  var videoChannel;
+
+  bool isVideoOn = false;
+
+  double loadCellDataFood = 0.0;
+  double loadCellDataWater = 0.0;
+
+  String ip = 'ws://192.168.1.132';
+
+  Future<Rx<IOWebSocketChannel>> motorWebScoketConnect() async {
+    return IOWebSocketChannel.connect(ip + ':25001').obs;
+  }
+
+  Future<Rx<IOWebSocketChannel>> videoWebSocketConnect() async {
+    return IOWebSocketChannel.connect(ip + ':25005').obs;
+  }
+
+  videoWebSocketDisconnect() {
+    videoChannel.value.sink.close();
+  }
+
+  loadCellWebSocketDisconnect() {
+    motorChannel.value.sink.close();
+  }
+
+  videoOn() {
+    videoWebSocketConnect().then((value) {
+      this.isVideoOn = true;
+
+      value.value.sink.add('on');
+    });
+  }
+
+  videoOff() {
+    isVideoOn = false;
+
+    this.videoChannel.value.sink.add('off');
+    videoWebSocketDisconnect();
+    print('video off');
+  }
+
+  sendFood() {
+    motorWebScoketConnect().then((value) => value.value.sink.add('food'));
+
+    DBHelper().createData(
+        History(date: DBHelper().getCurDateTime(), activity: '밥주기'));
+  }
+
+  sendWater() {
+    motorWebScoketConnect().then((value) => value.value.sink.add('water'));
+
+    DBHelper().createData(
+        History(date: DBHelper().getCurDateTime(), activity: '물주기'));
+  }
+
+  sendBall() {
+    motorWebScoketConnect().then((value) => value.value.sink.add('ball'));
+
+    DBHelper().createData(
+        History(date: DBHelper().getCurDateTime(), activity: '공던지기'));
   }
 }

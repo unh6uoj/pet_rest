@@ -12,9 +12,6 @@ import 'package:table_calendar/table_calendar.dart';
 // 한글 달력 출력을 위한 패키지
 import 'package:intl/date_symbol_data_local.dart';
 
-// Provider
-import 'package:provider/provider.dart';
-
 // getx
 import 'package:get/get.dart';
 
@@ -125,9 +122,15 @@ class HistoryBox extends StatelessWidget {
             padding: EdgeInsets.all(10),
             margin: EdgeInsets.only(bottom: 10),
             decoration: BoxDecoration(
-              color: Colors.green[100],
-              borderRadius: BorderRadius.circular(10),
-            ),
+                color: Colors.green[100],
+                borderRadius: BorderRadius.circular(15),
+                boxShadow: [
+                  BoxShadow(
+                      spreadRadius: 0.5,
+                      blurRadius: 0.5,
+                      offset: Offset(0, 3),
+                      color: Colors.grey.withOpacity(0.4))
+                ]),
             child: Column(children: histRowList)));
   }
 }

@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'dart:typed_data';
 import 'package:pet/main.dart';
+
+import 'dart:typed_data';
+
+// drawer
+import 'package:pet/drawer.dart';
 
 // persent_indicator
 import 'package:percent_indicator/percent_indicator.dart';
@@ -13,6 +17,8 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(title: Text('홈'), backgroundColor: Colors.green[500]),
+        drawer: myDrawer,
         body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Column(
@@ -56,13 +62,11 @@ class _VideoAreaState extends State<VideoArea> {
   Widget build(BuildContext context) {
     return Container(
         height: 340,
-        // watch() 함수를 통해 데이터 접근
-        // watch()는 UI를 바로 업데이트 함
         child: Padding(
-            padding: const EdgeInsets.symmetric(vertical: 24.0),
+            padding: const EdgeInsets.symmetric(vertical: 12.0),
             child: FractionallySizedBox(
-                widthFactor: 1,
-                child: Container(
+              widthFactor: 1,
+              child: Container(
                   child: context.read<HomeProvider>().isVideoOn
                       ? StreamBuilder(
                           // read() 함수를 통해 데이터 접근
@@ -72,7 +76,7 @@ class _VideoAreaState extends State<VideoArea> {
                               context.read<HomeProvider>().videoChannel.stream,
                           builder: (context, snapshot) {
                             return ElevatedButton(
-                                onPressed:
+                                onPressed: () =>
                                     context.watch<HomeProvider>().videoOff,
                                 style: ElevatedButton.styleFrom(
                                     primary: Colors.white),
@@ -82,12 +86,15 @@ class _VideoAreaState extends State<VideoArea> {
                                       true, // gaplessPlayback을 true로 하지 않으면 이미지 변경 될 때 마다 깜빡깜빡 한다.
                                 ));
                           })
-                      : ElevatedButton(
-                          onPressed: context.watch<HomeProvider>().videoOn,
-                          style: ElevatedButton.styleFrom(
-                              primary: Colors.grey[400]),
-                          child: Icon(Icons.play_arrow)),
-                ))));
+                      : Container(
+                          color: Colors.black,
+                          child: IconButton(
+                            onPressed: context.watch<HomeProvider>().videoOn,
+                            icon: Icon(Icons.play_arrow),
+                            color: Colors.white,
+                            iconSize: 72,
+                          ))),
+            )));
   }
 }
 
@@ -106,7 +113,7 @@ class HomeDataCard extends StatelessWidget {
             child: Card(
                 shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(20)),
-                color: Colors.green[400],
+                color: Colors.green[100],
                 child: Column(
                   children: <Widget>[
                     SizedBox(height: 20),
@@ -115,7 +122,9 @@ class HomeDataCard extends StatelessWidget {
                       textScaleFactor: 1.3,
                       style: TextStyle(fontWeight: FontWeight.bold),
                     ),
-                    PercentBar(isLinear: this.isLinear, data: 0.5),
+                    PercentBar(
+                      isLinear: this.isLinear,
+                    ),
                     if (this.name == '밥')
                       ElevatedButton(
                         onPressed: context.read<HomeProvider>().sendFood,
@@ -124,7 +133,7 @@ class HomeDataCard extends StatelessWidget {
                                 fontWeight: FontWeight.bold,
                                 color: Colors.black)),
                         style: ElevatedButton.styleFrom(
-                          primary: Colors.grey[300],
+                          primary: Colors.grey[200],
                         ),
                       )
                     else if (this.name == '물')
@@ -154,23 +163,19 @@ class HomeDataCard extends StatelessWidget {
 
 // 퍼센트 바
 class PercentBar extends StatefulWidget {
-  const PercentBar({Key? key, this.isLinear = true, @required this.data})
-      : super(key: key);
+  const PercentBar({Key? key, this.isLinear = true}) : super(key: key);
 
   final bool? isLinear;
-  final double? data; // data 변수 지금 상태에선 사용 x
 
   @override
-  _PercentBarState createState() =>
-      _PercentBarState(this.isLinear as bool, this.data as double);
+  _PercentBarState createState() => _PercentBarState(this.isLinear as bool);
 }
 
 class _PercentBarState extends State<PercentBar> {
   // 데이터 전달받기
   final bool isLinear;
-  double data;
 
-  _PercentBarState(this.isLinear, this.data);
+  _PercentBarState(this.isLinear);
 
   @override
   Widget build(BuildContext context) {
@@ -204,8 +209,8 @@ class _PercentBarState extends State<PercentBar> {
                 radius: 100.0,
                 lineWidth: 12.0,
                 backgroundColor: Colors.white70,
-                percent: (this.data * 100) / maxCalorie,
-                center: new Text(this.data.toString(),
+                percent: foodData,
+                center: new Text((foodData * 100).toString() + '%',
                     style: new TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 20.0)),
                 circularStrokeCap: CircularStrokeCap.round,

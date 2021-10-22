@@ -13,61 +13,55 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 // Provider
 import 'package:provider/provider.dart';
 
+// getx
+import 'package:get/get.dart';
+
 Future<void> main() async {
   runApp(MyApp());
 
-  // DBHelper().createData(History(id: 0, date: '1', activity: 'asd'));
-  // DBHelper().createData(History(id: 1, date: '1', activity: '2134123'));
-  // DBHelper().createData(History(id: 2, date: '2', activity: 'sdaf'));
-  // DBHelper().createData(History(id: 3, date: '2', activity: '21321'));
-  // DBHelper().createData(History(id: 4, date: '2', activity: '4241'));
-  // DBHelper().createData(History(id: 5, date: '3', activity: '21321'));
-  // DBHelper().createData(History(id: 6, date: '3', activity: 'sdfasdf'));
-  // DBHelper().createData(History(id: 7, date: '3', activity: 'sdfasf'));
+  DBHelper()
+      .createData(History(date: '2021-10-10 10:10:11', activity: 'assas'));
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      color: Colors.lightGreen[50],
-      title: 'Pet Station',
-      theme: ThemeData(primaryColor: Colors.green),
-      home: DefaultTabController(
-          length: 3,
-          child: Scaffold(
-            appBar: AppBar(
-                title: Text('Pet Station'),
-                backgroundColor: Colors.green[500],
-                leading: Icon(Icons.menu)),
-            body: TabBarView(
-              physics: NeverScrollableScrollPhysics(),
-              children: [
-                ChangeNotifierProvider<HomeProvider>(
-                    create: (_) => HomeProvider(), child: HomeScreen()),
-                LogScreen(),
-                InfoScreen()
-              ],
-            ),
-            bottomNavigationBar: TabBar(
-                labelColor: Colors.green,
-                indicatorColor: Colors.green,
-                tabs: [
-                  Tab(
-                    icon: Icon(Icons.home_outlined),
-                    text: '홈',
-                  ),
-                  Tab(
-                    icon: Icon(Icons.list_alt),
-                    text: '로그',
-                  ),
-                  Tab(
-                    icon: Icon(Icons.person_outline),
-                    text: '정보',
-                  )
-                ]),
-          )),
-    );
+    return MultiProvider(
+        providers: [
+          ChangeNotifierProvider(
+            create: (context) => HomeProvider(),
+          )
+        ],
+        child: GetMaterialApp(
+          color: Colors.lightGreen[50],
+          title: 'Pet Station',
+          theme: ThemeData(primaryColor: Colors.green),
+          home: DefaultTabController(
+              length: 3,
+              child: Scaffold(
+                body: TabBarView(
+                  physics: NeverScrollableScrollPhysics(),
+                  children: [HomeScreen(), LogScreen(), InfoScreen()],
+                ),
+                bottomNavigationBar: TabBar(
+                    labelColor: Colors.green,
+                    indicatorColor: Colors.green,
+                    tabs: [
+                      Tab(
+                        icon: Icon(Icons.home_outlined),
+                        text: '홈',
+                      ),
+                      Tab(
+                        icon: Icon(Icons.list_alt),
+                        text: '로그',
+                      ),
+                      Tab(
+                        icon: Icon(Icons.person_outline),
+                        text: '정보',
+                      )
+                    ]),
+              )),
+        ));
   }
 }
 
@@ -85,7 +79,6 @@ class HomeProvider extends ChangeNotifier {
 
   HomeProvider() {
     motorWebScoketConnect();
-    // videoWebSocketConnect();
   }
 
   void motorWebScoketConnect() async {
@@ -138,12 +131,20 @@ class HomeProvider extends ChangeNotifier {
   void sendFood() {
     this.motorChannel.sink.add('food');
     print('food 보냄');
+
+    DBHelper().createData(
+        History(date: DBHelper().getCurDateTime(), activity: '밥주기'));
+
     notifyListeners();
   }
 
   void sendWater() {
     this.motorChannel.sink.add('water');
     print('water 보냄');
+
+    DBHelper().createData(
+        History(date: DBHelper().getCurDateTime(), activity: '물주기'));
+
     notifyListeners();
   }
 

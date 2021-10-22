@@ -5,15 +5,11 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 class History {
-  late int id;
-  late String date; // 현재 날자 > 이번달 > [[id, date, act], [dsfsdf]]
+  late int? id;
+  late String date;
   late String activity;
 
-  History({required this.id, required this.date, required this.activity});
-
-  String get_date() {
-    return this.date;
-  }
+  History({this.id, required this.date, required this.activity});
 }
 
 class DBHelper {
@@ -33,7 +29,7 @@ class DBHelper {
     return await openDatabase(path, version: 1, onCreate: (db, version) async {
       await db.execute('''
           CREATE TABLE $tableName (
-            id INTEGER PRIMARY KEY,
+            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
             date TEXT,
             activity TEXT
           )
@@ -41,7 +37,7 @@ class DBHelper {
     }, onUpgrade: (db, oldVersion, newVersion) {});
   }
 
-  //Create
+  // 데이터 생성
   createData(History history) async {
     final db = await database;
     var res = await db.rawInsert(
@@ -50,7 +46,7 @@ class DBHelper {
     return res;
   }
 
-  //Read
+  // id로 하나 검색
   get(int id) async {
     final db = await database;
     var res = await db.rawQuery('SELECT * FROM $tableName WHERE id = ?', [id]);
@@ -62,7 +58,7 @@ class DBHelper {
         : Null;
   }
 
-  //Read All
+  // 모든 데이터 검색
   Future<List<History>> getAllHistorys() async {
     final db = await database;
     var res = await db.rawQuery('SELECT * FROM $tableName');
@@ -78,16 +74,44 @@ class DBHelper {
     return list;
   }
 
-  //Delete
+  // 특정 달로 검색
+  Future<List<History>> getHistorysByMonth(String curDate) async {
+    final db = await database;
+    var res = await db.rawQuery(
+        'SELECT * FROM $tableName WHERE DATE(date) BETWEEN DATE("' +
+            curDate +
+            '", "start of month") AND DATE("' +
+            curDate +
+            '", "start of month", "+1 month", "-1 day")');
+
+    List<History> list = res.isNotEmpty
+        ? res
+            .map((c) => History(
+                id: c['id'] as int,
+                date: c['date'] as String,
+                activity: c['activity'] as String))
+            .toList()
+        : [];
+
+    return list;
+  }
+
+  // id로 데이터 삭제
   deleteHistory(int id) async {
     final db = await database;
     var res = db.rawDelete('DELETE FROM $tableName WHERE id = ?', [id]);
     return res;
   }
 
-  //Delete All
+  // 모든 데이터 삭제
   deleteAllHistorys() async {
     final db = await database;
     db.rawDelete('DELETE FROM $tableName');
+  }
+
+  String getCurDateTime() {
+    return DateTime.fromMillisecondsSinceEpoch(
+            DateTime.now().millisecondsSinceEpoch)
+        .toString();
   }
 }

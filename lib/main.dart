@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'screen_home.dart';
 import 'screen_log.dart';
 import 'screen_info.dart';
+import 'sqlite.dart';
 
 // getx
 import 'package:get/get.dart';

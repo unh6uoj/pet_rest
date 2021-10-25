@@ -1,7 +1,10 @@
 import pyaudio
 import numpy as np
 import librosa
-import tflite_runtime.interpreter as tflite
+try:
+    import tflite_runtime.interpreter as tflite
+except:
+    import tensorflow.lite as tflite
 # from pyfcm import FCMNotification
 
 
@@ -18,7 +21,7 @@ class Audio():
         self.mic_chunk = 2048
 
         # 텐서플로우 관련 변수
-        self.model = tflite.Interpreter(r'C:\Users\User\VS_workspace\pet_rest\server\model\model.tflite')
+        self.model = tflite.Interpreter(model_path='model/model.tflite')
         self.model.allocate_tensors()
         self.model_rate = 16000
         self.input_details = self.model.get_input_details()

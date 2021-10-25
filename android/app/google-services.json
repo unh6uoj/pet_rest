@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "503374469732",
+    "project_id": "pet-station-aa0eb",
+    "storage_bucket": "pet-station-aa0eb.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:503374469732:android:116738891f6e26535d9d71",
+        "android_client_info": {
+          "package_name": "com.mecha.pet"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "503374469732-ldu57bkcihgutntfn33mqi449fj3gho3.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1VTe5X9eMVIg3qXFJOTE0FkCQS3SnWDY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "503374469732-ldu57bkcihgutntfn33mqi449fj3gho3.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "503374469732-m7negi4kmefciqnrqmsntiuqj2uk71m2.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.petstation"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

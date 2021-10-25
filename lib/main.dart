@@ -14,9 +14,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> main() async {
   runApp(MyApp());
-
-  DBHelper()
-      .createData(History(date: '2021-10-10 10:10:11', activity: 'assas'));
 }
 
 class MyApp extends StatelessWidget {

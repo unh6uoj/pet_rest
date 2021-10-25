@@ -49,14 +49,14 @@ class HomeScreen extends StatelessWidget {
                           child: HomeDataCard(
                         name: '물',
                         isLinear: false,
-                        sendFunc: homeScreenController.sendFood,
+                        sendFunc: homeScreenController.sendWater,
                       )),
                     ],
                   ),
                   HomeDataCard(
                     name: '공',
                     isLinear: false,
-                    sendFunc: homeScreenController.sendFood,
+                    sendFunc: homeScreenController.sendBall,
                   ),
                 ])));
   }
@@ -158,8 +158,7 @@ class HomeDataCard extends StatelessWidget {
 }
 
 class BottomSheetForSendData extends StatelessWidget {
-  const BottomSheetForSendData(
-      {Key? key, required this.name, required this.sendFunc})
+  BottomSheetForSendData({Key? key, required this.name, required this.sendFunc})
       : super(key: key);
 
   final String name;
@@ -178,7 +177,7 @@ class BottomSheetForSendData extends StatelessWidget {
                 padding: EdgeInsets.all(10),
                 child: Text(this.name + '을 보낼까요?',
                     style: TextStyle(fontSize: 20))),
-            TextButton(onPressed: () => this.sendFunc, child: Text('넹'))
+            ElevatedButton(onPressed: () => sendFunc(), child: Text('넹'))
             // ElevatedButton(onPressed: () => this.sendFunc, child: Text('보내기'), style: ButtonStyle(backgroundColor: Colors.green[200])),
           ],
         ));
@@ -290,6 +289,8 @@ class HomeScreenController extends GetxController {
 
   sendFood() {
     motorWebScoketConnect().then((value) => value.value.sink.add('food'));
+
+    print('밥보냄');
 
     DBHelper().createData(
         History(date: DBHelper().getCurDateTime(), activity: '밥주기'));

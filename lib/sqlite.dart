@@ -29,7 +29,7 @@ class DBHelper {
     return await openDatabase(path, version: 1, onCreate: (db, version) async {
       await db.execute('''
           CREATE TABLE $tableName (
-            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
+            id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL,
             date TEXT,
             activity TEXT
           )

@@ -1,15 +1,20 @@
-import pyaudio
-import numpy as np
+from pyfcm import FCMNotification
+import time
 import librosa
+import numpy as np
+import pyaudio
+import os
+import warnings
+warnings.filterwarnings(action='ignore')
 try:
     import tflite_runtime.interpreter as tflite
 except:
     import tensorflow.lite as tflite
-# from pyfcm import FCMNotification
 
 
-APIKEY = "Your Server Key"
-TOKEN = "Your Token"
+APIKEY = 'AAAAdTN02mQ:APA91bE2ZilYBVvDYK5FcdtA88yDTzBpmP4a-hPt8yJ4d4s0sEj9QaW7umidMi7aKIYhEOKJGuEklhyYfqDJ-xB88L4pptnFPgS_9CKVfKBWqjoHhTzA1-SzbMsrUAJN_prplw-Yl0rb'
+TOKEN = 'eIi-ZTHsSRG5YDTiJt0ikq:APA91bGtVkNW3iA3meofbyfjmFXHmjrwa5bUSSV1ZMwVD6yYH--hTG93d36R6NpE3CIfbXEtnrLESZOAbEeUDh7CjCi7VQ9K9HoIr-4SE3dyEPRsXDuk2Q9XC5PhB0K5YvKEXkuwIgmS'
+
 
 class Audio():
     # 초기화
@@ -21,14 +26,15 @@ class Audio():
         self.mic_chunk = 2048
 
         # 텐서플로우 관련 변수
-        self.model = tflite.Interpreter(model_path='model/model.tflite')
+        self.model = tflite.Interpreter(model_path=os.path.dirname(
+            os.path.realpath(__file__)) + '/model/model.tflite')
         self.model.allocate_tensors()
         self.model_rate = 16000
         self.input_details = self.model.get_input_details()
         self.output_details = self.model.get_output_details()
 
         # fcm 관련 변수
-        # self.push_service = FCMNotification(APIKEY)
+        self.push_service = FCMNotification(APIKEY)
 
     # 최적의 마이크 찾기
     def find_best_mic(self):
@@ -38,18 +44,19 @@ class Audio():
             if desc["maxInputChannels"] == 1 and 44000 < desc["defaultSampleRate"] <= 48000:
                 self.mic_index = index
                 self.mic_rate = int(desc["defaultSampleRate"])
+                os.system('clear')
                 print(desc["name"]+"을(를) 사용합니다!")
                 return True
 
+        os.system('clear')
         print("사용할 수 있는 마이크를 찾을 수 없습니다.")
         return False
 
-    # # 메세지 전송하기
-    # def send_message(self):
-    #     data_message = {"body": "펫터레스트", "title": "개가 짖었습니다!"}
-    #     push_result = self.push_service.single_device_data_message(
-    #         registration_id=TOKEN, data_message=data_message)
-    #     print(push_result)
+    # 메세지 전송하기
+    def sendMessage(self):
+        result = self.push_service.notify_single_device(
+            registration_id=TOKEN, message_title="펫터레스트", message_body="개가 짖었습니다!")
+        print(result)
 
     # 오디오 큐 시작하기
     def start_audio_queue(self):
@@ -60,18 +67,22 @@ class Audio():
 
         while True:
             stream_data = np.fromstring(
-                stream.read(self.mic_chunk), dtype=np.int16)
+                stream.read(self.mic_chunk, exception_on_overflow=False), dtype=np.int16)
             audio_queue = np.append(audio_queue, stream_data)
 
-            if audio_queue.shape[0] > self.mic_rate * 10.9:
-                audio_queue = np.delete(audio_queue, 0, axis=0)
-
-            # 1초 이상 데이터가 모이면 음성 인식
-            if audio_queue.shape[0] > self.mic_rate * 1.0:
-                result = self.bark_detection(audio_queue)
+            # 1.5초 이상 데이터가 모이면 음성 인식
+            if audio_queue.shape[0] > self.mic_rate * 1.5:
+                result, detection_time = self.bark_detection(audio_queue)
+                # 객체 탐지에 걸린 시간만큼 큐 비우기
+                audio_queue = audio_queue[round(
+                    self.mic_rate * detection_time):]
                 if result:
+                    self.sendMessage()
+                    # stream 10초간 멈추기
+                    audio_queue = np.array([])
                     stream.stop_stream()
-                    stream.close()
+                    time.sleep(10)
+                    stream.start_stream()
 
     # 개 짖음 인식하기
     def bark_detection(self, audio_queue):
@@ -81,29 +92,29 @@ class Audio():
         data_pad = np.hstack((resample_queue, np.zeros(
             int(self.model_rate*10.99))[resample_queue.shape[0]:]))
         melspec = librosa.feature.melspectrogram(
-            data_pad, sr=16000, n_fft=512, hop_length=160, n_mels=64) #  win_length=400
+            data_pad, sr=16000, n_fft=512, hop_length=160, n_mels=64)  # win_length=400
         audio_mel = np.expand_dims(
             librosa.power_to_db(melspec, ref=np.max), -1)[np.newaxis].astype('float32')
 
         # 음성 데이터 예측하기
         self.model.set_tensor(self.input_details[0]['index'], audio_mel)
+        past_time = time.time()
         self.model.invoke()
+        current_time = time.time()
+        detection_time = round(current_time - past_time, 2)
+        print("음성 인식 소요 시간 : " + str(detection_time) + "초")
         output_data = self.model.get_tensor(self.output_details[0]['index'])[0]
 
         # 결과 출력하기
-        print(output_data)
+        dog_percent = round(
+            (output_data[0] * (10**5)) / (1.0 - output_data[1]), 2)
+        print(dog_percent)
 
-        if output_data[0] > output_data[2] and output_data[0] > 0.3:
-            print("개")
-        else:
-            print("...")
-        # print(np.argmax(output_data))
+        if dog_percent > 20.0:
+            print("개가 짖었다!!!")
+            return True, detection_time
 
-        # # 개 짖음을 인식했을 때
-        # if np.max(output_data) > 0.8 and np.argmax(output_data) == 0:
-        #     print("개가 짖었습니다!")
-        #     return True
-        return False
+        return False, detection_time
 
     # 종료
     def __del__(self):

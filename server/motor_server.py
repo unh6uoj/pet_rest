@@ -44,7 +44,7 @@ async def accept(websocket, path):
             ball_motor1.stop()
             ball_motor2.stop()
 
-websoc_svr = websockets.serve(accept, "0.0.0.0", "25005")
+websoc_svr = websockets.serve(accept, "0.0.0.0", "25001")
 
 # waiting
 asyncio.get_event_loop().run_until_complete(websoc_svr)

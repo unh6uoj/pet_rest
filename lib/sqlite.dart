@@ -78,11 +78,25 @@ class DBHelper {
   Future<List<History>> getHistorysByMonth(String curDate) async {
     final db = await database;
     var res = await db.rawQuery(
-        'SELECT * FROM $tableName WHERE DATE(date) BETWEEN DATE("' +
-            curDate +
-            '", "start of month") AND DATE("' +
-            curDate +
-            '", "start of month", "+1 month", "-1 day")');
+        'SELECT * FROM $tableName WHERE DATE(date) BETWEEN DATE("$curDate", "start of month") AND DATE("$curDate", "start of month", "+1 month", "-1 day");');
+
+    List<History> list = res.isNotEmpty
+        ? res
+            .map((c) => History(
+                id: c['id'] as int,
+                date: c['date'] as String,
+                activity: c['activity'] as String))
+            .toList()
+        : [];
+
+    return list;
+  }
+
+  // 특정 일로 검색
+  Future<List<History>> getHistorysByDay(String curDate) async {
+    final db = await database;
+    var res = await db.rawQuery(
+        'SELECT * FROM $tableName WHERE DATE(date) = Date("$curDate");');
 
     List<History> list = res.isNotEmpty
         ? res

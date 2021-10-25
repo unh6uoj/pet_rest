@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'screen_home.dart';
-import 'screen_log.dart';
-import 'screen_info.dart';
+import 'screen/screen_home.dart';
+import 'screen/screen_log.dart';
+import 'screen/screen_info.dart';
 
 // getx
 import 'package:get/get.dart';

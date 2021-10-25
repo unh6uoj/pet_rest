@@ -1,5 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher.dart';
+
+// screen
+// tutorial
+import 'package:pet/tutorial/tutorial1.dart';
+
+// 외부 패키지
+import 'package:get/get.dart'; // getx
+import 'package:url_launcher/url_launcher.dart'; // url_launcher
 
 Drawer myDrawer = Drawer(
     child: ListView(
@@ -27,7 +34,10 @@ Drawer myDrawer = Drawer(
     ListTile(
         title: const Text('스마트스토어', style: TextStyle(fontSize: 20)),
         onTap: () => _launchURL('https://smartstore.naver.com/peterest')),
-    SizedBox(height: 350),
+    ListTile(
+        title: const Text('사용법', style: TextStyle(fontSize: 20)),
+        onTap: () => Get.to(Tutorial1())),
+    SizedBox(height: 300),
     ListTile(
         title: const Text('앱 버전 0.1v', style: TextStyle(fontSize: 16)),
         onTap: () {}),

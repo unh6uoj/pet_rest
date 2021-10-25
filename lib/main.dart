@@ -20,11 +20,9 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Firebase.initializeApp().whenComplete(() {
-      final FirebaseMessaging _firebaseMessaging = FirebaseMessaging.instance;
+      final FirebaseMessaging _firebaseMessasing = FirebaseMessaging.instance;
 
-      _firebaseMessaging.getToken().then((token) {
-        print(token); // Print the Token in Console
-      });
+      _firebaseMessasing.getToken().then((value) => print(value));
     });
 
     return GetMaterialApp(

@@ -28,9 +28,20 @@ class LogScreen extends StatelessWidget {
         drawer: myDrawer,
         body: Column(children: <Widget>[
           CalendarArea(),
+          Row(children: <Widget>[
+            Expanded(
+                child: Container(
+              height: 45,
+              color: Colors.black,
+            )),
+            Expanded(child: Container(height: 45, color: Colors.red)),
+            Expanded(child: Container(height: 45, color: Colors.blue))
+          ]),
           Expanded(
+              child: Padding(
+            padding: EdgeInsets.all(5),
             child: HistoryList(),
-          )
+          )),
         ]));
   }
 }
@@ -127,22 +138,20 @@ class HistoryBox extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FractionallySizedBox(
-        widthFactor: 0.9,
-        child: Container(
-            padding: EdgeInsets.all(10),
-            margin: EdgeInsets.only(bottom: 10),
-            decoration: BoxDecoration(
-                color: Colors.green[100],
-                borderRadius: BorderRadius.circular(15),
-                boxShadow: [
-                  BoxShadow(
-                      spreadRadius: 0.5,
-                      blurRadius: 0.5,
-                      offset: Offset(0, 3),
-                      color: Colors.grey.withOpacity(0.4))
-                ]),
-            child: Column(children: histRowList)));
+    return Container(
+        padding: EdgeInsets.all(10),
+        margin: EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+            color: Colors.green[100],
+            borderRadius: BorderRadius.circular(15),
+            boxShadow: [
+              BoxShadow(
+                  spreadRadius: 0.5,
+                  blurRadius: 0.5,
+                  offset: Offset(0, 3),
+                  color: Colors.grey.withOpacity(0.4))
+            ]),
+        child: Column(children: histRowList));
   }
 }
 

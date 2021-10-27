@@ -428,7 +428,7 @@ class HomeScreenController extends GetxController {
   var videoChannel;
   var bottomSheetText = ''.obs;
 
-  var isVideoOn = true.obs;
+  var isVideoOn = false.obs;
 
   var loadCellDataFood = 0.85.obs;
   var loadCellDataWater = 0.5.obs;

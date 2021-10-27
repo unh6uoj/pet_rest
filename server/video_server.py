@@ -29,7 +29,7 @@ async def accept(websocket, path):
     cap.set(4, FRAME_H)
 
     model = tflite.Interpreter(model_path=os.path.dirname(
-        os.path.realpath(__file__)) + '/model/coco_model.tflite')
+        os.path.realpath(__file__)) + '/model/video_model.tflite')
     model.allocate_tensors()
     input_details = model.get_input_details()
     output_details = model.get_output_details()
@@ -42,17 +42,9 @@ async def accept(websocket, path):
 
             if data_rcv == 'off':
                 break
-            print(data_rcv)
 
             _, frame = cap.read()
-            print("img read")
-
-            try:
-                img_tensor = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-            except:
-                return (None, None)
-
-            print("img tensor")
+            img_tensor = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
             cv2.imshow("test", frame)
             cv2.waitKey(1)
@@ -63,23 +55,23 @@ async def accept(websocket, path):
             input_data = np.expand_dims(img_tensor, axis=0)
             model.set_tensor(input_details[0]['index'], input_data)
 
-            start = time.perf_counter()
+            start_time = time.time()
             model.invoke()
-            end = time.perf_counter() - start
-            print('%.2f ms' % (end * 1000))
+            end_time = time.time()
+            detection_time = round(end_time - start_time, 2)
+            print("사진 인식 소요 시간 : " + str(detection_time) + "초")
 
-            count = model.get_tensor(output_details[0]['index'])[0]
-            boxes = model.get_tensor(output_details[1]['index'])[0]
-            classes = model.get_tensor(output_details[2]['index'])[0]
-            scores = model.get_tensor(output_details[4]['index'])[0]
+            boxes = model.get_tensor(output_details[0]['index'])[0]
+            classes = model.get_tensor(output_details[1]['index'])[0]
+            scores = model.get_tensor(output_details[2]['index'])[0]
+            count = model.get_tensor(output_details[3]['index'])[0]
 
             result = []
 
             # 객체 개수만큼 반복
             for i in range(int(count)):
-                print(scores[i])
                 # 정확도가 지정한 범위 안에 있을 때
-                if (scores[i] > CONFIDENCE_THRESHOLD) and classes[i] == 18:
+                if (scores[i] > CONFIDENCE_THRESHOLD) and int(classes[i]) == 17:
                     # 객체 테두리 좌표 저장(텐서플로우 이미지용 좌표를 원본 이미지용 좌표로 변환)
                     y_min = int(max(1, (boxes[i][0] * origin_h)))
                     x_min = int(max(1, (boxes[i][1] * origin_w)))

@@ -2,10 +2,11 @@ from gpiozero import Servo, Motor
 import time
 import asyncio
 import websockets
+from hx711 import HX711
 
 
 async def accept(websocket, path):
-    print("init")
+    print("Motor init")
 
     # Motor Pins
     food_motor = Motor(20, 16)
@@ -13,6 +14,12 @@ async def accept(websocket, path):
     ball_motor1 = Motor(1, 2)
     ball_motor2 = Motor(3, 4)
     ball_servo = Servo(5)
+
+    print("Loadcell init")
+
+    # Loadcell Pins
+    food_loadcell = HX711(5, 6)
+    water_loadcell = HX711(7, 8)
 
     while True:
         try:
@@ -27,11 +34,19 @@ async def accept(websocket, path):
             time.sleep(2)
             food_motor.stop()
 
+            food_amount = food_loadcell.get_raw_data(1)[0]
+            print(food_amount)
+            await websocket.send(food_amount)
+
         elif data_rcv == "water":
             water_servo.value = 0.6
             time.sleep(1)
             water_servo.value = -0.2
             time.sleep(1)
+
+            water_amount = water_loadcell.get_raw_data(1)[0]
+            print(water_amount)
+            await websocket.send(water_amount)
 
         elif data_rcv == "ball":        # 테스트 해봐야 함...
             ball_motor1.forward()
@@ -39,7 +54,7 @@ async def accept(websocket, path):
             time.sleep(1)
             ball_servo.value = 0.6
             time.sleep(1)
-            water_servo.value = -0.2
+            ball_servo.value = -0.2
             time.sleep(1)
             ball_motor1.stop()
             ball_motor2.stop()

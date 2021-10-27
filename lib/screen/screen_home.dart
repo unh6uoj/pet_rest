@@ -436,7 +436,7 @@ class HomeScreenController extends GetxController {
   var isBall = true.obs;
   var ballText = '공이 있어요'.obs;
 
-  String ip = 'ws://192.168.1.196';
+  String ip = 'ws://192.168.1.132';
 
   Future<Rx<IOWebSocketChannel>> motorWebScoketConnect() async {
     return IOWebSocketChannel.connect(ip + ':25001').obs;

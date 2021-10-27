@@ -27,7 +27,7 @@ class Audio():
 
         # 텐서플로우 관련 변수
         self.model = tflite.Interpreter(model_path=os.path.dirname(
-            os.path.realpath(__file__)) + '/model2/model.tflite')
+            os.path.realpath(__file__)) + '/model/audio_model.tflite')
         self.model.allocate_tensors()
         self.model_rate = 16000
         self.input_details = self.model.get_input_details()

@@ -23,7 +23,7 @@ class Audio():
         self.audio = pyaudio.PyAudio()
         self.mic_index = 0
         self.mic_rate = 0
-        self.mic_chunk = 2048
+        self.mic_chunk = 512
 
         # 텐서플로우 관련 변수
         self.model = tflite.Interpreter(model_path=os.path.dirname(
@@ -43,7 +43,7 @@ class Audio():
 
             if desc["maxInputChannels"] == 1 and 44000 < desc["defaultSampleRate"] <= 48000:
                 self.mic_index = index
-                self.mic_rate = int(desc["defaultSampleRate"])
+                self.mic_rate = desc["defaultSampleRate"]
                 os.system('clear')
                 print(desc["name"]+"을(를) 사용합니다!")
                 return True
@@ -60,7 +60,7 @@ class Audio():
 
     # 오디오 큐 시작하기
     def start_audio_queue(self):
-        stream = self.audio.open(format=pyaudio.paInt16, channels=1, rate=self.mic_rate, input=True,
+        stream = self.audio.open(format=pyaudio.paInt16, channels=1, rate=int(self.mic_rate), input=True,
                                  frames_per_buffer=self.mic_chunk, input_device_index=self.mic_index)
 
         audio_queue = np.array([])
@@ -71,7 +71,7 @@ class Audio():
             audio_queue = np.append(audio_queue, stream_data)
 
             # 1.5초 이상 데이터가 모이면 음성 인식
-            if audio_queue.shape[0] > self.mic_rate * 1.5:
+            if audio_queue.shape[0] / self.mic_rate > 1.5:
                 result, detection_time = self.bark_detection(audio_queue)
                 # 객체 탐지에 걸린 시간만큼 큐 비우기
                 audio_queue = audio_queue[round(
@@ -91,8 +91,11 @@ class Audio():
             audio_queue, self.mic_rate, self.model_rate)
         data_pad = np.hstack((resample_queue, np.zeros(
             int(self.model_rate*1.5))[resample_queue.shape[0]:]))
+        pad_overflow = data_pad.shape[0] - int(self.model_rate*1.5)
+        if pad_overflow > 0:
+            data_pad = data_pad[pad_overflow:]
         melspec = librosa.feature.melspectrogram(
-            data_pad, sr=16000, n_fft=512, hop_length=160, n_mels=64)  # win_length=400
+            data_pad, sr=16000, n_fft=512, win_length=400, hop_length=160, n_mels=64)
         audio_mel = np.expand_dims(
             librosa.power_to_db(melspec, ref=np.max), -1)[np.newaxis].astype('float32')
 
@@ -105,13 +108,8 @@ class Audio():
         print("음성 인식 소요 시간 : " + str(detection_time) + "초")
         output_data = self.model.get_tensor(self.output_details[0]['index'])[0]
 
-        # 결과 출력하기
-        dog_percent = round(
-            (output_data[0] * (10**5)) / (1.0 - output_data[1]), 2)
-        print(dog_percent)
-
-        if dog_percent > 20.0:
-            print("개가 짖었다!!!")
+        if output_data[0] > 0.0001:
+            print("dog bark!!")
             return True, detection_time
 
         return False, detection_time

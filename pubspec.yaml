@@ -60,7 +60,7 @@ flutter:
     - images/pet_food.png
     - images/pet_water.png
     - images/peterest_logo.png
-    - images/insta_logo1.svg
+    # - images/insta_logo1.svg
     - images/insta_logo2.png
     - images/ball_on.png
     - images/ball_off.png

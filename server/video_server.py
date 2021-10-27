@@ -10,11 +10,13 @@ import numpy as np
 import time
 
 # 동영상 설정
-FRAME_W = 400
-FRAME_H = 300
+FRAME_W = 800
+FRAME_H = 600
 
 # tensorflow 정확도 최소값
 CONFIDENCE_THRESHOLD = 0.5
+
+print("server on!")
 
 
 async def get_recv_data(websocket):
@@ -36,18 +38,24 @@ async def accept(websocket, path):
         data_rcv = await websocket.recv()
         print("received data: ", data_rcv)
         while data_rcv == 'on':
-            data_rcv = get_recv_data(websocket)
+            # data_rcv = get_recv_data(websocket)
 
             if data_rcv == 'off':
                 break
             print(data_rcv)
 
             _, frame = cap.read()
+            print("img read")
 
             try:
                 img_tensor = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
             except:
                 return (None, None)
+
+            print("img tensor")
+
+            cv2.imshow("test", frame)
+            cv2.waitKey(1)
 
             origin_h, origin_w, _ = frame.shape
             img_tensor = cv2.resize(
@@ -69,6 +77,7 @@ async def accept(websocket, path):
 
             # 객체 개수만큼 반복
             for i in range(int(count)):
+                print(scores[i])
                 # 정확도가 지정한 범위 안에 있을 때
                 if (scores[i] > CONFIDENCE_THRESHOLD) and classes[i] == 18:
                     # 객체 테두리 좌표 저장(텐서플로우 이미지용 좌표를 원본 이미지용 좌표로 변환)

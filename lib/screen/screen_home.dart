@@ -288,7 +288,7 @@ class HomeScreenController extends GetxController {
   double loadCellDataFood = 0.0;
   double loadCellDataWater = 0.0;
 
-  String ip = 'ws://192.168.1.132';
+  String ip = 'ws://192.168.1.196';
 
   Future<Rx<IOWebSocketChannel>> motorWebScoketConnect() async {
     return IOWebSocketChannel.connect(ip + ':25001').obs;

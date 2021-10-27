@@ -54,25 +54,19 @@ class HomeScreen extends StatelessWidget {
                         percent: homeScreenController.loadCellDataWater,
                         sendFunc: homeScreenController.sendWater,
                       )
-                      // HomeDataCard(
-                      //   name: '밥',
-                      //   isLinear: true,
-                      //   sendFunc: homeScreenController.sendFood,
-                      // ),
-                      // SizedBox(
-                      //   width: 10,
-                      // ),
-                      // HomeDataCard(
-                      //   name: '물',
-                      //   isLinear: true,
-                      //   sendFunc: homeScreenController.sendWater,
-                      // ),
                     ],
                   ),
                   SizedBox(
                     height: 10,
                   ),
-                  BallCard(sendFunc: homeScreenController.sendBall)
+                  BallCard(sendFunc: homeScreenController.sendBall),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  MoveCheckCard(),
+                  SizedBox(
+                    height: 10,
+                  ),
                 ])));
   }
 }
@@ -93,6 +87,7 @@ class VideoArea extends StatelessWidget {
                 widthFactor: 1,
                 child: Obx(
                   () => Container(
+                      clipBehavior: Clip.hardEdge,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(15))),
                       child: homeScreenController.isVideoOn.value
@@ -400,8 +395,10 @@ class BallCard extends StatelessWidget {
     return InkWell(
         onTap: () {
           homeScreenController.bottomSheetText.value = '공 날리기';
-          Get.bottomSheet(
-              BottomSheetForSendData(name: '공', sendFunc: sendFunc));
+          homeScreenController.isBall.value
+              ? Get.bottomSheet(
+                  BottomSheetForSendData(name: '공', sendFunc: sendFunc))
+              : null;
         },
         child: Container(
           width: 374,
@@ -416,10 +413,31 @@ class BallCard extends StatelessWidget {
                         ? Image.asset('images/ball_on.png')
                         : Image.asset('images/ball_off.png')),
                 homeScreenController.isBall.value
-                    ? Text('공이 있어요')
-                    : Text('공이 없어요'),
+                    ? Text(
+                        '공이 있어요',
+                        style: TextStyle(fontSize: 18),
+                      )
+                    : Text(
+                        '공이 없어요',
+                        style: TextStyle(fontSize: 18),
+                      ),
               ])),
         ));
+  }
+}
+
+class MoveCheckCard extends StatelessWidget {
+  const MoveCheckCard({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 374,
+      height: 200,
+      decoration: BoxDecoration(
+          color: Colors.blue,
+          borderRadius: BorderRadius.all(Radius.circular(15))),
+    );
   }
 }
 
@@ -438,60 +456,61 @@ class HomeScreenController extends GetxController {
 
   String ip = 'ws://192.168.1.132';
 
+  // 여기는 모터
   Future<Rx<IOWebSocketChannel>> motorWebScoketConnect() async {
     return IOWebSocketChannel.connect(ip + ':25001').obs;
   }
 
-  Future<Rx<IOWebSocketChannel>> videoWebSocketConnect() async {
-    return IOWebSocketChannel.connect(ip + ':25005').obs;
-  }
-
-  videoWebSocketDisconnect() {
-    videoChannel.value.sink.close();
-  }
-
-  loadCellWebSocketDisconnect() {
+  loadCellWebSocketDisconnect() async {
     motorChannel.value.sink.close();
   }
 
-  videoOn() {
-    videoWebSocketConnect().then((channel) {
-      videoChannel = channel;
-
-      isVideoOn.value = true;
-
-      channel.value.sink.add('on');
-    });
-  }
-
-  videoOff() {
-    isVideoOn.value = false;
-
-    this.videoChannel.value.sink.add('off');
-    videoWebSocketDisconnect();
-    print('video off');
-  }
-
-  sendFood() {
+  sendFood() async {
     motorWebScoketConnect().then((value) => value.value.sink.add('food'));
 
     DBHelper().createData(
         History(date: DBHelper().getCurDateTime(), activity: '밥주기'));
   }
 
-  sendWater() {
+  sendWater() async {
     motorWebScoketConnect().then((value) => value.value.sink.add('water'));
 
     DBHelper().createData(
         History(date: DBHelper().getCurDateTime(), activity: '물주기'));
   }
 
-  sendBall() {
+  sendBall() async {
     motorWebScoketConnect().then((value) => value.value.sink.add('ball'));
 
     isBall.value = false;
 
     DBHelper().createData(
         History(date: DBHelper().getCurDateTime(), activity: '공던지기'));
+  }
+
+  // 여기부터 비디오
+  Future<Rx<IOWebSocketChannel>> videoWebSocketConnect() async {
+    return IOWebSocketChannel.connect(ip + ':25005').obs;
+  }
+
+  videoWebSocketDisconnect() async {
+    videoChannel.value.sink.close();
+  }
+
+  videoOn() async {
+    videoWebSocketConnect().then((channel) {
+      videoChannel = channel;
+      channel.value.sink.add('on');
+
+      Future.delayed(Duration(seconds: 1))
+          .then((value) => isVideoOn.value = true);
+    });
+  }
+
+  videoOff() async {
+    isVideoOn.value = false;
+
+    videoChannel.value.sink.add('off');
+    videoWebSocketDisconnect();
   }
 }

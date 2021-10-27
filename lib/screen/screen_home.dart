@@ -54,25 +54,19 @@ class HomeScreen extends StatelessWidget {
                         percent: homeScreenController.loadCellDataWater,
                         sendFunc: homeScreenController.sendWater,
                       )
-                      // HomeDataCard(
-                      //   name: '밥',
-                      //   isLinear: true,
-                      //   sendFunc: homeScreenController.sendFood,
-                      // ),
-                      // SizedBox(
-                      //   width: 10,
-                      // ),
-                      // HomeDataCard(
-                      //   name: '물',
-                      //   isLinear: true,
-                      //   sendFunc: homeScreenController.sendWater,
-                      // ),
                     ],
                   ),
                   SizedBox(
                     height: 10,
                   ),
-                  BallCard(sendFunc: homeScreenController.sendBall)
+                  BallCard(sendFunc: homeScreenController.sendBall),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  MoveCheckCard(),
+                  SizedBox(
+                    height: 10,
+                  ),
                 ])));
   }
 }
@@ -400,8 +394,10 @@ class BallCard extends StatelessWidget {
     return InkWell(
         onTap: () {
           homeScreenController.bottomSheetText.value = '공 날리기';
-          Get.bottomSheet(
-              BottomSheetForSendData(name: '공', sendFunc: sendFunc));
+          homeScreenController.isBall.value
+              ? Get.bottomSheet(
+                  BottomSheetForSendData(name: '공', sendFunc: sendFunc))
+              : null;
         },
         child: Container(
           width: 374,
@@ -416,10 +412,31 @@ class BallCard extends StatelessWidget {
                         ? Image.asset('images/ball_on.png')
                         : Image.asset('images/ball_off.png')),
                 homeScreenController.isBall.value
-                    ? Text('공이 있어요')
-                    : Text('공이 없어요'),
+                    ? Text(
+                        '공이 있어요',
+                        style: TextStyle(fontSize: 18),
+                      )
+                    : Text(
+                        '공이 없어요',
+                        style: TextStyle(fontSize: 18),
+                      ),
               ])),
         ));
+  }
+}
+
+class MoveCheckCard extends StatelessWidget {
+  const MoveCheckCard({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      width: 374,
+      height: 200,
+      decoration: BoxDecoration(
+          color: Colors.blue,
+          borderRadius: BorderRadius.all(Radius.circular(15))),
+    );
   }
 }
 

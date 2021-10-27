@@ -29,15 +29,8 @@ class LogScreen extends StatelessWidget {
         drawer: myDrawer,
         body: Column(children: <Widget>[
           CalendarArea(),
-          Row(children: <Widget>[
-            Expanded(
-                child: Container(
-              height: 45,
-              color: Colors.black,
-            )),
-            Expanded(child: Container(height: 45, color: Colors.red)),
-            Expanded(child: Container(height: 45, color: Colors.blue))
-          ]),
+          // SelectHistoryBtns(),
+          SizedBox(height: 10),
           Expanded(
               child: Padding(
             padding: EdgeInsets.all(5),
@@ -104,14 +97,87 @@ class _CalendarAreaState extends State<CalendarArea> {
       formatAnimationDuration: Duration(milliseconds: 300),
 
       onDaySelected: (datetime1, datetime2) {
-        logScreenController.curCalendarDate =
-            datetime1.toString().split(" ")[0];
+        if (datetime1.toString().split(" ")[0] ==
+                logScreenController.curCalendarDate &&
+            !logScreenController.isMonthData.value) {
+          logScreenController.curCalendarDate =
+              datetime1.toString().split(" ")[0];
+          logScreenController
+              .getDataByMonth(logScreenController.curCalendarDate)
+              .then((value) => logScreenController.setHistoryBox(value));
 
-        logScreenController
-            .getDataByDay(logScreenController.curCalendarDate)
-            .then((value) => logScreenController.setHistoryBox(value));
+          print('asdfsda');
+        } else {
+          logScreenController.curCalendarDate =
+              datetime1.toString().split(" ")[0];
+
+          logScreenController
+              .getDataByDay(logScreenController.curCalendarDate)
+              .then((value) => logScreenController.setHistoryBox(value));
+          logScreenController.isMonthData.value = false;
+          print('111122');
+        }
       },
     );
+  }
+}
+
+class SelectHistoryBtns extends StatelessWidget {
+  const SelectHistoryBtns({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+        child:
+            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+      InkWell(
+          onTap: () {},
+          child: Container(
+              width: 100,
+              height: 45,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                        spreadRadius: 1,
+                        blurRadius: 2,
+                        color: Colors.grey.withOpacity(0.5))
+                  ],
+                  borderRadius: BorderRadius.all(Radius.circular(10))),
+              child: Center(child: Text('밥')))),
+      SizedBox(width: 15),
+      InkWell(
+          onTap: () {},
+          child: Container(
+              width: 100,
+              height: 45,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                        spreadRadius: 1,
+                        blurRadius: 2,
+                        color: Colors.grey.withOpacity(0.5))
+                  ],
+                  borderRadius: BorderRadius.all(Radius.circular(10))),
+              child: Center(child: Text('물')))),
+      SizedBox(width: 15),
+      InkWell(
+          onTap: () {},
+          child: Container(
+              width: 100,
+              height: 45,
+              decoration: BoxDecoration(
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                        spreadRadius: 1,
+                        blurRadius: 2,
+                        color: Colors.grey.withOpacity(0.5))
+                  ],
+                  borderRadius: BorderRadius.all(Radius.circular(10))),
+              child: Center(child: Text('공'))))
+    ]));
   }
 }
 
@@ -159,6 +225,8 @@ class HistoryBox extends StatelessWidget {
 class LogScreenController extends GetxController {
   var curCalendarDate = DateTime.now().toString().split(" ")[0];
   var resultBoxes = <HistoryBox>[].obs;
+
+  var isMonthData = true.obs;
 
   // 모든 데이터 가져오기
   Future<List<History>> getAllData() {

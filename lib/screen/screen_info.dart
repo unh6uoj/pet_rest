@@ -14,7 +14,8 @@ class InfoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(title: Text('내 정보'), backgroundColor: Colors.green[500]),
+        backgroundColor: Color(0xffE5E5E5),
+        appBar: AppBar(title: Text('홈'), backgroundColor: Color(0xff00AAA1)),
         drawer: myDrawer,
         body: SingleChildScrollView(
             child: Column(children: <Widget>[

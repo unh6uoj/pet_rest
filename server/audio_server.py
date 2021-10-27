@@ -27,7 +27,7 @@ class Audio():
 
         # 텐서플로우 관련 변수
         self.model = tflite.Interpreter(model_path=os.path.dirname(
-            os.path.realpath(__file__)) + '/model/model.tflite')
+            os.path.realpath(__file__)) + '/model2/model.tflite')
         self.model.allocate_tensors()
         self.model_rate = 16000
         self.input_details = self.model.get_input_details()
@@ -90,7 +90,7 @@ class Audio():
         resample_queue = librosa.resample(
             audio_queue, self.mic_rate, self.model_rate)
         data_pad = np.hstack((resample_queue, np.zeros(
-            int(self.model_rate*10.99))[resample_queue.shape[0]:]))
+            int(self.model_rate*1.5))[resample_queue.shape[0]:]))
         melspec = librosa.feature.melspectrogram(
             data_pad, sr=16000, n_fft=512, hop_length=160, n_mels=64)  # win_length=400
         audio_mel = np.expand_dims(

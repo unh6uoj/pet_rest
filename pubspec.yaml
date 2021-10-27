@@ -33,13 +33,12 @@ dependencies:
   sqflite: ^2.0.0+4
   path: ^1.8.0
   path_provider: ^2.0.5
-  flutter_local_notifications: ^9.0.0
   intl: ^0.17.0
   get: ^4.3.8
-  firebase_core: ^1.7.0
-  firebase_messaging: ^10.0.8
   url_launcher: ^6.0.12
   wave: ^0.2.0
+  firebase_core: ^1.8.0
+  firebase_messaging: ^10.0.9
 
 dev_dependencies:
   flutter_native_splash: ^1.2.3
@@ -63,6 +62,8 @@ flutter:
     - images/peterest_logo.png
     - images/insta_logo1.svg
     - images/insta_logo2.png
+    - images/ball_on.png
+    - images/ball_off.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.

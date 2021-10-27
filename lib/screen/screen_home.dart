@@ -69,6 +69,10 @@ class HomeScreen extends StatelessWidget {
                       // ),
                     ],
                   ),
+                  SizedBox(
+                    height: 10,
+                  ),
+                  BallCard(sendFunc: homeScreenController.sendBall)
                 ])));
   }
 }
@@ -84,7 +88,7 @@ class VideoArea extends StatelessWidget {
     return Container(
         height: 340,
         child: Padding(
-            padding: const EdgeInsets.fromLTRB(5, 12, 5, 12),
+            padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
             child: FractionallySizedBox(
                 widthFactor: 1,
                 child: Obx(
@@ -383,15 +387,54 @@ class WavePercent extends StatelessWidget {
 //   }
 // }
 
+class BallCard extends StatelessWidget {
+  BallCard({Key? key, required this.sendFunc}) : super(key: key);
+
+  final HomeScreenController homeScreenController =
+      Get.put(HomeScreenController());
+
+  var sendFunc;
+
+  @override
+  Widget build(BuildContext context) {
+    return InkWell(
+        onTap: () {
+          homeScreenController.bottomSheetText.value = '공 날리기';
+          Get.bottomSheet(
+              BottomSheetForSendData(name: '공', sendFunc: sendFunc));
+        },
+        child: Container(
+          width: 374,
+          height: 200,
+          decoration: BoxDecoration(
+              color: Colors.blue,
+              borderRadius: BorderRadius.all(Radius.circular(15))),
+          child: Obx(() => Row(children: <Widget>[
+                Padding(
+                    padding: EdgeInsets.all(45),
+                    child: homeScreenController.isBall.value
+                        ? Image.asset('images/ball_on.png')
+                        : Image.asset('images/ball_off.png')),
+                homeScreenController.isBall.value
+                    ? Text('공이 있어요')
+                    : Text('공이 없어요'),
+              ])),
+        ));
+  }
+}
+
 class HomeScreenController extends GetxController {
   var motorChannel;
   var videoChannel;
   var bottomSheetText = ''.obs;
 
-  var isVideoOn = false.obs;
+  var isVideoOn = true.obs;
 
-  var loadCellDataFood = 1.0.obs;
-  var loadCellDataWater = 0.1.obs;
+  var loadCellDataFood = 0.85.obs;
+  var loadCellDataWater = 0.5.obs;
+
+  var isBall = true.obs;
+  var ballText = '공이 있어요'.obs;
 
   String ip = 'ws://192.168.1.132';
 
@@ -445,6 +488,8 @@ class HomeScreenController extends GetxController {
 
   sendBall() {
     motorWebScoketConnect().then((value) => value.value.sink.add('ball'));
+
+    isBall.value = false;
 
     DBHelper().createData(
         History(date: DBHelper().getCurDateTime(), activity: '공던지기'));

@@ -87,6 +87,7 @@ class VideoArea extends StatelessWidget {
                 widthFactor: 1,
                 child: Obx(
                   () => Container(
+                      clipBehavior: Clip.hardEdge,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.all(Radius.circular(15))),
                       child: homeScreenController.isVideoOn.value
@@ -453,62 +454,63 @@ class HomeScreenController extends GetxController {
   var isBall = true.obs;
   var ballText = '공이 있어요'.obs;
 
-  String ip = 'ws://192.168.1.132';
+  String ip = 'ws://192.168.1.196';
 
+  // 여기는 모터
   Future<Rx<IOWebSocketChannel>> motorWebScoketConnect() async {
     return IOWebSocketChannel.connect(ip + ':25001').obs;
   }
 
-  Future<Rx<IOWebSocketChannel>> videoWebSocketConnect() async {
-    return IOWebSocketChannel.connect(ip + ':25005').obs;
-  }
-
-  videoWebSocketDisconnect() {
-    videoChannel.value.sink.close();
-  }
-
-  loadCellWebSocketDisconnect() {
+  loadCellWebSocketDisconnect() async {
     motorChannel.value.sink.close();
   }
 
-  videoOn() {
-    videoWebSocketConnect().then((channel) {
-      videoChannel = channel;
-
-      isVideoOn.value = true;
-
-      channel.value.sink.add('on');
-    });
-  }
-
-  videoOff() {
-    isVideoOn.value = false;
-
-    this.videoChannel.value.sink.add('off');
-    videoWebSocketDisconnect();
-    print('video off');
-  }
-
-  sendFood() {
+  sendFood() async {
     motorWebScoketConnect().then((value) => value.value.sink.add('food'));
 
     DBHelper().createData(
         History(date: DBHelper().getCurDateTime(), activity: '밥주기'));
   }
 
-  sendWater() {
+  sendWater() async {
     motorWebScoketConnect().then((value) => value.value.sink.add('water'));
 
     DBHelper().createData(
         History(date: DBHelper().getCurDateTime(), activity: '물주기'));
   }
 
-  sendBall() {
+  sendBall() async {
     motorWebScoketConnect().then((value) => value.value.sink.add('ball'));
 
     isBall.value = false;
 
     DBHelper().createData(
         History(date: DBHelper().getCurDateTime(), activity: '공던지기'));
+  }
+
+  // 여기부터 비디오
+  Future<Rx<IOWebSocketChannel>> videoWebSocketConnect() async {
+    return IOWebSocketChannel.connect(ip + ':25005').obs;
+  }
+
+  videoWebSocketDisconnect() async {
+    videoChannel.value.sink.close();
+  }
+
+  videoOn() async {
+    videoWebSocketConnect().then((channel) {
+      videoChannel = channel;
+      channel.value.sink.add('on');
+
+      Future.delayed(Duration(seconds: 1))
+          .then((value) => isVideoOn.value = true);
+    });
+  }
+
+  videoOff() async {
+    isVideoOn.value = false;
+
+    videoChannel.value.sink.add('off');
+    videoWebSocketDisconnect();
   }
 }

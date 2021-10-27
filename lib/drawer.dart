@@ -14,7 +14,7 @@ Drawer myDrawer = Drawer(
   padding: EdgeInsets.zero,
   children: [
     DrawerHeader(
-        decoration: BoxDecoration(color: Colors.green),
+        decoration: BoxDecoration(color: Color(0xff00AAA1)),
         child: Row(children: <Widget>[
           Image.asset(
             'images/peterest_logo.png',

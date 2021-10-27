@@ -24,7 +24,8 @@ class LogScreen extends StatelessWidget {
     //     Get.put(LogScreenController());
 
     return Scaffold(
-        appBar: AppBar(title: Text('기록'), backgroundColor: Colors.green[500]),
+        backgroundColor: Color(0xffE5E5E5),
+        appBar: AppBar(title: Text('홈'), backgroundColor: Color(0xff00AAA1)),
         drawer: myDrawer,
         body: Column(children: <Widget>[
           CalendarArea(),

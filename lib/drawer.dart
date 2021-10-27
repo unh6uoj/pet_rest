@@ -23,7 +23,8 @@ Drawer myDrawer = Drawer(
           SizedBox(width: 10),
           Text(
             '바로가기',
-            style: TextStyle(fontSize: 23),
+            style: TextStyle(
+                color: Colors.white, fontSize: 23, fontWeight: FontWeight.bold),
           )
         ])),
     ListTile(
@@ -37,7 +38,7 @@ Drawer myDrawer = Drawer(
     ListTile(
         title: const Text('사용법', style: TextStyle(fontSize: 20)),
         onTap: () => Get.to(Tutorial1())),
-    SizedBox(height: 300),
+    SizedBox(height: 320),
     ListTile(
         title: const Text('앱 버전 0.1v', style: TextStyle(fontSize: 16)),
         onTap: () {}),

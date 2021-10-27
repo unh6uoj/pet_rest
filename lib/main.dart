@@ -27,7 +27,7 @@ class MyApp extends StatelessWidget {
     return GetMaterialApp(
       color: Colors.lightGreen[50],
       title: 'Pet Station',
-      theme: ThemeData(primaryColor: Colors.green),
+      theme: ThemeData(primaryColor: Color(0xff88F5D2)),
       home: DefaultTabController(
           length: 3,
           child: Scaffold(
@@ -36,8 +36,8 @@ class MyApp extends StatelessWidget {
               children: [HomeScreen(), LogScreen(), InfoScreen()],
             ),
             bottomNavigationBar: TabBar(
-                labelColor: Colors.green,
-                indicatorColor: Colors.green,
+                labelColor: Color(0xff00AAA1),
+                indicatorColor: Color(0xff003EAD),
                 tabs: [
                   Tab(
                     icon: Icon(Icons.home_outlined),

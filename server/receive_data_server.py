@@ -81,16 +81,27 @@ class ImageData():
         return result
 
     def save_momentum(self):
-        curr_date = time.strftime('%Y-%m-%d', time.localtime(time.time()))
+        curr_time = time.localtime(time.time())
+        curr_date = time.strftime('%Y-%m-%d', curr_time)
+        curr_hour = int(curr_time.tm_hour)
+        csv_read_data = []
         try:
-            file = open('./data/' + str(curr_date) + '.csv', 'r', encoding='utf-8')
-            csv_file = csv.reader(file)
+            file_r = open('./data/' + str(curr_date) + '.csv', 'r', encoding='utf-8')
+            csv_read_data = csv.reader(file_r)
+            file_r.close()
 
-        except:
-            file = open('./data/' + str(curr_date) + '.csv', 'w', encoding='utf-8', newline='')
-            csv_file = csv.writer(file)
-        csv_file.writerow()
-        file.close()
+        finally:
+            file_w = open('./data/' + str(curr_date) + '.csv', 'w', encoding='utf-8', newline='')
+            csv_w = csv.writer(file_w)
+            if len(csv_read_data) >= curr_hour + 1:
+                csv_read_data[curr_hour] += 56789
+            else:
+                csv_read_data.append([4567890987654])
+
+            for line in csv_read_data:
+                csv_w.writerow(line)
+            
+            file_w.close()
 
 
 class ServeData():

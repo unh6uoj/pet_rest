@@ -1,3 +1,5 @@
+import 'dart:ffi';
+
 import 'package:flutter/material.dart';
 
 import 'dart:typed_data';
@@ -19,12 +21,16 @@ import '../sqlite.dart';
 import 'package:wave/config.dart';
 import 'package:wave/wave.dart';
 
+// fl_chart
+import 'package:fl_chart/fl_chart.dart';
+
 class HomeScreen extends StatelessWidget {
   final HomeScreenController homeScreenController =
       Get.put(HomeScreenController());
 
   HomeScreen({Key? key}) : super(key: key) {
     homeScreenController.dataWebSocketConnect();
+    homeScreenController.getChartData();
   }
 
   @override
@@ -269,72 +275,89 @@ class BallCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-        onTap: () {
-          homeScreenController.bottomSheetText.value = '공 날리기';
-          homeScreenController.isBall.value
-              ? Get.bottomSheet(
-                  BottomSheetForSendData(name: '공', sendFunc: sendFunc))
-              : null;
-        },
-        child: Container(
-          width: 374,
-          height: 200,
-          decoration: BoxDecoration(
-              color: Color(0xFF049A5B),
-              borderRadius: BorderRadius.all(Radius.circular(15)),
-              boxShadow: [
-                BoxShadow(
-                    spreadRadius: 0.5,
-                    blurRadius: 0.5,
-                    offset: Offset(0, 3),
-                    color: Colors.grey.withOpacity(0.4))
-              ]),
-          child: Obx(() => Row(children: <Widget>[
-                Padding(
-                    padding: EdgeInsets.all(45),
-                    child: homeScreenController.isBall.value
-                        ? Image.asset('images/ball_on.png')
-                        : Image.asset('images/ball_off.png')),
-                homeScreenController.isBall.value
-                    ? Text(
-                        '공이 있어요',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold),
-                      )
-                    : Text(
-                        '공이 없어요',
-                        style: TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold),
-                      ),
-              ])),
-        ));
+    return FractionallySizedBox(
+        widthFactor: 0.95,
+        child: InkWell(
+            onTap: () {
+              homeScreenController.bottomSheetText.value = '공 날리기';
+              homeScreenController.isBall.value
+                  ? Get.bottomSheet(
+                      BottomSheetForSendData(name: '공', sendFunc: sendFunc))
+                  : null;
+            },
+            child: Container(
+              height: 200,
+              decoration: BoxDecoration(
+                  color: Color(0xFF05BE70),
+                  borderRadius: BorderRadius.all(Radius.circular(15)),
+                  boxShadow: [
+                    BoxShadow(
+                        spreadRadius: 0.5,
+                        blurRadius: 0.5,
+                        offset: Offset(0, 3),
+                        color: Colors.grey.withOpacity(0.4))
+                  ]),
+              child: Obx(() => Row(children: <Widget>[
+                    Padding(
+                        padding: EdgeInsets.all(45),
+                        child: homeScreenController.isBall.value
+                            ? Image.asset('images/ball_on.png')
+                            : Image.asset('images/ball_off.png')),
+                    homeScreenController.isBall.value
+                        ? Text(
+                            '공이 있어요',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
+                          )
+                        : Text(
+                            '공이 없어요',
+                            style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
+                          ),
+                  ])),
+            )));
   }
 }
 
 class MoveCheckCard extends StatelessWidget {
-  const MoveCheckCard({Key? key}) : super(key: key);
+  MoveCheckCard({Key? key}) : super(key: key);
+
+  final HomeScreenController homeScreenController =
+      Get.put(HomeScreenController());
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: 374,
-      height: 230,
-      decoration: BoxDecoration(
-          color: Color(0xFF049A5B),
-          borderRadius: BorderRadius.all(Radius.circular(15)),
-          boxShadow: [
-            BoxShadow(
-                spreadRadius: 0.5,
-                blurRadius: 0.5,
-                offset: Offset(0, 3),
-                color: Colors.grey.withOpacity(0.4))
-          ]),
-    );
+    return FractionallySizedBox(
+        widthFactor: 0.95,
+        child: Container(
+            height: 250,
+            decoration: BoxDecoration(
+                color: Color(0xFF05BE70),
+                borderRadius: BorderRadius.all(Radius.circular(15)),
+                boxShadow: [
+                  BoxShadow(
+                      spreadRadius: 0.5,
+                      blurRadius: 0.5,
+                      offset: Offset(0, 3),
+                      color: Colors.grey.withOpacity(0.4))
+                ]),
+            child: Padding(
+                padding: EdgeInsets.all(10),
+                child: BarChart(
+                  BarChartData(
+                      barGroups: homeScreenController.barChartList,
+                      borderData: FlBorderData(show: false),
+                      titlesData: FlTitlesData(
+                          show: true,
+                          leftTitles: SideTitles(showTitles: true),
+                          topTitles: SideTitles(showTitles: false),
+                          rightTitles: SideTitles(showTitles: false),
+                          bottomTitles: SideTitles(showTitles: false))),
+                ))));
   }
 }
 
@@ -354,6 +377,44 @@ class HomeScreenController extends GetxController {
   var ballText = '공이 있어요'.obs;
 
   String ip = 'ws://192.168.1.132';
+
+  var momentDataList = [
+    11,
+    22,
+    31,
+    41,
+    31,
+    21,
+    31,
+    41,
+    31,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    12,
+    18,
+    29,
+    10,
+    21,
+    22,
+    23,
+    24,
+  ].obs;
+  var barChartList = RxList<BarChartGroupData>();
+
+  getChartData() {
+    // barChartDataList에 값 넣기
+    this.momentDataList.forEach((element) {
+      barChartList.add(BarChartGroupData(x: 1, barRods: [
+        BarChartRodData(
+            y: element.toDouble(), width: 10, colors: [Colors.white])
+      ]));
+    });
+  }
 
   @override
   void onInit() {

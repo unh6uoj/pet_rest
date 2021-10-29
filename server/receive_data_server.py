@@ -39,10 +39,13 @@ class ServeData():
 
         return result
 
-    def accept(self):
-        while True:
-            server.get_loadcell_data()
-            time.sleep(1)
+
+def accept(websocket, path):
+    while True:
+        a = websocket.recv()
+        'AA'
+        server.get_loadcell_data()
+        time.sleep(1)
 
 
 server = ServeData()

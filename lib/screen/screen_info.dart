@@ -15,7 +15,7 @@ class InfoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Color(0xffE5E5E5),
-        appBar: AppBar(title: Text('홈'), backgroundColor: Color(0xff00AAA1)),
+        appBar: AppBar(title: Text('정보'), backgroundColor: Color(0xFF049A5B)),
         drawer: myDrawer,
         body: SingleChildScrollView(
             child: Column(children: <Widget>[

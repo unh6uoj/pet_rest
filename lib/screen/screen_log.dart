@@ -20,12 +20,9 @@ class LogScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final LogScreenController logScreenController =
-    //     Get.put(LogScreenController());
-
     return Scaffold(
         backgroundColor: Color(0xffE5E5E5),
-        appBar: AppBar(title: Text('홈'), backgroundColor: Color(0xff00AAA1)),
+        appBar: AppBar(title: Text('기록'), backgroundColor: Color(0xFF049A5B)),
         drawer: myDrawer,
         body: Column(children: <Widget>[
           CalendarArea(),
@@ -209,7 +206,7 @@ class HistoryBox extends StatelessWidget {
         padding: EdgeInsets.all(10),
         margin: EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
-            color: Colors.green[100],
+            color: Color(0xFF049A5B),
             borderRadius: BorderRadius.circular(15),
             boxShadow: [
               BoxShadow(

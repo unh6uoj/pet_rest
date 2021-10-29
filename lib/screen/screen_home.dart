@@ -1,7 +1,4 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:pet/main.dart';
 
 import 'dart:typed_data';
 
@@ -10,6 +7,7 @@ import 'package:pet/drawer.dart';
 
 // WebScoket
 import 'package:web_socket_channel/io.dart';
+import 'package:web_socket_channel/web_socket_channel.dart';
 
 // getx
 import 'package:get/get.dart';
@@ -25,13 +23,15 @@ class HomeScreen extends StatelessWidget {
   final HomeScreenController homeScreenController =
       Get.put(HomeScreenController());
 
-  HomeScreen({Key? key}) : super(key: key);
+  HomeScreen({Key? key}) : super(key: key) {
+    homeScreenController.dataWebSocketConnect();
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Color(0xffE5E5E5),
-        appBar: AppBar(title: Text('홈'), backgroundColor: Color(0xff00AAA1)),
+        appBar: AppBar(title: Text('홈'), backgroundColor: Color(0xFF049A5B)),
         drawer: myDrawer,
         body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -124,66 +124,6 @@ class VideoArea extends StatelessWidget {
   }
 }
 
-// class HomeDataCard extends StatelessWidget {
-//   HomeDataCard(
-//       {Key? key,
-//       required this.name,
-//       required this.isLinear,
-//       required this.sendFunc})
-//       : super(key: key);
-
-//   final String name;
-//   final bool isLinear;
-//   final sendFunc;
-
-//   final HomeScreenController homeScreenController =
-//       Get.put(HomeScreenController());
-
-//   @override
-//   Widget build(BuildContext context) {
-//     return Padding(
-//         padding: EdgeInsets.symmetric(vertical: 5),
-//         child: InkWell(
-//             onTap: () {
-//               homeScreenController.bottomSheetText.value =
-//                   '여기를 누르면 $name을 줄 수 있어요';
-//               Get.bottomSheet(
-//                   BottomSheetForSendData(name: name, sendFunc: sendFunc));
-//             },
-//             child: Container(
-//                 width: 180,
-//                 height: 250,
-//                 decoration: BoxDecoration(
-//                     color: Color(0xffF9FFFC),
-//                     borderRadius: BorderRadius.all(Radius.circular(15)),
-//                     boxShadow: [
-//                       BoxShadow(
-//                           spreadRadius: 0.5,
-//                           blurRadius: 0.5,
-//                           offset: Offset(0, 3),
-//                           color: Colors.grey.withOpacity(0.4))
-//                     ]),
-//                 child: Column(
-//                   // crossAxisAlignment: CrossAxisAlignment.start,
-//                   children: <Widget>[
-//                     Padding(
-//                         padding: EdgeInsets.all(5),
-//                         child: Text(
-//                           name,
-//                           textScaleFactor: 1.3,
-//                           style: TextStyle(fontWeight: FontWeight.bold),
-//                         )),
-//                     Obx(() => Text(
-//                         (homeScreenController.loadCellDataFood.value * 100)
-//                                 .toString() +
-//                             '%',
-//                         style: TextStyle(
-//                             fontSize: 26, fontWeight: FontWeight.bold))),
-//                   ],
-//                 ))));
-//   }
-// }
-
 class BottomSheetForSendData extends StatelessWidget {
   BottomSheetForSendData({Key? key, required this.name, required this.sendFunc})
       : super(key: key);
@@ -206,7 +146,7 @@ class BottomSheetForSendData extends StatelessWidget {
         child: Container(
             height: 120,
             decoration: BoxDecoration(
-                color: Colors.green.withOpacity(0.7),
+                color: Color(0xFF08D57F).withOpacity(0.5),
                 borderRadius: BorderRadius.all(Radius.circular(15))),
             child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -238,58 +178,59 @@ class WavePercent extends StatelessWidget {
   Widget build(BuildContext context) {
     return Stack(children: <Widget>[
       Container(
-          // Clip.hardEdge를 적용하면 child위젯이 Container크기에 맞춰서 가져짐
-          // overflow: hidden 과 비슷한듯
-          clipBehavior: Clip.hardEdge,
-          decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.all(Radius.circular(15))),
-          child: InkWell(
-              onTap: () {
-                homeScreenController.bottomSheetText.value =
-                    '여기를 누르면 $name을 줄 수 있어요';
-                Get.bottomSheet(
-                    BottomSheetForSendData(name: name, sendFunc: sendFunc));
-              },
-              child: WaveWidget(
-                config: name == '밥'
-                    ? CustomConfig(
-                        gradients: [
-                          [Color(0xffDFB796), Color(0xEEF44336)],
-                          [Color(0xffEEDFD3), Color(0x77E57373)],
-                          [Colors.orange, Color(0x66FF9800)],
-                          [Color(0xffE4DFB1), Color(0x55FFEB3B)]
-                        ],
-                        durations: [36000, 19000, 12000, 8000],
-                        heightPercentages: [
-                          0.86 - percent.value,
-                          0.87 - percent.value,
-                          0.88 - percent.value,
-                          0.89 - percent.value
-                        ],
-                        gradientBegin: Alignment.bottomLeft,
-                        gradientEnd: Alignment.topRight,
-                      )
-                    : CustomConfig(
-                        gradients: [
-                          [Color(0xffEDEDEF), Color(0xff6767FB)],
-                          [Color(0xffB6B6BC), Color(0xff0000FF)],
-                          [Color(0xffD8D8DF), Color(0xff4F4FA9)],
-                          [Color(0xffC2C2C7), Color(0xff4141E8)]
-                        ],
-                        durations: [33000, 17000, 12000, 5000],
-                        heightPercentages: [
-                          0.86 - percent.value,
-                          0.87 - percent.value,
-                          0.88 - percent.value,
-                          0.89 - percent.value
-                        ],
-                        gradientBegin: Alignment.bottomLeft,
-                        gradientEnd: Alignment.topRight,
-                      ),
-                waveAmplitude: 0,
-                size: Size(182, 250),
-              ))),
+        // Clip.hardEdge를 적용하면 child위젯이 Container크기에 맞춰서 가져짐
+        // overflow: hidden 과 비슷한듯
+        clipBehavior: Clip.hardEdge,
+        decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.all(Radius.circular(15))),
+        child: InkWell(
+            onTap: () {
+              homeScreenController.bottomSheetText.value =
+                  '여기를 누르면 $name을 줄 수 있어요';
+              Get.bottomSheet(
+                  BottomSheetForSendData(name: name, sendFunc: sendFunc));
+            },
+            child: WaveWidget(
+              config: name == '밥'
+                  ? CustomConfig(
+                      gradients: [
+                        [Color(0xffDFB796), Color(0xEEF44336)],
+                        [Color(0xffEEDFD3), Color(0x77E57373)],
+                        [Colors.orange, Color(0x66FF9800)],
+                        [Color(0xffE4DFB1), Color(0x55FFEB3B)]
+                      ],
+                      durations: [36000, 19000, 12000, 8000],
+                      heightPercentages: [
+                        0.86 - percent.value,
+                        0.87 - percent.value,
+                        0.88 - percent.value,
+                        0.89 - percent.value,
+                      ],
+                      gradientBegin: Alignment.bottomLeft,
+                      gradientEnd: Alignment.topRight,
+                    )
+                  : CustomConfig(
+                      gradients: [
+                        [Color(0xffEDEDEF), Color(0xff6767FB)],
+                        [Color(0xffB6B6BC), Color(0xff0000FF)],
+                        [Color(0xffD8D8DF), Color(0xff4F4FA9)],
+                        [Color(0xffC2C2C7), Color(0xff4141E8)]
+                      ],
+                      durations: [33000, 17000, 12000, 5000],
+                      heightPercentages: [
+                        0.86 - percent.value,
+                        0.87 - percent.value,
+                        0.88 - percent.value,
+                        0.89 - percent.value
+                      ],
+                      gradientBegin: Alignment.bottomLeft,
+                      gradientEnd: Alignment.topRight,
+                    ),
+              waveAmplitude: name == '밥' ? -5 : 5,
+              size: Size(182, 250),
+            )),
+      ),
       Container(
           width: 182,
           height: 250,
@@ -311,84 +252,13 @@ class WavePercent extends StatelessWidget {
   }
 }
 
-// 퍼센트 바
-// class PercentBar extends StatefulWidget {
-//   const PercentBar({Key? key, this.isLinear = true}) : super(key: key);
-
-//   final bool? isLinear;
-
-//   @override
-//   _PercentBarState createState() => _PercentBarState(this.isLinear as bool);
-// }
-
-// class _PercentBarState extends State<PercentBar> {
-//   // 데이터 전달받기
-//   final bool isLinear;
-
-//   _PercentBarState(this.isLinear);
-
-//   final HomeScreenController homeScreenController =
-//       Get.put(HomeScreenController());
-
-//   @override
-//   Widget build(BuildContext context) {
-//     // 최대 칼로리
-//     const double maxCalorie = 100;
-//     var foodData = homeScreenController.loadCellDataFood.value;
-//     // 선형/비선형 퍼센트 바 반환
-//     return this.isLinear
-//         // 선형 퍼센트 바
-//         ? Container(
-//             margin: EdgeInsets.symmetric(horizontal: 15.0),
-//             padding: EdgeInsets.all(5.0),
-//             child: LinearPercentIndicator(
-//               animation: true,
-//               animateFromLastPercent: true, // 이전 퍼센트에서 애니메이션 재생
-//               animationDuration: 1000,
-//               lineHeight: 5.0,
-//               percent: foodData,
-//               // center: Text((foodData * 100).toStringAsFixed(1).toString()),
-//               linearStrokeCap: LinearStrokeCap.roundAll,
-//               // progressColor: Colors.lightGreen[500]
-//               linearGradient: LinearGradient(
-//                   begin: const FractionalOffset(0.0, 0.0),
-//                   end: const FractionalOffset(1.0, 1.0),
-//                   colors: <Color>[
-//                     const Color(0xff72ed59),
-//                     const Color(0xff6ac65f),
-//                     const Color(0xff64a060),
-//                     const Color(0xff5d7b5d),
-//                     const Color(0xff565756),
-//                   ]),
-//             ))
-
-//         // 비선형(원형) 퍼센트 바
-//         : Container(
-//             margin: EdgeInsets.symmetric(vertical: 15.0),
-//             padding: EdgeInsets.all(5.0),
-//             child: CircularPercentIndicator(
-//                 animation: true,
-//                 animateFromLastPercent: true, // 이전 퍼센트에서 애니메이션 재생
-//                 animationDuration: 1000,
-//                 radius: 100.0,
-//                 lineWidth: 12.0,
-//                 backgroundColor: Colors.white70,
-//                 percent: foodData,
-//                 center: new Text((foodData * 100).toString() + '%',
-//                     style: new TextStyle(
-//                         fontWeight: FontWeight.bold, fontSize: 20.0)),
-//                 circularStrokeCap: CircularStrokeCap.round,
-//                 progressColor: Colors.lightGreen[700]));
-//   }
-// }
-
 class BallCard extends StatelessWidget {
   BallCard({Key? key, required this.sendFunc}) : super(key: key);
 
   final HomeScreenController homeScreenController =
       Get.put(HomeScreenController());
 
-  var sendFunc;
+  final sendFunc;
 
   @override
   Widget build(BuildContext context) {
@@ -404,7 +274,7 @@ class BallCard extends StatelessWidget {
           width: 374,
           height: 200,
           decoration: BoxDecoration(
-              color: Colors.blue,
+              color: Color(0xFF049A5B),
               borderRadius: BorderRadius.all(Radius.circular(15))),
           child: Obx(() => Row(children: <Widget>[
                 Padding(
@@ -415,11 +285,17 @@ class BallCard extends StatelessWidget {
                 homeScreenController.isBall.value
                     ? Text(
                         '공이 있어요',
-                        style: TextStyle(fontSize: 18),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
                       )
                     : Text(
                         '공이 없어요',
-                        style: TextStyle(fontSize: 18),
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
                       ),
               ])),
         ));
@@ -433,31 +309,55 @@ class MoveCheckCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       width: 374,
-      height: 200,
+      height: 230,
       decoration: BoxDecoration(
-          color: Colors.blue,
+          color: Color(0xFF049A5B),
           borderRadius: BorderRadius.all(Radius.circular(15))),
     );
   }
 }
 
 class HomeScreenController extends GetxController {
+  WebSocketChannel? dataChannel;
   var motorChannel;
   var videoChannel;
+
   var bottomSheetText = ''.obs;
 
   var isVideoOn = false.obs;
 
-  var loadCellDataFood = 0.85.obs;
-  var loadCellDataWater = 0.5.obs;
+  var loadCellDataFood = 0.0.obs;
+  var loadCellDataWater = 0.0.obs;
 
   var isBall = true.obs;
   var ballText = '공이 있어요'.obs;
 
   String ip = 'ws://192.168.1.132';
 
+  @override
+  void onInit() {
+    super.onInit();
+    dataChannel = IOWebSocketChannel.connect(ip + ':25001');
+  }
+
+  // 여기는 데이터
+  setData(double data) {
+    this.loadCellDataFood.value = data;
+  }
+
+  dataWebSocketConnect() async {
+    this.dataChannel = WebSocketChannel.connect(Uri.parse(ip + ':25001'));
+
+    print('done');
+    dataChannel!.sink.add('done');
+
+    dataChannel!.stream.listen((event) {
+      setData(double.parse(event));
+    });
+  }
+
   // 여기는 모터
-  Future<Rx<IOWebSocketChannel>> motorWebScoketConnect() async {
+  Future<Rx<IOWebSocketChannel>> motorWebSocketConnect() async {
     return IOWebSocketChannel.connect(ip + ':25001').obs;
   }
 
@@ -466,21 +366,21 @@ class HomeScreenController extends GetxController {
   }
 
   sendFood() async {
-    motorWebScoketConnect().then((value) => value.value.sink.add('food'));
+    motorWebSocketConnect().then((value) => value.value.sink.add('food'));
 
     DBHelper().createData(
         History(date: DBHelper().getCurDateTime(), activity: '밥주기'));
   }
 
   sendWater() async {
-    motorWebScoketConnect().then((value) => value.value.sink.add('water'));
+    motorWebSocketConnect().then((value) => value.value.sink.add('water'));
 
     DBHelper().createData(
         History(date: DBHelper().getCurDateTime(), activity: '물주기'));
   }
 
   sendBall() async {
-    motorWebScoketConnect().then((value) => value.value.sink.add('ball'));
+    motorWebSocketConnect().then((value) => value.value.sink.add('ball'));
 
     isBall.value = false;
 

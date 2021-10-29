@@ -18,26 +18,26 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    Firebase.initializeApp().whenComplete(() {
-      final FirebaseMessaging _firebaseMessasing = FirebaseMessaging.instance;
+    // Firebase.initializeApp().whenComplete(() {
+    //   final FirebaseMessaging _firebaseMessasing = FirebaseMessaging.instance;
 
-      _firebaseMessasing.getToken().then((value) => print(value));
-    });
+    //   _firebaseMessasing.getToken().then((value) => print(value));;
 
     return GetMaterialApp(
       title: 'Pet Station',
-      theme: ThemeData(primaryColor: Color(0xff00AAA1)),
+      theme: ThemeData(primaryColor: Color(0xFFFFFFFF)),
       home: DefaultTabController(
           length: 3,
           child: Scaffold(
+            backgroundColor: Color(0xFF049A5B),
             body: TabBarView(
               physics: NeverScrollableScrollPhysics(),
               children: [HomeScreen(), LogScreen(), InfoScreen()],
             ),
             bottomNavigationBar: TabBar(
                 indicatorWeight: 4,
-                labelColor: Color(0xff00AAA1),
-                indicatorColor: Color(0xff00AAA1),
+                labelColor: Color(0xFFFFFFFF),
+                indicatorColor: Color(0xFFFFFFFF),
                 tabs: [
                   Tab(
                     icon: Icon(Icons.home_outlined),
@@ -45,7 +45,7 @@ class MyApp extends StatelessWidget {
                   ),
                   Tab(
                     icon: Icon(Icons.list_alt),
-                    text: '로그',
+                    text: '기록',
                   ),
                   Tab(
                     icon: Icon(Icons.person_outline),

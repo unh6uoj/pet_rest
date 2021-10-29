@@ -110,6 +110,7 @@ class Audio():
 
         if output_data[0] > 0.0001:
             print("dog bark!!")
+            print(output_data)
             return True, detection_time
 
         return False, detection_time
@@ -125,5 +126,5 @@ def main():
     if audio.find_best_mic():
         audio.start_audio_queue()
 
-
-main()
+if __name__ == '__main__':
+    main()

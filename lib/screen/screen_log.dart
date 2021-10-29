@@ -94,25 +94,42 @@ class _CalendarAreaState extends State<CalendarArea> {
       formatAnimationDuration: Duration(milliseconds: 300),
 
       onDaySelected: (datetime1, datetime2) {
+        // 현재 선택된 날짜와 누른 날짜가 같을 때
         if (datetime1.toString().split(" ")[0] ==
-                logScreenController.curCalendarDate &&
-            !logScreenController.isMonthData.value) {
+            logScreenController.curCalendarDate) {
+          // 달 별 데이터 보여주기를 (not 달 별 데이터 보여주기)로 변경
+          logScreenController.isMonthData.value =
+              !logScreenController.isMonthData.value;
+
+          // 날짜 추출 [1]에는 시간 담김
           logScreenController.curCalendarDate =
               datetime1.toString().split(" ")[0];
-          logScreenController
-              .getDataByMonth(logScreenController.curCalendarDate)
-              .then((value) => logScreenController.setHistoryBox(value));
 
-          print('asdfsda');
+          // 현재 달 별 데이터일때
+          if (logScreenController.isMonthData.value) {
+            // 달 별 데이터 출력
+            logScreenController
+                .getDataByMonth(logScreenController.curCalendarDate)
+                .then((value) => logScreenController.setHistoryBox(value));
+            // 일 별 데이터 출력
+          } else {
+            logScreenController
+                .getDataByDay(logScreenController.curCalendarDate)
+                .then((value) => logScreenController.setHistoryBox(value));
+          }
         } else {
+          // 달 별 데이터 보여주기를 (not 달 별 데이터 보여주기)로 변경
+          logScreenController.isMonthData.value =
+              !logScreenController.isMonthData.value;
+
+          // 날짜 추출 [1]에는 시간 담김
           logScreenController.curCalendarDate =
               datetime1.toString().split(" ")[0];
 
+          // 일 별 데이터 출력
           logScreenController
               .getDataByDay(logScreenController.curCalendarDate)
               .then((value) => logScreenController.setHistoryBox(value));
-          logScreenController.isMonthData.value = false;
-          print('111122');
         }
       },
     );

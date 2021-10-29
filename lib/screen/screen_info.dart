@@ -1,12 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:pet/drawer.dart';
+import 'dart:io';
+import 'dart:async';
 
 // screen
 import 'route_setting.dart';
 import 'route_app_info.dart';
+import 'package:pet/drawer.dart';
 
 // getx
 import 'package:get/get.dart';
+
+// image_picker
+import 'package:image_picker/image_picker.dart';
 
 class InfoScreen extends StatelessWidget {
   const InfoScreen({Key? key}) : super(key: key);
@@ -19,10 +24,81 @@ class InfoScreen extends StatelessWidget {
         drawer: myDrawer,
         body: SingleChildScrollView(
             child: Column(children: <Widget>[
+          DogInfo(),
           ButtonForInfoScreen(name: '설정', screen: SettingScreen()),
           ButtonForInfoScreen(name: '공지사항', screen: AppInfoScreen()),
           ButtonForInfoScreen(name: '앱 정보', screen: AppInfoScreen()),
         ])));
+  }
+}
+
+class DogInfo extends StatelessWidget {
+  DogInfo({Key? key}) : super(key: key);
+
+  final InfoScreenController infoScreenController =
+      Get.put(InfoScreenController());
+
+  @override
+  Widget build(BuildContext context) {
+    return FractionallySizedBox(
+        widthFactor: 1,
+        child: Container(
+            height: 250,
+            decoration: BoxDecoration(
+              color: Colors.green,
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: <Widget>[
+                // 강아지 프로필 사진
+                Obx(() => InkWell(
+                    onTap: infoScreenController.getProfileImage,
+                    child: Container(
+                      width: 120,
+                      height: 120,
+                      clipBehavior: Clip.hardEdge,
+                      margin: EdgeInsets.all(25),
+                      decoration: BoxDecoration(
+                        color: Colors.white,
+                        shape: BoxShape.circle,
+                      ),
+                      child: infoScreenController.isImage.value
+                          ? ClipRRect(
+                              borderRadius: BorderRadius.circular(8.0),
+                              child: Image.file(
+                                File(infoScreenController
+                                    .profileImage.value.path),
+                                fit: BoxFit.fill,
+                              ))
+                          : null,
+                    ))),
+                SizedBox(
+                  width: 30,
+                ),
+                Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      '강아지 이름',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    Text(
+                      '강아지 나이',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    Text(
+                      '강아지 성별',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                    Text(
+                      '강아지 몸무게',
+                      style: TextStyle(fontSize: 20),
+                    ),
+                  ],
+                )
+              ],
+            )));
   }
 }
 
@@ -60,5 +136,17 @@ class ButtonForInfoScreen extends StatelessWidget {
             )),
       ),
     );
+  }
+}
+
+class InfoScreenController extends GetxController {
+  var isImage = false.obs;
+  var profileImage = XFile('images/peterest_logo.png').obs;
+
+  getProfileImage() async {
+    profileImage.value =
+        await ImagePicker().pickImage(source: ImageSource.gallery) as XFile;
+
+    isImage.value = true;
   }
 }

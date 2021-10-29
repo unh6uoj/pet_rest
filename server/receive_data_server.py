@@ -39,11 +39,21 @@ class ServeData():
             return True
         return False
 
+<<<<<<< HEAD
     def accept(self):
         while True:
             self.get_loadcell_data()
             self.get_laser_data()
             time.sleep(1)
+=======
+
+def accept(websocket, path):
+    while True:
+        a = websocket.recv()
+        'AA'
+        server.get_loadcell_data()
+        time.sleep(1)
+>>>>>>> 89dbceb2b5d7ac616611b3a4fec8293a9a7bacfc
 
 
 server = ServeData()

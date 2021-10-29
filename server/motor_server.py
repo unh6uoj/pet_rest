@@ -45,6 +45,11 @@ async def accept(websocket, path):
             ball_motor1.stop()
             ball_motor2.stop()
 
+        # 운동량 조회하기
+        else:
+            pass
+
+
 websoc_svr = websockets.serve(accept, "0.0.0.0", "25001")
 
 # waiting

@@ -3,7 +3,6 @@ import asyncio
 import websockets
 import board
 import busio
-import RPi.GPIO as GPIO
 import adafruit_vl53l0x
 from hx711 import HX711
 import numpy as np
@@ -13,6 +12,7 @@ try:
 except:
     import tensorflow.lite as tflite
 import cv2
+import csv    
 
 
 # 동영상 설정
@@ -35,9 +35,13 @@ class ImageData():
         self.input_details = self.model.get_input_details()
         self.output_details = self.model.get_output_details()
 
+        self.before_time = 0
+        self.before_points = []
+
     def get_points(self):
         _, frame = self.cap.read()
         cv2.imwrite('./data/video.jpg', frame)
+        self.before_time = time.time()
         img_tensor = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
 
         origin_h, origin_w, _ = frame.shape
@@ -62,11 +66,9 @@ class ImageData():
 
         # 객체 개수만큼 반복
         for i in range(int(count)):
-            # 정확도가 지정한 범위 안에 있을 때
             if (scores[i] > CONFIDENCE_THRESHOLD) and (int(classes[i]) == 17):
                 if scores[i] > best_confidence:
                     best_confidence = scores[i]
-                    # 객체 테두리 좌표 저장(텐서플로우 이미지용 좌표를 원본 이미지용 좌표로 변환)
                     y_min = str(int(max(1, (boxes[i][0] * origin_h))))
                     x_min = str(int(max(1, (boxes[i][1] * origin_w))))
                     y_max = str(int(min(origin_h, (boxes[i][2] * origin_h))))
@@ -75,7 +77,20 @@ class ImageData():
 
                     result = [x_min, y_min, x_max, y_max]
 
+        self.before_points = result
         return result
+
+    def save_momentum(self):
+        curr_date = time.strftime('%Y-%m-%d', time.localtime(time.time()))
+        try:
+            file = open('./data/' + str(curr_date) + '.csv', 'r', encoding='utf-8')
+            csv_file = csv.reader(file)
+
+        except:
+            file = open('./data/' + str(curr_date) + '.csv', 'w', encoding='utf-8', newline='')
+            csv_file = csv.writer(file)
+        csv_file.writerow()
+        file.close()
 
 
 class ServeData():
@@ -83,6 +98,8 @@ class ServeData():
         # loadcell 초기 설정
         self.food_loadcell = HX711(5, 6)
         self.water_loadcell = HX711(7, 8)
+        self.zero_weight = -40000       # 빈 통 무게
+        self.max_weight = 2180000
 
         # 레이저 초기 설정
         i2c = busio.I2C(board.SCL, board.SDA)
@@ -92,38 +109,40 @@ class ServeData():
 
     def get_loadcell_data(self):
         try:
-            food_amount = self.food_loadcell.get_raw_data(1)[0]
-            water_amount = self.water_loadcell.get_raw_data(1)[0]
+            food_amount = self.food_loadcell.get_raw_data(5)[0]
+            water_amount = self.water_loadcell.get_raw_data(5)[0]
+        except:
+            print("err!!!")
 
-        finally:
-            GPIO.cleanup()
+        food_amount = round((food_amount - self.zero_weight) /
+                            float(self.max_weight - self.zero_weight), 3)
+        water_amount = round((water_amount - self.zero_weight) /
+                             float(self.max_weight - self.zero_weight), 3)
 
-        # ##### 보정하기
-
-        return food_amount, water_amount
+        return food_amount, water_amount    # 0~1 사이의 실수
 
     def get_laser_data(self):
         distance = self.ball_sensor.range / 10
 
-        # ######################보정 계수 적용할 것
-
-        if distance < 1:
-            return True
-        return False
+        if distance < 3.0:
+            return True     # 공 있다
+        return False        # 공 없다
 
     def get_momentum(self):
         return self.img_data.get_points()
 
-def accept(websocket, path):
+
+async def accept(websocket, path):
+    server = ServeData()
     while True:
-        a = websocket.recv()
-        server.get_loadcell_data()
-        time.sleep(1)
+        food_amount, water_amount = server.get_loadcell_data()
+        ball = server.get_laser_data()
+        send_data = [str(food_amount), str(water_amount), str(ball)]
+
+        await websocket.send(send_data)
 
 
-server = ServeData()
-
-websoc_svr = websockets.serve(server.accept, "0.0.0.0", "25002")
+websoc_svr = websockets.serve(accept, "0.0.0.0", "25002")
 
 # waiting
 asyncio.get_event_loop().run_until_complete(websoc_svr)

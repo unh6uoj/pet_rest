@@ -16,7 +16,10 @@ async def accept(websocket, path):
             if data_rcv == 'off':
                 break
 
-            video = cv2.imread('./data/video.jpg')
+            try:
+                video = cv2.imread('./data/video.jpg')
+            except:
+                continue
 
             encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 60]
             encoded_frame = cv2.imencode(

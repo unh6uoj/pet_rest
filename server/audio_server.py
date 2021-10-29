@@ -125,5 +125,5 @@ def main():
     if audio.find_best_mic():
         audio.start_audio_queue()
 
-
-main()
+if __name__ == '__main__':
+    main()

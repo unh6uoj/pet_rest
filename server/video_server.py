@@ -73,10 +73,10 @@ async def accept(websocket, path):
                 # 정확도가 지정한 범위 안에 있을 때
                 if (scores[i] > CONFIDENCE_THRESHOLD) and int(classes[i]) == 17:
                     # 객체 테두리 좌표 저장(텐서플로우 이미지용 좌표를 원본 이미지용 좌표로 변환)
-                    y_min = int(max(1, (boxes[i][0] * origin_h)))
-                    x_min = int(max(1, (boxes[i][1] * origin_w)))
-                    y_max = int(min(origin_h, (boxes[i][2] * origin_h)))
-                    x_max = int(min(origin_w, (boxes[i][3] * origin_w)))
+                    y_min = str(int(max(1, (boxes[i][0] * origin_h))))
+                    x_min = str(int(max(1, (boxes[i][1] * origin_w))))
+                    y_max = str(int(min(origin_h, (boxes[i][2] * origin_h))))
+                    x_max = str(int(min(origin_w, (boxes[i][3] * origin_w))))
                     print("detection rate : " + str(scores[i]))
 
                     # 탐지 결과 리스트에 추가
@@ -86,7 +86,7 @@ async def accept(websocket, path):
             encoded_frame = cv2.imencode(
                 '.jpg', frame, encode_param)[1].tobytes()
 
-            await websocket.send(encoded_frame)
+            await websocket.send([encoded_frame, result])
 
 websoc_svr = websockets.serve(accept, "0.0.0.0", "25005")
 

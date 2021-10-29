@@ -2,24 +2,15 @@ from gpiozero import Servo, Motor
 import time
 import asyncio
 import websockets
-from hx711 import HX711
 
 
 async def accept(websocket, path):
-    print("Motor init")
-
-    # Motor Pins
+    # Motor 초기 설정
     food_motor = Motor(20, 16)
     water_servo = Servo(17)
     ball_motor1 = Motor(1, 2)
     ball_motor2 = Motor(3, 4)
     ball_servo = Servo(5)
-
-    print("Loadcell init")
-
-    # Loadcell Pins
-    food_loadcell = HX711(5, 6)
-    water_loadcell = HX711(7, 8)
 
     while True:
         try:
@@ -29,26 +20,21 @@ async def accept(websocket, path):
         except:
             print('error')
 
+        # 밥 주기
         if data_rcv == "food":
             food_motor.forward()
             time.sleep(2)
             food_motor.stop()
 
-            food_amount = food_loadcell.get_raw_data(1)[0]
-            print(food_amount)
-            await websocket.send(food_amount)
-
+        # 물 주기
         elif data_rcv == "water":
             water_servo.value = 0.6
             time.sleep(1)
             water_servo.value = -0.2
             time.sleep(1)
 
-            water_amount = water_loadcell.get_raw_data(1)[0]
-            print(water_amount)
-            await websocket.send(water_amount)
-
-        elif data_rcv == "ball":        # 테스트 해봐야 함...
+        # 공 던지기
+        elif data_rcv == "ball":
             ball_motor1.forward()
             ball_motor2.backward()
             time.sleep(1)

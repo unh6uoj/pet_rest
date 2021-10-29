@@ -110,6 +110,7 @@ class Audio():
 
         if output_data[0] > 0.0001:
             print("dog bark!!")
+            print(output_data)
             return True, detection_time
 
         return False, detection_time

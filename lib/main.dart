@@ -18,11 +18,6 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    // Firebase.initializeApp().whenComplete(() {
-    //   final FirebaseMessaging _firebaseMessasing = FirebaseMessaging.instance;
-
-    //   _firebaseMessasing.getToken().then((value) => print(value));;
-
     return GetMaterialApp(
       title: 'Pet Station',
       theme: ThemeData(primaryColor: Color(0xFFFFFFFF)),

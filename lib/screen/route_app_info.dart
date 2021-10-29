@@ -6,10 +6,7 @@ class AppInfoScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('앱 정보'),
-        backgroundColor: Colors.green[500],
-      ),
+      appBar: AppBar(title: Text('앱 정보'), backgroundColor: Color(0xFF049A5B)),
       body: SizedBox(),
     );
   }

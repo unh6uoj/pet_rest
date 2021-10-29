@@ -183,7 +183,14 @@ class WavePercent extends StatelessWidget {
         clipBehavior: Clip.hardEdge,
         decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.all(Radius.circular(15))),
+            borderRadius: BorderRadius.all(Radius.circular(15)),
+            boxShadow: [
+              BoxShadow(
+                  spreadRadius: 0.5,
+                  blurRadius: 0.5,
+                  offset: Offset(0, 3),
+                  color: Colors.grey.withOpacity(0.4))
+            ]),
         child: InkWell(
             onTap: () {
               homeScreenController.bottomSheetText.value =
@@ -275,7 +282,14 @@ class BallCard extends StatelessWidget {
           height: 200,
           decoration: BoxDecoration(
               color: Color(0xFF049A5B),
-              borderRadius: BorderRadius.all(Radius.circular(15))),
+              borderRadius: BorderRadius.all(Radius.circular(15)),
+              boxShadow: [
+                BoxShadow(
+                    spreadRadius: 0.5,
+                    blurRadius: 0.5,
+                    offset: Offset(0, 3),
+                    color: Colors.grey.withOpacity(0.4))
+              ]),
           child: Obx(() => Row(children: <Widget>[
                 Padding(
                     padding: EdgeInsets.all(45),
@@ -312,7 +326,14 @@ class MoveCheckCard extends StatelessWidget {
       height: 230,
       decoration: BoxDecoration(
           color: Color(0xFF049A5B),
-          borderRadius: BorderRadius.all(Radius.circular(15))),
+          borderRadius: BorderRadius.all(Radius.circular(15)),
+          boxShadow: [
+            BoxShadow(
+                spreadRadius: 0.5,
+                blurRadius: 0.5,
+                offset: Offset(0, 3),
+                color: Colors.grey.withOpacity(0.4))
+          ]),
     );
   }
 }

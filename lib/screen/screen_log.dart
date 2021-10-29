@@ -37,161 +37,95 @@ class LogScreen extends StatelessWidget {
   }
 }
 
-class CalendarArea extends StatefulWidget {
-  const CalendarArea({Key? key}) : super(key: key);
-
-  @override
-  _CalendarAreaState createState() => _CalendarAreaState();
-}
-
-class _CalendarAreaState extends State<CalendarArea> {
-  CalendarFormat _calendarFormat = CalendarFormat.month;
-
-  @override
-  void initState() {
-    // 한글 달력 출력을 위한 함수
+class CalendarArea extends StatelessWidget {
+  CalendarArea({Key? key}) : super(key: key) {
     initializeDateFormatting();
-    super.initState();
   }
 
+  final LogScreenController logScreenController =
+      Get.put(LogScreenController());
   @override
   Widget build(BuildContext context) {
-    final LogScreenController logScreenController =
-        Get.put(LogScreenController());
+    return Obx(() => TableCalendar(
+          // 한글
+          locale: 'ko-KR',
+          // calendar 날짜 정의
+          firstDay: DateTime.utc(2010, 10, 16),
+          lastDay: DateTime.utc(2030, 3, 14),
+          focusedDay: DateTime.now(),
 
-    return TableCalendar(
-      calendarStyle:
-          CalendarStyle(holidayTextStyle: const TextStyle(color: Colors.red)),
-      // 한글
-      locale: 'ko-KR',
-      // calendar 날짜 정의
-      firstDay: DateTime.utc(2010, 10, 16),
-      lastDay: DateTime.utc(2030, 3, 14),
-      focusedDay: DateTime.now(),
-      // calendar format 정의
-      calendarFormat: _calendarFormat,
-      availableCalendarFormats: const {
-        CalendarFormat.month: '한달',
-        CalendarFormat.twoWeeks: '2주',
-      },
-      // calendar format 변경 시 setState
-      onFormatChanged: (format) {
-        setState(() {
-          _calendarFormat = format;
-        });
-      },
-      onPageChanged: (datetime) {
-        logScreenController.curCalendarDate = datetime.toString().split(".")[0];
+          calendarStyle: CalendarStyle(
+              selectedDecoration: BoxDecoration(color: Colors.red)),
 
-        logScreenController
-            .getDataByMonth(logScreenController.curCalendarDate)
-            .then((value) {
-          logScreenController.setHistoryBox(value);
-        });
-      },
-      // foramt변경 animation
-      formatAnimationCurve: Curves.easeInOutCirc,
-      formatAnimationDuration: Duration(milliseconds: 300),
+          // calendar format 정의
+          calendarFormat: logScreenController._calendarFormat.value,
+          availableCalendarFormats: const {
+            CalendarFormat.month: '한달',
+            CalendarFormat.twoWeeks: '2주',
+          },
+          // calendar format 변경 시 setState
+          onFormatChanged: (format) {
+            logScreenController._calendarFormat.value = format;
+          },
+          onPageChanged: (datetime) {
+            logScreenController.curCalendarDate.value =
+                datetime.toString().split(".")[0];
 
-      onDaySelected: (datetime1, datetime2) {
-        // 현재 선택된 날짜와 누른 날짜가 같을 때
-        if (datetime1.toString().split(" ")[0] ==
-            logScreenController.curCalendarDate) {
-          // 달 별 데이터 보여주기를 (not 달 별 데이터 보여주기)로 변경
-          logScreenController.isMonthData.value =
-              !logScreenController.isMonthData.value;
-
-          // 날짜 추출 [1]에는 시간 담김
-          logScreenController.curCalendarDate =
-              datetime1.toString().split(" ")[0];
-
-          // 현재 달 별 데이터일때
-          if (logScreenController.isMonthData.value) {
-            // 달 별 데이터 출력
             logScreenController
                 .getDataByMonth(logScreenController.curCalendarDate)
-                .then((value) => logScreenController.setHistoryBox(value));
-            // 일 별 데이터 출력
-          } else {
-            logScreenController
-                .getDataByDay(logScreenController.curCalendarDate)
-                .then((value) => logScreenController.setHistoryBox(value));
-          }
-        } else {
-          // 달 별 데이터 보여주기를 (not 달 별 데이터 보여주기)로 변경
-          logScreenController.isMonthData.value =
-              !logScreenController.isMonthData.value;
+                .then((value) {
+              logScreenController.setHistoryBox(value);
+            });
+          },
+          // foramt변경 animation
+          formatAnimationCurve: Curves.easeInOutCirc,
+          formatAnimationDuration: Duration(milliseconds: 300),
 
-          // 날짜 추출 [1]에는 시간 담김
-          logScreenController.curCalendarDate =
-              datetime1.toString().split(" ")[0];
+          selectedDayPredicate: (day) =>
+              isSameDay(day, logScreenController._selectedDay.value),
 
-          // 일 별 데이터 출력
-          logScreenController
-              .getDataByDay(logScreenController.curCalendarDate)
-              .then((value) => logScreenController.setHistoryBox(value));
-        }
-      },
-    );
-  }
-}
+          onDaySelected: (selectedDay, focusedDay) {
+            logScreenController._selectedDay.value = selectedDay;
 
-class SelectHistoryBtns extends StatelessWidget {
-  const SelectHistoryBtns({Key? key}) : super(key: key);
+            // 현재 선택된 날짜와 누른 날짜가 같을 때
+            if (selectedDay.toString().split(" ")[0] ==
+                logScreenController.curCalendarDate.value) {
+              // 달 별 데이터 보여주기를 (not 달 별 데이터 보여주기)로 변경
+              logScreenController.isMonthData.value =
+                  !logScreenController.isMonthData.value;
 
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-        child:
-            Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-      InkWell(
-          onTap: () {},
-          child: Container(
-              width: 100,
-              height: 45,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                        spreadRadius: 1,
-                        blurRadius: 2,
-                        color: Colors.grey.withOpacity(0.5))
-                  ],
-                  borderRadius: BorderRadius.all(Radius.circular(10))),
-              child: Center(child: Text('밥')))),
-      SizedBox(width: 15),
-      InkWell(
-          onTap: () {},
-          child: Container(
-              width: 100,
-              height: 45,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                        spreadRadius: 1,
-                        blurRadius: 2,
-                        color: Colors.grey.withOpacity(0.5))
-                  ],
-                  borderRadius: BorderRadius.all(Radius.circular(10))),
-              child: Center(child: Text('물')))),
-      SizedBox(width: 15),
-      InkWell(
-          onTap: () {},
-          child: Container(
-              width: 100,
-              height: 45,
-              decoration: BoxDecoration(
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                        spreadRadius: 1,
-                        blurRadius: 2,
-                        color: Colors.grey.withOpacity(0.5))
-                  ],
-                  borderRadius: BorderRadius.all(Radius.circular(10))),
-              child: Center(child: Text('공'))))
-    ]));
+              // 날짜 추출 [1]에는 시간 담김
+              logScreenController.curCalendarDate.value =
+                  selectedDay.toString().split(" ")[0];
+
+              // 현재 달 별 데이터일때
+              if (logScreenController.isMonthData.value) {
+                // 달 별 데이터 출력
+                logScreenController
+                    .getDataByMonth(logScreenController.curCalendarDate.value)
+                    .then((value) => logScreenController.setHistoryBox(value));
+                // 일 별 데이터 출력
+              } else {
+                logScreenController
+                    .getDataByDay(logScreenController.curCalendarDate.value)
+                    .then((value) => logScreenController.setHistoryBox(value));
+              }
+            } else {
+              // 달 별 데이터 보여주기를 (not 달 별 데이터 보여주기)로 변경
+              logScreenController.isMonthData.value =
+                  !logScreenController.isMonthData.value;
+
+              // 날짜 추출 [1]에는 시간 담김
+              logScreenController.curCalendarDate.value =
+                  selectedDay.toString().split(" ")[0];
+
+              // 일 별 데이터 출력
+              logScreenController
+                  .getDataByDay(logScreenController.curCalendarDate.value)
+                  .then((value) => logScreenController.setHistoryBox(value));
+            }
+          },
+        ));
   }
 }
 
@@ -237,10 +171,13 @@ class HistoryBox extends StatelessWidget {
 }
 
 class LogScreenController extends GetxController {
-  var curCalendarDate = DateTime.now().toString().split(" ")[0];
+  var curCalendarDate = DateTime.now().toString().split(" ")[0].obs;
   var resultBoxes = <HistoryBox>[].obs;
 
   var isMonthData = true.obs;
+
+  var _calendarFormat = CalendarFormat.month.obs;
+  var _selectedDay = DateTime.now().obs;
 
   // 모든 데이터 가져오기
   Future<List<History>> getAllData() {

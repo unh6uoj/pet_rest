@@ -7,8 +7,8 @@ class SettingScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        backgroundColor: Color(0xFF049A5B),
         title: Text('설정'),
-        backgroundColor: Colors.green[500],
       ),
       body: SizedBox(),
     );

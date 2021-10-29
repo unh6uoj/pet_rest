@@ -46,7 +46,7 @@ class DogInfo extends StatelessWidget {
             height: 250,
             decoration: BoxDecoration(
               color: Colors.green,
-              borderRadius: BorderRadius.vertical(bottom: Radius.circular(15)),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.start,
@@ -55,8 +55,8 @@ class DogInfo extends StatelessWidget {
                 Obx(() => InkWell(
                     onTap: infoScreenController.getProfileImage,
                     child: Container(
-                      width: 120,
-                      height: 120,
+                      width: 135,
+                      height: 135,
                       clipBehavior: Clip.hardEdge,
                       margin: EdgeInsets.all(25),
                       decoration: BoxDecoration(

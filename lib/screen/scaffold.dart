@@ -48,3 +48,7 @@ Drawer myDrawer = Drawer(
 void _launchURL(_url) async {
   await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
 }
+
+myAppBar(title) {
+  return AppBar(title: Text(title), backgroundColor: Color(0xFF049A5B));
+}

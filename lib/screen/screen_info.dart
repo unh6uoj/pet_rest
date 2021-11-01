@@ -5,7 +5,7 @@ import 'dart:async';
 // screen
 import 'route_setting.dart';
 import 'route_app_info.dart';
-import 'package:pet/drawer.dart';
+import 'package:pet/screen/scaffold.dart';
 
 // getx
 import 'package:get/get.dart';
@@ -20,7 +20,7 @@ class InfoScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Color(0xffE5E5E5),
-        appBar: AppBar(title: Text('정보'), backgroundColor: Color(0xFF049A5B)),
+        appBar: myAppBar('정보'),
         drawer: myDrawer,
         body: SingleChildScrollView(
             child: Column(children: <Widget>[
@@ -45,7 +45,7 @@ class DogInfo extends StatelessWidget {
         child: Container(
             height: 250,
             decoration: BoxDecoration(
-              color: Colors.green,
+              color: Color(0xFF05BE70),
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
             ),
             child: Row(

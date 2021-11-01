@@ -4,8 +4,8 @@ import 'package:flutter/material.dart';
 
 import 'dart:typed_data';
 
-// drawer
-import 'package:pet/drawer.dart';
+// drawer, appbar
+import 'package:pet/screen/scaffold.dart';
 
 // WebScoket
 import 'package:web_socket_channel/io.dart';
@@ -29,7 +29,6 @@ class HomeScreen extends StatelessWidget {
       Get.put(HomeScreenController());
 
   HomeScreen({Key? key}) : super(key: key) {
-    homeScreenController.dataWebSocketConnect();
     homeScreenController.getChartData();
   }
 
@@ -37,7 +36,7 @@ class HomeScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         backgroundColor: Color(0xffE5E5E5),
-        appBar: AppBar(title: Text('홈'), backgroundColor: Color(0xFF049A5B)),
+        appBar: myAppBar('홈'),
         drawer: myDrawer,
         body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
@@ -279,11 +278,16 @@ class BallCard extends StatelessWidget {
         widthFactor: 0.95,
         child: InkWell(
             onTap: () {
-              homeScreenController.bottomSheetText.value = '공 날리기';
+              homeScreenController.bottomSheetText.value =
+                  '여기를 누르면 공을 날릴 수 있어요';
+
               homeScreenController.isBall.value
                   ? Get.bottomSheet(
                       BottomSheetForSendData(name: '공', sendFunc: sendFunc))
-                  : null;
+                  : Get.snackbar('공이 없어요', 'pet station에 공을 넣어주세요',
+                      snackPosition: SnackPosition.BOTTOM,
+                      colorText: Colors.white,
+                      backgroundColor: Color(0xFF05BE70));
             },
             child: Container(
               height: 200,
@@ -351,6 +355,22 @@ class MoveCheckCard extends StatelessWidget {
                   BarChartData(
                       barGroups: homeScreenController.barChartList,
                       borderData: FlBorderData(show: false),
+                      barTouchData: BarTouchData(touchTooltipData:
+                          BarTouchTooltipData(getTooltipItem:
+                              (group, groupIndex, rod, rodIndex) {
+                        String hour;
+                        hour = (group.x.toInt() + 1).toString() + '시';
+
+                        return BarTooltipItem(
+                            hour + '\n',
+                            const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18),
+                            children: <TextSpan>[
+                              TextSpan(text: (rod.y).toString())
+                            ]);
+                      })),
                       titlesData: FlTitlesData(
                           show: true,
                           leftTitles: SideTitles(showTitles: true),
@@ -407,11 +427,12 @@ class HomeScreenController extends GetxController {
   var barChartList = RxList<BarChartGroupData>();
 
   getChartData() {
+    barChartList.clear();
+
     // barChartDataList에 값 넣기
-    this.momentDataList.forEach((element) {
-      barChartList.add(BarChartGroupData(x: 1, barRods: [
-        BarChartRodData(
-            y: element.toDouble(), width: 10, colors: [Colors.white])
+    this.momentDataList.asMap().forEach((key, value) {
+      barChartList.add(BarChartGroupData(x: key - 1, barRods: [
+        BarChartRodData(y: value.toDouble(), width: 10, colors: [Colors.white])
       ]));
     });
   }

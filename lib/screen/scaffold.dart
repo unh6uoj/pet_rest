@@ -49,6 +49,21 @@ void _launchURL(_url) async {
   await canLaunch(_url) ? await launch(_url) : throw 'Could not launch $_url';
 }
 
-myAppBar(title) {
-  return AppBar(title: Text(title), backgroundColor: Color(0xFF049A5B));
+class MyPage extends StatelessWidget {
+  MyPage(
+      {Key? key, required this.title, this.isDrawer = true, required this.body})
+      : super(key: key);
+
+  final String title;
+  final Widget body;
+  bool isDrawer;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        backgroundColor: Color(0xFFF0F0F0),
+        appBar: AppBar(title: Text(title), backgroundColor: Color(0xFF049A5B)),
+        drawer: isDrawer ? myDrawer : null,
+        body: body);
+  }
 }

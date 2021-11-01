@@ -1,10 +1,8 @@
-import 'dart:ffi';
-
 import 'package:flutter/material.dart';
 
 import 'dart:typed_data';
 
-// drawer, appbar
+// 페이지 공통
 import 'package:pet/screen/scaffold.dart';
 
 // WebScoket
@@ -34,10 +32,8 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Color(0xffE5E5E5),
-        appBar: myAppBar('홈'),
-        drawer: myDrawer,
+    return MyPage(
+        title: '홈',
         body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: Column(

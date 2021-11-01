@@ -6,6 +6,7 @@ import 'dart:async';
 import 'route_setting.dart';
 import 'route_app_info.dart';
 import 'package:pet/screen/scaffold.dart';
+import 'package:pet/regist_dog/name_regist.dart';
 
 // getx
 import 'package:get/get.dart';
@@ -14,14 +15,15 @@ import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
 
 class InfoScreen extends StatelessWidget {
-  const InfoScreen({Key? key}) : super(key: key);
+  final InfoScreenController infoScreenController =
+      Get.put(InfoScreenController());
+
+  InfoScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Color(0xffE5E5E5),
-        appBar: myAppBar('정보'),
-        drawer: myDrawer,
+    return MyPage(
+        title: '정보',
         body: SingleChildScrollView(
             child: Column(children: <Widget>[
           DogInfo(),
@@ -48,57 +50,72 @@ class DogInfo extends StatelessWidget {
               color: Color(0xFF05BE70),
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
             ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: <Widget>[
-                // 강아지 프로필 사진
-                Obx(() => InkWell(
-                    onTap: infoScreenController.getProfileImage,
-                    child: Container(
-                      width: 135,
-                      height: 135,
-                      clipBehavior: Clip.hardEdge,
-                      margin: EdgeInsets.all(25),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
+            child: infoScreenController.isDoggie.value
+                ? Row(
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: <Widget>[
+                      // 강아지 프로필 사진
+                      Obx(() => InkWell(
+                          onTap: infoScreenController.getProfileImage,
+                          child: Container(
+                            width: 135,
+                            height: 135,
+                            clipBehavior: Clip.hardEdge,
+                            margin: EdgeInsets.all(25),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              shape: BoxShape.circle,
+                            ),
+                            child: infoScreenController.isImage.value
+                                ? ClipRRect(
+                                    borderRadius: BorderRadius.circular(8.0),
+                                    child: Image.file(
+                                      File(infoScreenController
+                                          .profileImage.value.path),
+                                      fit: BoxFit.fill,
+                                    ))
+                                : null,
+                          ))),
+                      SizedBox(
+                        width: 30,
                       ),
-                      child: infoScreenController.isImage.value
-                          ? ClipRRect(
-                              borderRadius: BorderRadius.circular(8.0),
-                              child: Image.file(
-                                File(infoScreenController
-                                    .profileImage.value.path),
-                                fit: BoxFit.fill,
-                              ))
-                          : null,
-                    ))),
-                SizedBox(
-                  width: 30,
-                ),
-                Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text(
-                      '강아지 이름',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    Text(
-                      '강아지 나이',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    Text(
-                      '강아지 성별',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                    Text(
-                      '강아지 몸무게',
-                      style: TextStyle(fontSize: 20),
-                    ),
-                  ],
-                )
-              ],
-            )));
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: <Widget>[
+                          Text(
+                            '강아지 이름',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          Text(
+                            '강아지 나이',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          Text(
+                            '강아지 성별',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                          Text(
+                            '강아지 몸무게',
+                            style: TextStyle(fontSize: 20),
+                          ),
+                        ],
+                      )
+                    ],
+                  )
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                        Text(
+                          '강아지 정보를 등록 해보세요',
+                          style: TextStyle(fontSize: 20),
+                        ),
+                        SizedBox(height: 20),
+                        ElevatedButton(
+                            onPressed: () => Get.to(NameRegist()),
+                            style: ElevatedButton.styleFrom(
+                                primary: Color(0xFF049A5B)),
+                            child: Text('강아지 등록하러 가기'))
+                      ])));
   }
 }
 
@@ -141,6 +158,8 @@ class ButtonForInfoScreen extends StatelessWidget {
 
 class InfoScreenController extends GetxController {
   var isImage = false.obs;
+  var isDoggie = false.obs;
+
   var profileImage = XFile('images/peterest_logo.png').obs;
 
   getProfileImage() async {

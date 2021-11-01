@@ -20,10 +20,8 @@ class LogScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        backgroundColor: Color(0xffE5E5E5),
-        appBar: myAppBar('기록'),
-        drawer: myDrawer,
+    return MyPage(
+        title: '기록',
         body: Column(children: <Widget>[
           CalendarArea(),
           // SelectHistoryBtns(),
@@ -55,7 +53,9 @@ class CalendarArea extends StatelessWidget {
         focusedDay: logScreenController._focusedDay.value,
         calendarStyle: CalendarStyle(
             selectedTextStyle: TextStyle(),
-            selectedDecoration: logScreenController.isMonthData.value
+            selectedDecoration: logScreenController.isMonthData.value &&
+                    !isSameDay(
+                        logScreenController._focusedDay.value, DateTime.now())
                 ? BoxDecoration(
                     color: Colors.white.withOpacity(0), shape: BoxShape.circle)
                 : BoxDecoration(color: Colors.green, shape: BoxShape.circle)),

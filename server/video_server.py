@@ -18,12 +18,11 @@ async def accept(websocket, path):
 
             try:
                 video = cv2.imread('./data/video.jpg')
+                encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 60]
+                encoded_frame = cv2.imencode(
+                    '.jpg', video, encode_param)[1].tobytes()
             except:
                 continue
-
-            encode_param = [int(cv2.IMWRITE_JPEG_QUALITY), 60]
-            encoded_frame = cv2.imencode(
-                '.jpg', video, encode_param)[1].tobytes()
 
             await websocket.send(encoded_frame)
 

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:io';
 
 import 'package:pet/regist_dog/progress_dot.dart';
-import '../main.dart';
+import 'package:pet/main.dart';
 // 페이지 공통
 import 'package:pet/screen/scaffold.dart';
 
@@ -100,7 +100,7 @@ class ProfileImageRegist extends StatelessWidget {
                                 'dogProfile',
                                 profileImageScreenController
                                     .profileImage.value);
-                            Get.offAll(MyApp());
+                            Get.toNamed('/HomeScreen');
                           },
                           textCancel: '취소'),
                       style:

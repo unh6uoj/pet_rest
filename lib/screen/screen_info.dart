@@ -117,7 +117,7 @@ class DogInfo extends StatelessWidget {
                         ),
                         SizedBox(height: 20),
                         ElevatedButton(
-                            onPressed: () => Get.offAll(NameRegist()),
+                            onPressed: () => Get.to(NameRegist()),
                             style: ElevatedButton.styleFrom(
                                 primary: Color(0xFF049A5B)),
                             child: Text('강아지 등록하러 가기'))

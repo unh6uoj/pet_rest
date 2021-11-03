@@ -32,9 +32,9 @@ class InfoScreen extends StatelessWidget {
         body: SingleChildScrollView(
             child: Column(children: <Widget>[
           DogInfo(),
-          ButtonForInfoScreen(name: '설정', screen: SettingScreen()),
           ButtonForInfoScreen(name: '공지사항', screen: AppInfoScreen()),
-          ButtonForInfoScreen(name: '앱 정보', screen: AppInfoScreen()),
+          ButtonForInfoScreen(name: '강아지 정보 초기화', screen: AppInfoScreen()),
+          ButtonForInfoScreen(name: '설정', screen: SettingScreen()),
         ])));
   }
 }
@@ -117,7 +117,7 @@ class DogInfo extends StatelessWidget {
                         ),
                         SizedBox(height: 20),
                         ElevatedButton(
-                            onPressed: () => Get.to(NameRegist()),
+                            onPressed: () => Get.off(NameRegist()),
                             style: ElevatedButton.styleFrom(
                                 primary: Color(0xFF049A5B)),
                             child: Text('강아지 등록하러 가기'))

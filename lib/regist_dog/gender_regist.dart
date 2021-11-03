@@ -128,7 +128,7 @@ class GenderRegist extends StatelessWidget {
                               textConfirm: '확인',
                               onConfirm: () {
                                 Get.back();
-                                Get.to(WeightRegist(
+                                Get.off(WeightRegist(
                                     name: name,
                                     age: age,
                                     gender: genderScreenController

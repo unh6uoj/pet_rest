@@ -79,7 +79,7 @@ class NameRegist extends StatelessWidget {
                               textConfirm: '확인',
                               onConfirm: () {
                                 Get.back();
-                                Get.to(
+                                Get.off(
                                     AgeRegist(name: nameInputController.text));
                               },
                               textCancel: '취소'),

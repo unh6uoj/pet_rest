@@ -93,7 +93,7 @@ class AgeRegist extends StatelessWidget {
                               textConfirm: '확인',
                               onConfirm: () {
                                 Get.back();
-                                Get.to(GenderRegist(
+                                Get.off(GenderRegist(
                                     name: name,
                                     age: ageScreenController._curAge.value));
                               },

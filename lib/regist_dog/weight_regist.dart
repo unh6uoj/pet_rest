@@ -123,7 +123,7 @@ class WeightRegist extends StatelessWidget {
                               textConfirm: '확인',
                               onConfirm: () {
                                 Get.back();
-                                Get.offAll(ProfileImageRegist(
+                                Get.off(ProfileImageRegist(
                                     name: name,
                                     age: age,
                                     gender: gender,

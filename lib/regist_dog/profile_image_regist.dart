@@ -100,7 +100,8 @@ class ProfileImageRegist extends StatelessWidget {
                                 'dogProfile',
                                 profileImageScreenController
                                     .profileImage.value);
-                            Get.toNamed('/HomeScreen');
+                            Get.back();
+                            Get.off(MyApp());
                           },
                           textCancel: '취소'),
                       style:

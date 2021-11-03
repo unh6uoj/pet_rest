@@ -56,55 +56,55 @@ class DogInfo extends StatelessWidget {
               borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
             ),
             child: infoScreenController.isDoggie.value
-                ? Row(
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: <Widget>[
-                      // 강아지 프로필 사진
-                      Obx(() => Container(
-                            width: 135,
-                            height: 135,
-                            clipBehavior: Clip.hardEdge,
-                            margin: EdgeInsets.all(25),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
+                ? Obx(() => Row(
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      children: <Widget>[
+                        // 강아지 프로필 사진
+                        Container(
+                          width: 135,
+                          height: 135,
+                          clipBehavior: Clip.hardEdge,
+                          margin: EdgeInsets.all(25),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: infoScreenController.isImage.value
+                              ? ClipRRect(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                  child: Image.file(
+                                    File(infoScreenController
+                                        .profileImage.value),
+                                    fit: BoxFit.fill,
+                                  ))
+                              : null,
+                        ),
+                        SizedBox(
+                          width: 30,
+                        ),
+                        Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: <Widget>[
+                            Text(
+                              infoScreenController.dogName.value,
+                              style: TextStyle(fontSize: 20),
                             ),
-                            child: infoScreenController.isImage.value
-                                ? ClipRRect(
-                                    borderRadius: BorderRadius.circular(8.0),
-                                    child: Image.file(
-                                      File(infoScreenController
-                                          .profileImage.value.path),
-                                      fit: BoxFit.fill,
-                                    ))
-                                : null,
-                          )),
-                      SizedBox(
-                        width: 30,
-                      ),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: <Widget>[
-                          Text(
-                            infoScreenController.dogName.value,
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          Text(
-                            infoScreenController.dogAge.value.toString(),
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          Text(
-                            infoScreenController.dogGender.value,
-                            style: TextStyle(fontSize: 20),
-                          ),
-                          Text(
-                            infoScreenController.dogWeight.value.toString(),
-                            style: TextStyle(fontSize: 20),
-                          ),
-                        ],
-                      )
-                    ],
-                  )
+                            Text(
+                              infoScreenController.dogAge.value.toString(),
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            Text(
+                              infoScreenController.dogGender.value,
+                              style: TextStyle(fontSize: 20),
+                            ),
+                            Text(
+                              infoScreenController.dogWeight.value.toString(),
+                              style: TextStyle(fontSize: 20),
+                            ),
+                          ],
+                        )
+                      ],
+                    ))
                 : Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: <Widget>[
@@ -117,7 +117,7 @@ class DogInfo extends StatelessWidget {
                         ),
                         SizedBox(height: 20),
                         ElevatedButton(
-                            onPressed: () => Get.off(NameRegist()),
+                            onPressed: () => Get.to(NameRegist()),
                             style: ElevatedButton.styleFrom(
                                 primary: Color(0xFF049A5B)),
                             child: Text('강아지 등록하러 가기'))
@@ -165,7 +165,7 @@ class ButtonForInfoScreen extends StatelessWidget {
 class InfoScreenController extends GetxController {
   var isImage = false.obs;
 
-  var profileImage = XFile('images/peterest_logo.png').obs;
+  var profileImage = ''.obs;
 
   var isDoggie = false.obs;
   var dogName = ''.obs;
@@ -174,13 +174,6 @@ class InfoScreenController extends GetxController {
   var dogWeight = 0.0.obs;
 
   final box = GetStorage();
-
-  getProfileImage() async {
-    profileImage.value =
-        await ImagePicker().pickImage(source: ImageSource.gallery) as XFile;
-
-    isImage.value = true;
-  }
 
   getProfileData() async {
     this.isDoggie.value = await box.read('isDoggie');

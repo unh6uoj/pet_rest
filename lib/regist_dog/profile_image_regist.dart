@@ -83,27 +83,18 @@ class ProfileImageRegist extends StatelessWidget {
               FractionallySizedBox(
                   widthFactor: 0.9,
                   child: ElevatedButton(
-                      onPressed: () => Get.defaultDialog(
-                          title: '확인',
-                          buttonColor: Color(0xFF049A5B),
-                          confirmTextColor: Color(0xFFF0F0F0),
-                          cancelTextColor: Colors.black,
-                          content: Text('${name}의 정보를 등록할게요'),
-                          textConfirm: '확인',
-                          onConfirm: () {
-                            box.write('isDoggie', true);
-                            box.write('dogName', name);
-                            box.write('dogAge', age);
-                            box.write('dogGender', gender);
-                            box.write('dogWeight', weight);
-                            box.write(
-                                'dogProfile',
-                                profileImageScreenController
-                                    .profileImage.value);
-                            Get.back();
-                            Get.off(MyApp());
-                          },
-                          textCancel: '취소'),
+                      onPressed: () {
+                        box.write('isDoggie', true);
+                        box.write('dogName', name);
+                        box.write('dogAge', age);
+                        box.write('dogGender', gender);
+                        box.write('dogWeight', weight);
+                        box.write(
+                            'dogProfile',
+                            profileImageScreenController
+                                .profileImage.value.path);
+                        Get.back();
+                      },
                       style:
                           ElevatedButton.styleFrom(primary: Color(0xFF049A5B)),
                       child: Text('완료'))),

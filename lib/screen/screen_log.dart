@@ -155,7 +155,7 @@ class HistoryBox extends StatelessWidget {
         padding: EdgeInsets.all(10),
         margin: EdgeInsets.only(bottom: 10),
         decoration: BoxDecoration(
-            color: Color(0xFF05BE70),
+            color: Color(0xFF17D282),
             borderRadius: BorderRadius.circular(15),
             boxShadow: [
               BoxShadow(

@@ -23,17 +23,17 @@ class NameRegist extends StatelessWidget {
           padding: EdgeInsets.all(30),
           child: Column(
             children: <Widget>[
-              Padding(
-                  padding: EdgeInsets.only(bottom: 100),
-                  child: ProgressDot(progressIndex: 0)),
-              Text(
-                '강아지 이름을 알려주세요',
-                style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
-              ),
-              SizedBox(height: 20),
-              Padding(
-                  padding: EdgeInsets.only(bottom: 0),
-                  child: TextField(
+              Center(
+                child: Column(children: <Widget>[
+                  Padding(
+                      padding: EdgeInsets.only(bottom: 100),
+                      child: ProgressDot(progressIndex: 0)),
+                  Text(
+                    '강아지 이름을 알려주세요',
+                    style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+                  ),
+                  SizedBox(height: 20),
+                  TextField(
                     controller: nameInputController,
                     textAlign: TextAlign.center,
                     cursorColor: Color(0xFF049A5B),
@@ -47,44 +47,45 @@ class NameRegist extends StatelessWidget {
                             borderSide: BorderSide(
                                 color: Color(0xFF049A5B), width: 2))),
                     style: TextStyle(fontSize: 20),
-                  )),
+                  )
+                ]),
+              ),
+              Spacer(),
               FractionallySizedBox(
                   widthFactor: 0.9,
-                  child: Padding(
-                      padding: EdgeInsets.only(bottom: 20),
-                      child: ElevatedButton(
-                          onPressed: () => nameInputController.text == ''
-                              ? Get.defaultDialog(
-                                  title: '오잉?!', content: Text('이름을 입력 해주세요'))
-                              : Get.defaultDialog(
-                                  title: '확인',
-                                  buttonColor: Color(0xFF049A5B),
-                                  confirmTextColor: Color(0xFFF0F0F0),
-                                  cancelTextColor: Colors.black,
-                                  content: RichText(
-                                      text: TextSpan(children: [
-                                    TextSpan(
-                                        text: '강아지 이름이 ',
-                                        style: TextStyle(color: Colors.black)),
-                                    TextSpan(
-                                        text: '${nameInputController.text}',
-                                        style: TextStyle(
-                                            color: Colors.black,
-                                            fontWeight: FontWeight.bold)),
-                                    TextSpan(
-                                        text: '이(가) 맞나요?',
-                                        style: TextStyle(color: Colors.black)),
-                                  ])),
-                                  textConfirm: '확인',
-                                  onConfirm: () {
-                                    Get.back();
-                                    Get.to(AgeRegist(
-                                        name: nameInputController.text));
-                                  },
-                                  textCancel: '취소'),
-                          style: ElevatedButton.styleFrom(
-                              primary: Color(0xFF049A5B)),
-                          child: Text('완료')))),
+                  child: ElevatedButton(
+                      onPressed: () => nameInputController.text == ''
+                          ? Get.defaultDialog(
+                              title: '오잉?!', content: Text('이름을 입력 해주세요'))
+                          : Get.defaultDialog(
+                              title: '확인',
+                              buttonColor: Color(0xFF049A5B),
+                              confirmTextColor: Color(0xFFF0F0F0),
+                              cancelTextColor: Colors.black,
+                              content: RichText(
+                                  text: TextSpan(children: [
+                                TextSpan(
+                                    text: '강아지 이름이 ',
+                                    style: TextStyle(color: Colors.black)),
+                                TextSpan(
+                                    text: '${nameInputController.text}',
+                                    style: TextStyle(
+                                        color: Colors.black,
+                                        fontWeight: FontWeight.bold)),
+                                TextSpan(
+                                    text: '이(가) 맞나요?',
+                                    style: TextStyle(color: Colors.black)),
+                              ])),
+                              textConfirm: '확인',
+                              onConfirm: () {
+                                Get.back();
+                                Get.to(
+                                    AgeRegist(name: nameInputController.text));
+                              },
+                              textCancel: '취소'),
+                      style:
+                          ElevatedButton.styleFrom(primary: Color(0xFF049A5B)),
+                      child: Text('완료'))),
             ],
           ),
         ));

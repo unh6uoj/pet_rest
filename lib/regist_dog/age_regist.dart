@@ -28,17 +28,18 @@ class AgeRegist extends StatelessWidget {
         body: Padding(
             padding: EdgeInsets.all(30),
             child: Obx(() => Column(children: <Widget>[
-                  Padding(
-                      padding: EdgeInsets.only(bottom: 150),
-                      child: ProgressDot(progressIndex: 1)),
-                  Text(
-                    '${name}의 나이를 알려주세요',
-                    style: TextStyle(fontSize: 23, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 20),
-                  Padding(
-                      padding: EdgeInsets.only(bottom: 120),
-                      child: Container(
+                  Center(
+                    child: Column(children: <Widget>[
+                      Padding(
+                          padding: EdgeInsets.only(bottom: 150),
+                          child: ProgressDot(progressIndex: 1)),
+                      Text(
+                        '${name}의 나이를 알려주세요',
+                        style: TextStyle(
+                            fontSize: 23, fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 20),
+                      Container(
                           decoration: BoxDecoration(
                               border: Border.all(
                                 width: 2,
@@ -56,7 +57,16 @@ class AgeRegist extends StatelessWidget {
                                   fontSize: 25,
                                   fontWeight: FontWeight.bold),
                               onChanged: (value) =>
-                                  ageScreenController._curAge.value = value))),
+                                  ageScreenController._curAge.value = value)),
+                      SizedBox(height: 45),
+                      Text(
+                        ageScreenController._curAge.value.toString() + '살',
+                        style: TextStyle(
+                            fontSize: 22, fontWeight: FontWeight.bold),
+                      ),
+                    ]),
+                  ),
+                  Spacer(),
                   FractionallySizedBox(
                       widthFactor: 0.9,
                       child: ElevatedButton(

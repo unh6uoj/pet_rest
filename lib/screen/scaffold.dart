@@ -56,7 +56,7 @@ class MyPage extends StatelessWidget {
 
   final String title;
   final Widget body;
-  bool isDrawer;
+  final bool isDrawer;
 
   @override
   Widget build(BuildContext context) {

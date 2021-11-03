@@ -92,6 +92,7 @@ class WeightRegist extends StatelessWidget {
                     weightScreenController._curWeight.value.toString() + ' kg',
                     style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
                   )),
+              Spacer(),
               FractionallySizedBox(
                   widthFactor: 0.9,
                   child: ElevatedButton(

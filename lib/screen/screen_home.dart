@@ -283,12 +283,12 @@ class BallCard extends StatelessWidget {
                   : Get.snackbar('공이 없어요', 'pet station에 공을 넣어주세요',
                       snackPosition: SnackPosition.BOTTOM,
                       colorText: Colors.white,
-                      backgroundColor: Color(0xFF05BE70));
+                      backgroundColor: Color(0xFF17D282));
             },
             child: Container(
               height: 200,
               decoration: BoxDecoration(
-                  color: Color(0xFF05BE70),
+                  color: Color(0xFF17D282),
                   borderRadius: BorderRadius.all(Radius.circular(15)),
                   boxShadow: [
                     BoxShadow(
@@ -329,51 +329,64 @@ class MoveCheckCard extends StatelessWidget {
   final HomeScreenController homeScreenController =
       Get.put(HomeScreenController());
 
+  final List<String> today = DateTime.now().toString().split(' ')[0].split('-');
+
   @override
   Widget build(BuildContext context) {
     return FractionallySizedBox(
         widthFactor: 0.95,
-        child: Container(
-            height: 250,
-            decoration: BoxDecoration(
-                color: Color(0xFF05BE70),
-                borderRadius: BorderRadius.all(Radius.circular(15)),
-                boxShadow: [
-                  BoxShadow(
-                      spreadRadius: 0.5,
-                      blurRadius: 0.5,
-                      offset: Offset(0, 3),
-                      color: Colors.grey.withOpacity(0.4))
-                ]),
-            child: Padding(
-                padding: EdgeInsets.all(10),
-                child: BarChart(
-                  BarChartData(
-                      barGroups: homeScreenController.barChartList,
-                      borderData: FlBorderData(show: false),
-                      barTouchData: BarTouchData(touchTooltipData:
-                          BarTouchTooltipData(getTooltipItem:
-                              (group, groupIndex, rod, rodIndex) {
-                        String hour;
-                        hour = (group.x.toInt() + 1).toString() + '시';
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+                padding: EdgeInsets.fromLTRB(15, 5, 0, 5),
+                child: Text(
+                  '${today[0]}년 ${today[1]}월 ${today[2]}일',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                )),
+            Container(
+                height: 250,
+                decoration: BoxDecoration(
+                    color: Color(0xFF17D282),
+                    borderRadius: BorderRadius.all(Radius.circular(15)),
+                    boxShadow: [
+                      BoxShadow(
+                          spreadRadius: 0.5,
+                          blurRadius: 0.5,
+                          offset: Offset(0, 3),
+                          color: Colors.grey.withOpacity(0.4))
+                    ]),
+                child: Padding(
+                    padding: EdgeInsets.all(10),
+                    child: BarChart(
+                      BarChartData(
+                          barGroups: homeScreenController.barChartList,
+                          borderData: FlBorderData(show: false),
+                          barTouchData: BarTouchData(touchTooltipData:
+                              BarTouchTooltipData(getTooltipItem:
+                                  (group, groupIndex, rod, rodIndex) {
+                            String hour;
+                            hour = (group.x.toInt() + 1).toString() + '시';
 
-                        return BarTooltipItem(
-                            hour + '\n',
-                            const TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18),
-                            children: <TextSpan>[
-                              TextSpan(text: (rod.y).toString())
-                            ]);
-                      })),
-                      titlesData: FlTitlesData(
-                          show: true,
-                          leftTitles: SideTitles(showTitles: true),
-                          topTitles: SideTitles(showTitles: false),
-                          rightTitles: SideTitles(showTitles: false),
-                          bottomTitles: SideTitles(showTitles: false))),
-                ))));
+                            return BarTooltipItem(
+                                hour + '\n',
+                                const TextStyle(
+                                    color: Colors.white,
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 18),
+                                children: <TextSpan>[
+                                  TextSpan(text: (rod.y).toString())
+                                ]);
+                          })),
+                          titlesData: FlTitlesData(
+                              show: true,
+                              leftTitles: SideTitles(showTitles: true),
+                              topTitles: SideTitles(showTitles: false),
+                              rightTitles: SideTitles(showTitles: false),
+                              bottomTitles: SideTitles(showTitles: false))),
+                    ))),
+          ],
+        ));
   }
 }
 

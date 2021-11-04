@@ -1,14 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
+import 'package:get_storage/get_storage.dart';
 import 'package:pet/screen/scaffold.dart';
+import 'package:pet/screen/screen_info.dart';
 
 class DogInitScreen extends StatelessWidget {
   const DogInitScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    return MyPage(
-        title: '강아지 정보 초기화',
-        isDrawer: false,
-        body: Center(child: Text('강아지 정보를 초기화 하시겠어요?')));
+    return Dialog(
+      backgroundColor: Colors.red,
+      child: Container(
+        width: 100,
+        height: 100,
+        decoration:
+            BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(50))),
+      ),
+    );
   }
 }

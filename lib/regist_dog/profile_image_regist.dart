@@ -19,6 +19,9 @@ class ProfileImageRegist extends StatelessWidget {
   final ProfileImageScreenController profileImageScreenController =
       Get.put(ProfileImageScreenController());
 
+  final InfoScreenController infoScreenController =
+      Get.put(InfoScreenController());
+
   ProfileImageRegist(
       {Key? key,
       required this.name,
@@ -83,16 +86,19 @@ class ProfileImageRegist extends StatelessWidget {
               FractionallySizedBox(
                   widthFactor: 0.9,
                   child: ElevatedButton(
-                      onPressed: () {
-                        box.write('isDoggie', true);
-                        box.write('dogName', name);
-                        box.write('dogAge', age);
-                        box.write('dogGender', gender);
-                        box.write('dogWeight', weight);
-                        box.write(
+                      onPressed: () async {
+                        await box.write('isDoggie', true);
+                        await box.write('dogName', name);
+                        await box.write('dogAge', age);
+                        await box.write('dogGender', gender);
+                        await box.write('dogWeight', weight);
+                        await box.write(
                             'dogProfile',
                             profileImageScreenController
                                 .profileImage.value.path);
+
+                        infoScreenController.getProfileData();
+
                         Get.back();
                       },
                       style:

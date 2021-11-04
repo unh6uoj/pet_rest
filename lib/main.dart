@@ -15,7 +15,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> main() async {
-  // await GetStorage.init();
+  await GetStorage.init();
   runApp(MyApp());
 }
 

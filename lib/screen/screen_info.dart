@@ -26,6 +26,7 @@ class InfoScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    infoScreenController.getProfileData();
     return MyPage(
         title: '정보',
         body: SingleChildScrollView(
@@ -33,9 +34,17 @@ class InfoScreen extends StatelessWidget {
             Column(children: <Widget>[
               DogInfoArea(),
               SizedBox(height: 35),
-              ButtonForInfoScreen(name: '공지사항', screen: NoticeScreen()),
+              ButtonForInfoScreen(
+                name: '공지사항',
+                screen: NoticeScreen(),
+                isNewPage: true,
+              ),
               ButtonForInfoScreen(name: '강아지 정보 초기화', screen: DogInitScreen()),
-              ButtonForInfoScreen(name: '설정', screen: SettingScreen()),
+              ButtonForInfoScreen(
+                name: '설정',
+                screen: SettingScreen(),
+                isNewPage: true,
+              ),
             ]),
             Container(
                 margin: EdgeInsets.only(top: 230), child: DogInfoTextArea())
@@ -52,66 +61,67 @@ class DogInfoArea extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      width: double.infinity,
-      height: 280,
-      decoration: BoxDecoration(
-          color: Color(0xFF17D282),
-          borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
-          boxShadow: [
-            BoxShadow(
-                spreadRadius: 1,
-                blurRadius: 1,
-                color: Colors.grey,
-                offset: Offset(0, 1))
-          ]),
-      child: infoScreenController.isDoggie.value
-          ? Obx(() => Column(
-                children: <Widget>[
-                  SizedBox(
-                    height: 20,
-                  ),
-                  // 강아지 프로필 사진
-                  Container(
-                      width: 135,
-                      height: 135,
-                      clipBehavior: Clip.hardEdge,
-                      margin: EdgeInsets.all(15),
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        shape: BoxShape.circle,
-                      ),
-                      child: ClipRRect(
-                          borderRadius: BorderRadius.circular(8.0),
-                          child: Image.file(
-                            File(infoScreenController.profileImage.value),
-                            fit: BoxFit.fill,
-                          ))),
-                  Text(
-                    infoScreenController.dogName.value,
-                    style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 20),
-                ],
-              ))
-          : Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                  Text(
-                    '강아지 정보를 등록 해보세요',
-                    style: TextStyle(
-                        fontSize: 22,
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold),
-                  ),
-                  SizedBox(height: 20),
-                  ElevatedButton(
-                      onPressed: () => Get.to(NameRegist()),
+    return Obx(() => Container(
+          width: double.infinity,
+          height: 280,
+          decoration: BoxDecoration(
+              color: Color(0xFF17D282),
+              borderRadius: BorderRadius.vertical(bottom: Radius.circular(10)),
+              boxShadow: [
+                BoxShadow(
+                    spreadRadius: 1,
+                    blurRadius: 1,
+                    color: Colors.grey,
+                    offset: Offset(0, 1))
+              ]),
+          child: infoScreenController.isDoggie.value
+              ? Column(
+                  children: <Widget>[
+                    SizedBox(
+                      height: 20,
+                    ),
+                    // 강아지 프로필 사진
+                    Container(
+                        width: 135,
+                        height: 135,
+                        clipBehavior: Clip.hardEdge,
+                        margin: EdgeInsets.all(15),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          shape: BoxShape.circle,
+                        ),
+                        child: ClipRRect(
+                            borderRadius: BorderRadius.circular(8.0),
+                            child: Image.file(
+                              File(infoScreenController.profileImage.value),
+                              fit: BoxFit.fill,
+                            ))),
+                    Text(
+                      infoScreenController.dogName.value,
                       style:
-                          ElevatedButton.styleFrom(primary: Color(0xFF049A5B)),
-                      child: Text('강아지 등록하러 가기'))
-                ]),
-    );
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
+                    ),
+                    SizedBox(height: 20),
+                  ],
+                )
+              : Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                      Text(
+                        '강아지 정보를 등록 해보세요',
+                        style: TextStyle(
+                            fontSize: 22,
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold),
+                      ),
+                      SizedBox(height: 20),
+                      ElevatedButton(
+                          onPressed: () => Get.to(NameRegist()),
+                          style: ElevatedButton.styleFrom(
+                              primary: Color(0xFF049A5B)),
+                          child: Text('강아지 등록하러 가기'))
+                    ]),
+        ));
   }
 }
 
@@ -119,18 +129,36 @@ class ButtonForInfoScreen extends StatelessWidget {
   final InfoScreenController infoScreenController =
       Get.put(InfoScreenController());
 
-  ButtonForInfoScreen({Key? key, required this.name, required this.screen})
+  ButtonForInfoScreen(
+      {Key? key,
+      required this.name,
+      required this.screen,
+      this.isNewPage = false})
       : super(key: key);
 
   final String name;
   final StatelessWidget screen;
+  final bool isNewPage;
 
   @override
   Widget build(BuildContext context) {
     return FractionallySizedBox(
       widthFactor: 1,
       child: InkWell(
-        onTap: () => Get.to(screen),
+        onTap: () => isNewPage
+            ? Get.to(screen)
+            : Get.defaultDialog(
+                title: '강아지 정보 초기화',
+                content: Text('강아지 정보를 지우시겠어요?'),
+                buttonColor: Color(0xFF049A5B),
+                confirmTextColor: Color(0xFFF0F0F0),
+                cancelTextColor: Colors.black,
+                onCancel: () => Get.back(),
+                onConfirm: () {
+                  infoScreenController.eraseData();
+                  infoScreenController.getProfileData();
+                  Get.back();
+                }),
         child: Container(
             decoration: BoxDecoration(
                 border:
@@ -161,65 +189,68 @@ class DogInfoTextArea extends StatelessWidget {
 
   DogInfoTextArea({Key? key}) : super(key: key);
 
+  infoText(category) {
+    return Text(category,
+        textAlign: TextAlign.center,
+        style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500));
+  }
+
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 90,
-      margin: EdgeInsets.symmetric(horizontal: 15),
-      decoration: BoxDecoration(
-          color: Colors.white,
-          boxShadow: [
-            BoxShadow(
-                color: Colors.grey,
-                blurRadius: 3,
-                spreadRadius: 1,
-                offset: Offset(0, 1))
-          ],
-          borderRadius: BorderRadius.all(Radius.circular(10))),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: <Widget>[
-          Expanded(
-              child: Container(
-                  child: Column(
+    return Obx(() => Container(
+          height: 90,
+          margin: EdgeInsets.symmetric(horizontal: 15),
+          decoration: BoxDecoration(
+              color: Colors.white,
+              boxShadow: [
+                BoxShadow(
+                    color: Colors.grey,
+                    blurRadius: 3,
+                    spreadRadius: 1,
+                    offset: Offset(0, 1))
+              ],
+              borderRadius: BorderRadius.all(Radius.circular(10))),
+          child: Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                infoScreenController.dogAge.value.toString() + '살',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-              ),
+            children: <Widget>[
+              Expanded(
+                  child: Container(
+                      child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  infoScreenController.isDoggie.value
+                      ? infoText(
+                          infoScreenController.dogAge.value.toString() + '살')
+                      : infoText('나이')
+                ],
+              ))),
+              Container(width: 1, height: 50, color: Colors.grey),
+              Expanded(
+                  child: Container(
+                      child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  infoScreenController.isDoggie.value
+                      ? infoText(infoScreenController.dogGender.value)
+                      : infoText('성별')
+                ],
+              ))),
+              Container(width: 1, height: 50, color: Colors.grey),
+              Expanded(
+                  child: Container(
+                      child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  infoScreenController.isDoggie.value
+                      ? infoText(
+                          infoScreenController.dogWeight.value.toString() +
+                              'kg')
+                      : infoText('체중')
+                ],
+              ))),
             ],
-          ))),
-          Container(width: 1, height: 50, color: Colors.grey),
-          Expanded(
-              child: Container(
-                  child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                infoScreenController.dogGender.value,
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-              ),
-            ],
-          ))),
-          Container(width: 1, height: 50, color: Colors.grey),
-          Expanded(
-              child: Container(
-                  child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                infoScreenController.dogWeight.value.toString() + 'kg',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500),
-              ),
-            ],
-          ))),
-        ],
-      ),
-    );
+          ),
+        ));
   }
 }
 
@@ -237,11 +268,44 @@ class InfoScreenController extends GetxController {
   final box = GetStorage();
 
   getProfileData() async {
-    isDoggie.value = await box.read('isDoggie');
-    dogName.value = await box.read('dogName');
-    dogAge.value = await box.read('dogAge');
-    dogGender.value = await box.read('dogGender');
-    dogWeight.value = await box.read('dogWeight');
-    profileImage.value = await box.read('dogProfile');
+    try {
+      isDoggie.value = await box.read('isDoggie');
+    } catch (err) {
+      isDoggie.value = false;
+    }
+
+    try {
+      dogName.value = await box.read('dogName');
+    } catch (err) {
+      dogName.value = '';
+    }
+
+    try {
+      dogAge.value = await box.read('dogAge');
+    } catch (err) {
+      dogAge.value = 0;
+    }
+
+    try {
+      dogGender.value = await box.read('dogGender');
+    } catch (err) {
+      dogGender.value = '';
+    }
+
+    try {
+      dogWeight.value = await box.read('dogWeight');
+    } catch (err) {
+      dogWeight.value = 0.0;
+    }
+
+    try {
+      profileImage.value = await box.read('dogProfile');
+    } catch (err) {
+      profileImage.value = '';
+    }
+  }
+
+  eraseData() async {
+    await box.erase();
   }
 }

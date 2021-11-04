@@ -10,9 +10,11 @@ import 'package:pet/screen/scaffold.dart';
 import 'package:get/get.dart';
 
 class NameRegist extends StatelessWidget {
-  NameRegist({Key? key}) : super(key: key);
+  NameRegist({Key? key, required this.isNewDog}) : super(key: key);
 
   final nameInputController = TextEditingController();
+
+  final bool isNewDog;
 
   @override
   Widget build(BuildContext context) {
@@ -79,8 +81,12 @@ class NameRegist extends StatelessWidget {
                               textConfirm: '확인',
                               onConfirm: () {
                                 Get.back();
-                                Get.off(
-                                    AgeRegist(name: nameInputController.text));
+                                isNewDog
+                                    ? Get.off(AgeRegist(
+                                        name: nameInputController.text,
+                                        isNewDog: true,
+                                      ))
+                                    : null;
                               },
                               textCancel: '취소'),
                       style:

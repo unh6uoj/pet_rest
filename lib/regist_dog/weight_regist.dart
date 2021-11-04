@@ -12,17 +12,31 @@ import 'package:get/get.dart';
 // number picker
 import 'package:numberpicker/numberpicker.dart';
 
+// get_storage
+import 'package:get_storage/get_storage.dart';
+import 'package:pet/screen/screen_info.dart';
+
 class WeightRegist extends StatelessWidget {
   final WeightScreenController weightScreenController =
       Get.put(WeightScreenController());
 
+  final InfoScreenController infoScreenController =
+      Get.put(InfoScreenController());
+
   WeightRegist(
-      {Key? key, required this.name, required this.age, required this.gender})
+      {Key? key,
+      required this.name,
+      required this.age,
+      required this.gender,
+      required this.isNewDog})
       : super(key: key);
 
   final String name;
   final int age;
   final String gender;
+  final bool isNewDog;
+
+  final box = GetStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -123,12 +137,21 @@ class WeightRegist extends StatelessWidget {
                               textConfirm: '확인',
                               onConfirm: () {
                                 Get.back();
-                                Get.off(ProfileImageRegist(
-                                    name: name,
-                                    age: age,
-                                    gender: gender,
-                                    weight: weightScreenController
-                                        ._curWeight.value));
+                                if (isNewDog) {
+                                  Get.off(ProfileImageRegist(
+                                      name: name,
+                                      age: age,
+                                      gender: gender,
+                                      weight: weightScreenController
+                                          ._curWeight.value));
+                                } else {
+                                  box.write('dogWeight',
+                                      weightScreenController._curWeight.value);
+
+                                  infoScreenController.getProfileData();
+
+                                  Get.back();
+                                }
                               },
                               textCancel: '취소'),
                       style:

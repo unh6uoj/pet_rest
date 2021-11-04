@@ -1,6 +1,9 @@
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
+import 'package:pet/regist_dog/age_regist.dart';
+import 'package:pet/regist_dog/gender_regist.dart';
+import 'package:pet/regist_dog/weight_regist.dart';
 import 'dart:io';
 
 // screen
@@ -116,7 +119,9 @@ class DogInfoArea extends StatelessWidget {
                       ),
                       SizedBox(height: 20),
                       ElevatedButton(
-                          onPressed: () => Get.to(NameRegist()),
+                          onPressed: () => Get.to(NameRegist(
+                                isNewDog: true,
+                              )),
                           style: ElevatedButton.styleFrom(
                               primary: Color(0xFF049A5B)),
                           child: Text('강아지 등록하러 가기'))
@@ -200,6 +205,7 @@ class DogInfoTextArea extends StatelessWidget {
     return Obx(() => Container(
           height: 90,
           margin: EdgeInsets.symmetric(horizontal: 15),
+          clipBehavior: Clip.hardEdge,
           decoration: BoxDecoration(
               color: Colors.white,
               boxShadow: [
@@ -214,16 +220,22 @@ class DogInfoTextArea extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Expanded(
-                  child: Container(
-                      child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  infoScreenController.isDoggie.value
-                      ? infoText(
-                          infoScreenController.dogAge.value.toString() + '살')
-                      : infoText('나이')
-                ],
-              ))),
+                  child: Material(
+                      child: InkWell(
+                          onTap: () => Get.to(AgeRegist(
+                              name: infoScreenController.dogName.value,
+                              isNewDog: false)),
+                          child: Container(
+                              child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              infoScreenController.isDoggie.value
+                                  ? infoText(infoScreenController.dogAge.value
+                                          .toString() +
+                                      '살')
+                                  : infoText('나이')
+                            ],
+                          ))))),
               Container(width: 1, height: 50, color: Colors.grey),
               Expanded(
                   child: Container(
@@ -237,17 +249,25 @@ class DogInfoTextArea extends StatelessWidget {
               ))),
               Container(width: 1, height: 50, color: Colors.grey),
               Expanded(
-                  child: Container(
-                      child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  infoScreenController.isDoggie.value
-                      ? infoText(
-                          infoScreenController.dogWeight.value.toString() +
-                              'kg')
-                      : infoText('체중')
-                ],
-              ))),
+                  child: Material(
+                      child: InkWell(
+                          onTap: () => Get.to(WeightRegist(
+                              name: infoScreenController.dogName.value,
+                              age: infoScreenController.dogAge.value,
+                              gender: infoScreenController.dogGender.value,
+                              isNewDog: false)),
+                          child: Container(
+                              child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              infoScreenController.isDoggie.value
+                                  ? infoText(infoScreenController
+                                          .dogWeight.value
+                                          .toString() +
+                                      'kg')
+                                  : infoText('체중')
+                            ],
+                          ))))),
             ],
           ),
         ));

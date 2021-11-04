@@ -13,11 +13,13 @@ class GenderRegist extends StatelessWidget {
   final GenderScreenController genderScreenController =
       Get.put(GenderScreenController());
 
-  GenderRegist({Key? key, required this.name, required this.age})
+  GenderRegist(
+      {Key? key, required this.name, required this.age, required this.isNewDog})
       : super(key: key);
 
-  final name;
-  final age;
+  final String name;
+  final int age;
+  final bool isNewDog;
 
   @override
   Widget build(BuildContext context) {
@@ -128,11 +130,14 @@ class GenderRegist extends StatelessWidget {
                               textConfirm: '확인',
                               onConfirm: () {
                                 Get.back();
-                                Get.off(WeightRegist(
-                                    name: name,
-                                    age: age,
-                                    gender: genderScreenController
-                                        ._curGender.value));
+                                isNewDog
+                                    ? Get.off(WeightRegist(
+                                        name: name,
+                                        age: age,
+                                        gender: genderScreenController
+                                            ._curGender.value,
+                                        isNewDog: true))
+                                    : null;
                               },
                               textCancel: '취소'),
                       style:

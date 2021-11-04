@@ -12,13 +12,24 @@ import 'package:get/get.dart';
 // number picker
 import 'package:numberpicker/numberpicker.dart';
 
+import 'package:pet/screen/screen_info.dart';
+
+import 'package:get_storage/get_storage.dart';
+
 class AgeRegist extends StatelessWidget {
   final AgeScreenController ageScreenController =
       Get.put(AgeScreenController());
 
-  AgeRegist({Key? key, required this.name}) : super(key: key);
+  final InfoScreenController infoScreenController =
+      Get.put(InfoScreenController());
+
+  AgeRegist({Key? key, required this.name, required this.isNewDog})
+      : super(key: key);
 
   final String name;
+  final bool isNewDog;
+
+  final box = GetStorage();
 
   @override
   Widget build(BuildContext context) {
@@ -93,9 +104,20 @@ class AgeRegist extends StatelessWidget {
                               textConfirm: '확인',
                               onConfirm: () {
                                 Get.back();
-                                Get.off(GenderRegist(
+                                if (isNewDog) {
+                                  Get.off(GenderRegist(
                                     name: name,
-                                    age: ageScreenController._curAge.value));
+                                    age: ageScreenController._curAge.value,
+                                    isNewDog: true,
+                                  ));
+                                } else {
+                                  box.write('dogAge',
+                                      ageScreenController._curAge.value);
+
+                                  infoScreenController.getProfileData();
+
+                                  Get.back();
+                                }
                               },
                               textCancel: '취소'),
                           style: ElevatedButton.styleFrom(

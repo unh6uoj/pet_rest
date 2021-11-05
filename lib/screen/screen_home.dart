@@ -399,13 +399,13 @@ class HomeScreenController extends GetxController {
 
   var isVideoOn = false.obs;
 
-  var loadCellDataFood = 0.0.obs;
-  var loadCellDataWater = 0.0.obs;
+  var loadCellDataFood = 0.54.obs;
+  var loadCellDataWater = 0.122.obs;
 
   var isBall = true.obs;
   var ballText = '공이 있어요'.obs;
 
-  String ip = 'ws://192.168.1.132';
+  String ip = 'ws://192.168.1.128';
 
   var momentDataList = [
     11,

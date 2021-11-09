@@ -6,6 +6,8 @@ import 'package:pet/regist_dog/gender_regist.dart';
 import 'package:pet/regist_dog/weight_regist.dart';
 import 'dart:io';
 
+import 'package:pet/websocket_controller.dart';
+
 // screen
 import 'package:pet/screen/route_setting.dart';
 import 'package:pet/screen/route_notice.dart';
@@ -31,9 +33,12 @@ class InfoScreen extends StatelessWidget {
   final HomeScreenController homeScreenController =
       Get.put(HomeScreenController());
 
+  // final WebSocketController webSocketController =
+  //     Get.put(WebSocketController());
+
   @override
   Widget build(BuildContext context) {
-    homeScreenController.disConnectAllWebSocket();
+    // webSocketController.disConnectAllWebSocket();
     infoScreenController.getProfileData();
     return MyPage(
         title: '정보',

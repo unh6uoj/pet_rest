@@ -5,14 +5,11 @@ import 'dart:typed_data';
 // 페이지 공통
 import 'package:pet/screen/scaffold.dart';
 
-// WebScoket
-import 'package:web_socket_channel/io.dart';
+// websocket
+import 'package:pet/websocket_controller.dart';
 
 // getx
 import 'package:get/get.dart';
-
-// sqlite
-import '../sqlite.dart';
 
 // wave
 import 'package:wave/config.dart';
@@ -21,19 +18,20 @@ import 'package:wave/wave.dart';
 // fl_chart
 import 'package:fl_chart/fl_chart.dart';
 
-String ip = 'ws://192.168.1.126';
-
 class HomeScreen extends StatelessWidget {
   final HomeScreenController homeScreenController =
       Get.put(HomeScreenController());
 
+  final WebSocketController webSocketController =
+      Get.put(WebSocketController());
+
   HomeScreen({Key? key}) : super(key: key) {
     // homeScreenController.dataWebSocketConntect();
-    homeScreenController.dataOn();
   }
 
   @override
   Widget build(BuildContext context) {
+    webSocketController.dataOn();
     return MyPage(
         title: '홈',
         body: SingleChildScrollView(
@@ -43,9 +41,9 @@ class HomeScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       VideoArea(),
-                      homeScreenController.isData.value
+                      webSocketController.isData.value
                           ? StreamBuilder(
-                              stream: homeScreenController.dataChannel.stream,
+                              stream: webSocketController.dataChannel.stream,
                               builder: (context, snapshot) {
                                 if (snapshot.hasData) {
                                   homeScreenController.setData(snapshot.data);
@@ -57,25 +55,25 @@ class HomeScreen extends StatelessWidget {
                                       children: <Widget>[
                                         WavePercent(
                                           name: '밥',
-                                          percent: homeScreenController
+                                          percent: webSocketController
                                               .loadCellDataFood,
                                           sendFunc:
-                                              homeScreenController.sendFood,
+                                              webSocketController.sendFood,
                                         ),
                                         SizedBox(width: 10),
                                         WavePercent(
                                           name: '물',
-                                          percent: homeScreenController
+                                          percent: webSocketController
                                               .loadCellDataWater,
                                           sendFunc:
-                                              homeScreenController.sendWater,
+                                              webSocketController.sendWater,
                                         ),
                                       ]),
                                   SizedBox(
                                     height: 10,
                                   ),
                                   BallCard(
-                                      sendFunc: homeScreenController.sendBall),
+                                      sendFunc: webSocketController.sendBall),
                                   SizedBox(
                                     height: 10,
                                   ),
@@ -96,6 +94,9 @@ class VideoArea extends StatelessWidget {
   final HomeScreenController homeScreenController =
       Get.put(HomeScreenController());
 
+  final WebSocketController webSocketController =
+      Get.put(WebSocketController());
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -109,12 +110,11 @@ class VideoArea extends StatelessWidget {
                       color: Colors.black,
                       borderRadius: BorderRadius.all(Radius.circular(15))),
                   clipBehavior: Clip.hardEdge,
-                  child: homeScreenController.isVideoOn.value
+                  child: webSocketController.isVideoOn.value
                       ? InkWell(
-                          onTap: () => homeScreenController.videoOff(),
+                          onTap: () => webSocketController.videoOff(),
                           child: StreamBuilder(
-                              stream: homeScreenController
-                                  .videoChannel.value.stream,
+                              stream: webSocketController.videoChannel.stream,
                               builder: (context, snapshot) {
                                 return snapshot.hasData
                                     ? Image.memory(
@@ -141,7 +141,7 @@ class VideoArea extends StatelessWidget {
                                             ),
                                             IconButton(
                                               onPressed: () =>
-                                                  homeScreenController.videoOn,
+                                                  webSocketController.videoOn,
                                               icon:
                                                   Icon(Icons.replay, size: 35),
                                               color: Colors.white,
@@ -149,7 +149,7 @@ class VideoArea extends StatelessWidget {
                                           ]);
                               }))
                       : IconButton(
-                          onPressed: homeScreenController.videoOn,
+                          onPressed: webSocketController.videoOn,
                           icon: Icon(Icons.play_arrow),
                           color: Colors.white,
                           iconSize: 72,
@@ -159,11 +159,14 @@ class VideoArea extends StatelessWidget {
 }
 
 class BottomSheetForSendData extends StatelessWidget {
-  BottomSheetForSendData({Key? key, required this.name, required this.sendFunc})
-      : super(key: key);
-
   final HomeScreenController homeScreenController =
       Get.put(HomeScreenController());
+
+  final WebSocketController webSocketController =
+      Get.put(WebSocketController());
+
+  BottomSheetForSendData({Key? key, required this.name, required this.sendFunc})
+      : super(key: key);
 
   final String name;
   final sendFunc;
@@ -198,15 +201,18 @@ class BottomSheetForSendData extends StatelessWidget {
 }
 
 class WavePercent extends StatelessWidget {
+  final HomeScreenController homeScreenController =
+      Get.put(HomeScreenController());
+
+  final WebSocketController webSocketController =
+      Get.put(WebSocketController());
+
   WavePercent({Key? key, required this.name, this.percent, this.sendFunc})
       : super(key: key);
 
   final name;
   final percent;
   final sendFunc;
-
-  final HomeScreenController homeScreenController =
-      Get.put(HomeScreenController());
 
   @override
   Widget build(BuildContext context) {
@@ -279,10 +285,14 @@ class WavePercent extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Text(name),
+                    Text(
+                      name,
+                      style:
+                          TextStyle(fontSize: 22, fontWeight: FontWeight.w400),
+                    ),
                     SizedBox(height: 180),
                     Text(
-                      (percent.value * 100).toString() + '%',
+                      (percent.value * 100).toStringAsFixed(1) + '%',
                       style: TextStyle(fontSize: 22),
                     ),
                   ]))
@@ -296,6 +306,9 @@ class BallCard extends StatelessWidget {
   final HomeScreenController homeScreenController =
       Get.put(HomeScreenController());
 
+  final WebSocketController webSocketController =
+      Get.put(WebSocketController());
+
   final sendFunc;
 
   @override
@@ -307,7 +320,7 @@ class BallCard extends StatelessWidget {
               homeScreenController.bottomSheetText.value =
                   '여기를 누르면 공을 날릴 수 있어요';
 
-              homeScreenController.isBall.value
+              webSocketController.isBall.value
                   ? Get.bottomSheet(
                       BottomSheetForSendData(name: '공', sendFunc: sendFunc))
                   : Get.snackbar('공이 없어요', 'pet station에 공을 넣어주세요',
@@ -330,10 +343,10 @@ class BallCard extends StatelessWidget {
               child: Row(children: <Widget>[
                 Padding(
                     padding: EdgeInsets.all(45),
-                    child: homeScreenController.isBall.value
+                    child: webSocketController.isBall.value
                         ? Image.asset('images/ball_on.png')
                         : Image.asset('images/ball_off.png')),
-                homeScreenController.isBall.value
+                webSocketController.isBall.value
                     ? Text(
                         '공이 있어요',
                         style: TextStyle(
@@ -421,38 +434,13 @@ class MoveCheckCard extends StatelessWidget {
 }
 
 class HomeScreenController extends GetxController {
-  var dataChannel;
-  var motorChannel;
-  var videoChannel;
-
-  var isData = false.obs;
-  var isBall = false.obs;
-  var isVideoOn = false.obs;
-
-  var loadCellDataFood = 0.0.obs;
-  var loadCellDataWater = 0.0.obs;
-
   var ballText = '공이 없어요'.obs;
   var bottomSheetText = ''.obs;
 
   var momentDataList = [].obs;
   var barChartList = RxList<BarChartGroupData>();
 
-  dataWebSocketConntect() {
-    dataChannel = IOWebSocketChannel.connect(ip + ':25002');
-  }
-
-  dataWebSocketDisconnect() {
-    isData.value = false;
-    dataChannel.sink.close();
-  }
-
-  dataOn() async {
-    dataWebSocketConntect();
-    dataChannel.sink.add('data done');
-
-    isData.value = true;
-  }
+  WebSocketController webSocketController = Get.put(WebSocketController());
 
   getChartData() {
     List<BarChartGroupData> tempList = [];
@@ -468,77 +456,31 @@ class HomeScreenController extends GetxController {
     barChartList.value = tempList;
   }
 
+  zeroToOneData(data) {
+    if (data > 1) {
+      return 1.0;
+    } else if (data < 0) {
+      return 0.0;
+    } else {
+      return data;
+    }
+  }
+
   setData(receivedData) {
     // 데이터 전처리
     List<dynamic> sensorData = receivedData.toString().split('[')[0].split(',');
     List<dynamic> cameraData =
         (receivedData.toString().split('[')[1]).replaceAll(']', '').split(',');
 
-    loadCellDataFood.value = double.parse(sensorData[0]);
-    loadCellDataWater.value = double.parse(sensorData[1]);
-    isBall.value = sensorData[2] == 'True';
+    double foodData = double.parse(sensorData[0]);
+    double waterData = double.parse(sensorData[1]);
+
+    webSocketController.loadCellDataFood.value = zeroToOneData(foodData);
+    webSocketController.loadCellDataWater.value = zeroToOneData(waterData);
+    webSocketController.isBall.value = sensorData[2] == 'True';
+
     momentDataList.value = cameraData;
 
     getChartData();
-  }
-
-  // 여기는 모터
-  Future<Rx<IOWebSocketChannel>> motorWebSocketConnect() async {
-    return IOWebSocketChannel.connect(ip + ':25001').obs;
-  }
-
-  motorWebSocketDisconnect() async {
-    motorChannel.value.sink.close();
-  }
-
-  sendFood() async {
-    motorWebSocketConnect().then((value) => value.value.sink.add('food'));
-
-    DBHelper().createData(
-        History(date: DBHelper().getCurDateTime(), activity: '밥주기'));
-  }
-
-  sendWater() async {
-    motorWebSocketConnect().then((value) => value.value.sink.add('water'));
-
-    DBHelper().createData(
-        History(date: DBHelper().getCurDateTime(), activity: '물주기'));
-  }
-
-  sendBall() async {
-    motorWebSocketConnect().then((value) => value.value.sink.add('ball'));
-
-    DBHelper().createData(
-        History(date: DBHelper().getCurDateTime(), activity: '공던지기'));
-  }
-
-  // 여기부터 비디오
-  videoWebSocketConnect() async {
-    videoChannel = IOWebSocketChannel.connect(ip + ':25005').obs;
-  }
-
-  videoWebSocketDisconnect() async {
-    if (isVideoOn.value) {
-      isVideoOn.value = false;
-      videoChannel.sink.close();
-    }
-  }
-
-  videoOn() async {
-    videoWebSocketConnect();
-    videoChannel.value.sink.add('on');
-    isVideoOn.value = true;
-  }
-
-  videoOff() async {
-    isVideoOn.value = false;
-
-    videoWebSocketDisconnect();
-  }
-
-  disConnectAllWebSocket() {
-    dataWebSocketDisconnect();
-    motorWebSocketDisconnect();
-    videoWebSocketDisconnect();
   }
 }

@@ -7,7 +7,6 @@ import 'package:pet/screen/scaffold.dart';
 
 // WebScoket
 import 'package:web_socket_channel/io.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 // getx
 import 'package:get/get.dart';
@@ -22,12 +21,15 @@ import 'package:wave/wave.dart';
 // fl_chart
 import 'package:fl_chart/fl_chart.dart';
 
+String ip = 'ws://192.168.1.126';
+
 class HomeScreen extends StatelessWidget {
   final HomeScreenController homeScreenController =
       Get.put(HomeScreenController());
 
   HomeScreen({Key? key}) : super(key: key) {
-    homeScreenController.getChartData();
+    // homeScreenController.dataWebSocketConntect();
+    homeScreenController.dataOn();
   }
 
   @override
@@ -36,39 +38,55 @@ class HomeScreen extends StatelessWidget {
         title: '홈',
         body: SingleChildScrollView(
             scrollDirection: Axis.vertical,
-            child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: <Widget>[
-                  VideoArea(),
-                  Row(
+            child: Obx(() => Column(
                     mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
-                      WavePercent(
-                        name: '밥',
-                        percent: homeScreenController.loadCellDataFood,
-                        sendFunc: homeScreenController.sendFood,
-                      ),
-                      SizedBox(width: 10),
-                      WavePercent(
-                        name: '물',
-                        percent: homeScreenController.loadCellDataWater,
-                        sendFunc: homeScreenController.sendWater,
-                      )
-                    ],
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  BallCard(sendFunc: homeScreenController.sendBall),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  MoveCheckCard(),
-                  SizedBox(
-                    height: 10,
-                  ),
-                ])));
+                      VideoArea(),
+                      homeScreenController.isData.value
+                          ? StreamBuilder(
+                              stream: homeScreenController.dataChannel.stream,
+                              builder: (context, snapshot) {
+                                if (snapshot.hasData) {
+                                  homeScreenController.setData(snapshot.data);
+                                }
+                                return Column(children: <Widget>[
+                                  Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: <Widget>[
+                                        WavePercent(
+                                          name: '밥',
+                                          percent: homeScreenController
+                                              .loadCellDataFood,
+                                          sendFunc:
+                                              homeScreenController.sendFood,
+                                        ),
+                                        SizedBox(width: 10),
+                                        WavePercent(
+                                          name: '물',
+                                          percent: homeScreenController
+                                              .loadCellDataWater,
+                                          sendFunc:
+                                              homeScreenController.sendWater,
+                                        ),
+                                      ]),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  BallCard(
+                                      sendFunc: homeScreenController.sendBall),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                  MoveCheckCard(),
+                                  SizedBox(
+                                    height: 10,
+                                  ),
+                                ]);
+                              })
+                          : SizedBox(),
+                    ]))));
   }
 }
 
@@ -81,47 +99,62 @@ class VideoArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 340,
+        height: 305,
         child: Padding(
             padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
             child: FractionallySizedBox(
-                widthFactor: 1,
-                child: Obx(
-                  () => Container(
-                      clipBehavior: Clip.hardEdge,
-                      decoration: BoxDecoration(
-                          borderRadius: BorderRadius.all(Radius.circular(15))),
-                      child: homeScreenController.isVideoOn.value
-                          ? StreamBuilder(
-                              // read() 함수를 통해 데이터 접근
-                              // read()는 UI업데이트 하지 않음. 여기선 stream으로 값을 받아오기 때문에
-                              // UI업데이트는 자동으로 된다.
+              widthFactor: 1,
+              child: Obx(() => Container(
+                  decoration: BoxDecoration(
+                      color: Colors.black,
+                      borderRadius: BorderRadius.all(Radius.circular(15))),
+                  clipBehavior: Clip.hardEdge,
+                  child: homeScreenController.isVideoOn.value
+                      ? InkWell(
+                          onTap: () => homeScreenController.videoOff(),
+                          child: StreamBuilder(
                               stream: homeScreenController
                                   .videoChannel.value.stream,
                               builder: (context, snapshot) {
-                                return ElevatedButton(
-                                    onPressed: () =>
-                                        homeScreenController.videoOff,
-                                    style: ElevatedButton.styleFrom(
-                                        primary: Colors.white),
-                                    child: Image.memory(
-                                      snapshot.data as Uint8List,
-                                      gaplessPlayback:
-                                          true, // gaplessPlayback을 true로 하지 않으면 이미지 변경 될 때 마다 깜빡깜빡 한다.
-                                    ));
-                              })
-                          : Container(
-                              decoration: BoxDecoration(
-                                  color: Colors.black,
-                                  borderRadius:
-                                      BorderRadius.all(Radius.circular(15))),
-                              child: IconButton(
-                                onPressed: homeScreenController.videoOn,
-                                icon: Icon(Icons.play_arrow),
-                                color: Colors.white,
-                                iconSize: 72,
-                              ))),
-                ))));
+                                return snapshot.hasData
+                                    ? Image.memory(
+                                        snapshot.data as Uint8List,
+                                        gaplessPlayback:
+                                            true, // gaplessPlayback을 true로 하지 않으면 이미지 변경 될 때 마다 깜빡깜빡 한다.
+                                      )
+                                    : Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: <Widget>[
+                                            Image.asset(
+                                              'images/peterest_logo.png',
+                                              width: 150,
+                                            ),
+                                            Text(
+                                              '서버 상태가 좋지 않아요ㅠㅠ',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.white),
+                                            ),
+                                            SizedBox(
+                                              height: 20,
+                                            ),
+                                            IconButton(
+                                              onPressed: () =>
+                                                  homeScreenController.videoOn,
+                                              icon:
+                                                  Icon(Icons.replay, size: 35),
+                                              color: Colors.white,
+                                            ),
+                                          ]);
+                              }))
+                      : IconButton(
+                          onPressed: homeScreenController.videoOn,
+                          icon: Icon(Icons.play_arrow),
+                          color: Colors.white,
+                          iconSize: 72,
+                        ))),
+            )));
   }
 }
 
@@ -177,86 +210,83 @@ class WavePercent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(children: <Widget>[
-      Container(
-        // Clip.hardEdge를 적용하면 child위젯이 Container크기에 맞춰서 가져짐
-        // overflow: hidden 과 비슷한듯
-        clipBehavior: Clip.hardEdge,
-        decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.all(Radius.circular(15)),
-            boxShadow: [
-              BoxShadow(
-                  spreadRadius: 0.5,
-                  blurRadius: 0.5,
-                  offset: Offset(0, 3),
-                  color: Colors.grey.withOpacity(0.4))
-            ]),
-        child: InkWell(
-            onTap: () {
-              homeScreenController.bottomSheetText.value =
-                  '여기를 누르면 $name을 줄 수 있어요';
-              Get.bottomSheet(
-                  BottomSheetForSendData(name: name, sendFunc: sendFunc));
-            },
-            child: WaveWidget(
-              config: name == '밥'
-                  ? CustomConfig(
-                      gradients: [
-                        [Color(0xffDFB796), Color(0xEEF44336)],
-                        [Color(0xffEEDFD3), Color(0x77E57373)],
-                        [Colors.orange, Color(0x66FF9800)],
-                        [Color(0xffE4DFB1), Color(0x55FFEB3B)]
-                      ],
-                      durations: [36000, 19000, 12000, 8000],
-                      heightPercentages: [
-                        0.86 - percent.value,
-                        0.87 - percent.value,
-                        0.88 - percent.value,
-                        0.89 - percent.value,
-                      ],
-                      gradientBegin: Alignment.bottomLeft,
-                      gradientEnd: Alignment.topRight,
-                    )
-                  : CustomConfig(
-                      gradients: [
-                        [Color(0xffEDEDEF), Color(0xff6767FB)],
-                        [Color(0xffB6B6BC), Color(0xff0000FF)],
-                        [Color(0xffD8D8DF), Color(0xff4F4FA9)],
-                        [Color(0xffC2C2C7), Color(0xff4141E8)]
-                      ],
-                      durations: [33000, 17000, 12000, 5000],
-                      heightPercentages: [
-                        0.86 - percent.value,
-                        0.87 - percent.value,
-                        0.88 - percent.value,
-                        0.89 - percent.value
-                      ],
-                      gradientBegin: Alignment.bottomLeft,
-                      gradientEnd: Alignment.topRight,
+    return Obx(() => Stack(children: <Widget>[
+          Container(
+            // Clip.hardEdge를 적용하면 child위젯이 Container크기에 맞춰서 가져짐
+            // overflow: hidden 과 비슷한듯
+            clipBehavior: Clip.hardEdge,
+            decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.all(Radius.circular(15)),
+                boxShadow: [
+                  BoxShadow(
+                      spreadRadius: 0.5,
+                      blurRadius: 0.5,
+                      offset: Offset(0, 3),
+                      color: Colors.grey.withOpacity(0.4))
+                ]),
+            child: InkWell(
+                onTap: () {
+                  homeScreenController.bottomSheetText.value =
+                      '여기를 누르면 $name을 줄 수 있어요';
+                  Get.bottomSheet(
+                      BottomSheetForSendData(name: name, sendFunc: sendFunc));
+                },
+                child: WaveWidget(
+                  config: name == '밥'
+                      ? CustomConfig(
+                          gradients: [
+                            [Color(0xffDFB796), Color(0xEEF44336)],
+                            [Color(0xffEEDFD3), Color(0x77E57373)],
+                            [Colors.orange, Color(0x66FF9800)],
+                            [Color(0xffE4DFB1), Color(0x55FFEB3B)]
+                          ],
+                          durations: [36000, 19000, 12000, 8000],
+                          heightPercentages: [
+                            0.86 - percent.value,
+                            0.87 - percent.value,
+                            0.88 - percent.value,
+                            0.89 - percent.value,
+                          ],
+                          gradientBegin: Alignment.bottomLeft,
+                          gradientEnd: Alignment.topRight,
+                        )
+                      : CustomConfig(
+                          gradients: [
+                            [Color(0xffEDEDEF), Color(0xff6767FB)],
+                            [Color(0xffB6B6BC), Color(0xff0000FF)],
+                            [Color(0xffD8D8DF), Color(0xff4F4FA9)],
+                            [Color(0xffC2C2C7), Color(0xff4141E8)]
+                          ],
+                          durations: [33000, 17000, 12000, 5000],
+                          heightPercentages: [
+                            0.86 - percent.value,
+                            0.87 - percent.value,
+                            0.88 - percent.value,
+                            0.89 - percent.value
+                          ],
+                          gradientBegin: Alignment.bottomLeft,
+                          gradientEnd: Alignment.topRight,
+                        ),
+                  waveAmplitude: name == '밥' ? -5 : 5,
+                  size: Size(182, 250),
+                )),
+          ),
+          Container(
+              width: 182,
+              height: 250,
+              child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(name),
+                    SizedBox(height: 180),
+                    Text(
+                      (percent.value * 100).toString() + '%',
+                      style: TextStyle(fontSize: 22),
                     ),
-              waveAmplitude: name == '밥' ? -5 : 5,
-              size: Size(182, 250),
-            )),
-      ),
-      Container(
-          width: 182,
-          height: 250,
-          child: Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                Text(name),
-                SizedBox(height: 180),
-                Obx(() => Text((percent.value * 100).toString() + '%',
-                    style: TextStyle(
-                        color: percent.value >= 0.3
-                            ? Colors.black45
-                            : Colors.black87,
-                        fontSize: 40,
-                        fontWeight: FontWeight.bold))),
-              ]))
-    ]);
+                  ]))
+        ]));
   }
 }
 
@@ -270,7 +300,7 @@ class BallCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return FractionallySizedBox(
+    return Obx(() => FractionallySizedBox(
         widthFactor: 0.95,
         child: InkWell(
             onTap: () {
@@ -297,29 +327,29 @@ class BallCard extends StatelessWidget {
                         offset: Offset(0, 3),
                         color: Colors.grey.withOpacity(0.4))
                   ]),
-              child: Obx(() => Row(children: <Widget>[
-                    Padding(
-                        padding: EdgeInsets.all(45),
-                        child: homeScreenController.isBall.value
-                            ? Image.asset('images/ball_on.png')
-                            : Image.asset('images/ball_off.png')),
-                    homeScreenController.isBall.value
-                        ? Text(
-                            '공이 있어요',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold),
-                          )
-                        : Text(
-                            '공이 없어요',
-                            style: TextStyle(
-                                color: Colors.white,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold),
-                          ),
-                  ])),
-            )));
+              child: Row(children: <Widget>[
+                Padding(
+                    padding: EdgeInsets.all(45),
+                    child: homeScreenController.isBall.value
+                        ? Image.asset('images/ball_on.png')
+                        : Image.asset('images/ball_off.png')),
+                homeScreenController.isBall.value
+                    ? Text(
+                        '공이 있어요',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      )
+                    : Text(
+                        '공이 없어요',
+                        style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold),
+                      ),
+              ]),
+            ))));
   }
 }
 
@@ -356,7 +386,7 @@ class MoveCheckCard extends StatelessWidget {
                           offset: Offset(0, 3),
                           color: Colors.grey.withOpacity(0.4))
                     ]),
-                child: Padding(
+                child: Obx(() => Padding(
                     padding: EdgeInsets.all(10),
                     child: BarChart(
                       BarChartData(
@@ -384,88 +414,72 @@ class MoveCheckCard extends StatelessWidget {
                               topTitles: SideTitles(showTitles: false),
                               rightTitles: SideTitles(showTitles: false),
                               bottomTitles: SideTitles(showTitles: false))),
-                    ))),
+                    )))),
           ],
         ));
   }
 }
 
 class HomeScreenController extends GetxController {
-  WebSocketChannel? dataChannel;
+  var dataChannel;
   var motorChannel;
   var videoChannel;
 
-  var bottomSheetText = ''.obs;
-
+  var isData = false.obs;
+  var isBall = false.obs;
   var isVideoOn = false.obs;
 
-  var loadCellDataFood = 0.54.obs;
-  var loadCellDataWater = 0.122.obs;
+  var loadCellDataFood = 0.0.obs;
+  var loadCellDataWater = 0.0.obs;
 
-  var isBall = true.obs;
-  var ballText = '공이 있어요'.obs;
+  var ballText = '공이 없어요'.obs;
+  var bottomSheetText = ''.obs;
 
-  String ip = 'ws://192.168.1.128';
-
-  var momentDataList = [
-    11,
-    22,
-    31,
-    41,
-    31,
-    21,
-    31,
-    41,
-    31,
-    10,
-    11,
-    12,
-    13,
-    14,
-    15,
-    16,
-    12,
-    18,
-    29,
-    10,
-    21,
-    22,
-    23,
-    24,
-  ].obs;
+  var momentDataList = [].obs;
   var barChartList = RxList<BarChartGroupData>();
 
+  dataWebSocketConntect() {
+    dataChannel = IOWebSocketChannel.connect(ip + ':25002');
+  }
+
+  dataWebSocketDisconnect() {
+    isData.value = false;
+    dataChannel.sink.close();
+  }
+
+  dataOn() async {
+    dataWebSocketConntect();
+    dataChannel.sink.add('data done');
+
+    isData.value = true;
+  }
+
   getChartData() {
-    barChartList.clear();
+    List<BarChartGroupData> tempList = [];
 
     // barChartDataList에 값 넣기
     this.momentDataList.asMap().forEach((key, value) {
-      barChartList.add(BarChartGroupData(x: key - 1, barRods: [
-        BarChartRodData(y: value.toDouble(), width: 10, colors: [Colors.white])
+      tempList.add(BarChartGroupData(x: key - 1, barRods: [
+        BarChartRodData(
+            y: double.parse(value) * 5.5, width: 10, colors: [Colors.white])
       ]));
     });
+
+    barChartList.value = tempList;
   }
 
-  @override
-  void onInit() {
-    super.onInit();
-    dataChannel = IOWebSocketChannel.connect(ip + ':25001');
-  }
+  setData(receivedData) {
+    // 데이터 전처리
+    List<dynamic> sensorData = receivedData.toString().split('[')[0].split(',');
+    List<dynamic> cameraData =
+        (receivedData.toString().split('[')[1]).replaceAll(']', '').split(',');
 
-  // 여기는 데이터
-  setData(double data) {
-    this.loadCellDataFood.value = data;
-  }
+    loadCellDataFood.value = double.parse(sensorData[0]);
+    loadCellDataWater.value = double.parse(sensorData[1]);
+    isBall.value = sensorData[2] == 'True';
+    momentDataList.value = cameraData;
 
-  dataWebSocketConnect() async {
-    this.dataChannel = WebSocketChannel.connect(Uri.parse(ip + ':25001'));
-
-    print('done');
-    dataChannel!.sink.add('done');
-
-    dataChannel!.stream.listen((event) {
-      setData(double.parse(event));
-    });
+    getChartData();
   }
 
   // 여기는 모터
@@ -473,7 +487,7 @@ class HomeScreenController extends GetxController {
     return IOWebSocketChannel.connect(ip + ':25001').obs;
   }
 
-  loadCellWebSocketDisconnect() async {
+  motorWebSocketDisconnect() async {
     motorChannel.value.sink.close();
   }
 
@@ -494,35 +508,37 @@ class HomeScreenController extends GetxController {
   sendBall() async {
     motorWebSocketConnect().then((value) => value.value.sink.add('ball'));
 
-    isBall.value = false;
-
     DBHelper().createData(
         History(date: DBHelper().getCurDateTime(), activity: '공던지기'));
   }
 
   // 여기부터 비디오
-  Future<Rx<IOWebSocketChannel>> videoWebSocketConnect() async {
-    return IOWebSocketChannel.connect(ip + ':25005').obs;
+  videoWebSocketConnect() async {
+    videoChannel = IOWebSocketChannel.connect(ip + ':25005').obs;
   }
 
   videoWebSocketDisconnect() async {
-    videoChannel.value.sink.close();
+    if (isVideoOn.value) {
+      isVideoOn.value = false;
+      videoChannel.sink.close();
+    }
   }
 
   videoOn() async {
-    videoWebSocketConnect().then((channel) {
-      videoChannel = channel;
-      channel.value.sink.add('on');
-
-      Future.delayed(Duration(seconds: 1))
-          .then((value) => isVideoOn.value = true);
-    });
+    videoWebSocketConnect();
+    videoChannel.value.sink.add('on');
+    isVideoOn.value = true;
   }
 
   videoOff() async {
     isVideoOn.value = false;
 
-    videoChannel.value.sink.add('off');
+    videoWebSocketDisconnect();
+  }
+
+  disConnectAllWebSocket() {
+    dataWebSocketDisconnect();
+    motorWebSocketDisconnect();
     videoWebSocketDisconnect();
   }
 }

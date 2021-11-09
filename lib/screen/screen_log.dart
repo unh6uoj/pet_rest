@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:pet/main.dart';
 
 // drawer
 import 'package:pet/screen/scaffold.dart';
+
+// screen
+import 'package:pet/screen/screen_home.dart';
 
 // sqlite
 import 'package:pet/sqlite.dart';
@@ -18,8 +20,13 @@ import 'package:get/get.dart';
 class LogScreen extends StatelessWidget {
   LogScreen({Key? key}) : super(key: key);
 
+  final HomeScreenController homeScreenController =
+      Get.put(HomeScreenController());
+
   @override
   Widget build(BuildContext context) {
+    homeScreenController.videoOff();
+
     return MyPage(
         title: '기록',
         body: Column(children: <Widget>[

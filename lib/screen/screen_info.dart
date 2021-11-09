@@ -12,6 +12,7 @@ import 'package:pet/screen/route_notice.dart';
 import 'package:pet/screen/route_dog_init.dart';
 import 'package:pet/screen/scaffold.dart';
 import 'package:pet/regist_dog/name_regist.dart';
+import 'package:pet/screen/screen_home.dart';
 
 // getx
 import 'package:get/get.dart';
@@ -27,8 +28,12 @@ class InfoScreen extends StatelessWidget {
     infoScreenController.getProfileData();
   }
 
+  final HomeScreenController homeScreenController =
+      Get.put(HomeScreenController());
+
   @override
   Widget build(BuildContext context) {
+    homeScreenController.disConnectAllWebSocket();
     infoScreenController.getProfileData();
     return MyPage(
         title: '정보',

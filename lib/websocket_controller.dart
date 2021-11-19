@@ -41,7 +41,7 @@ class WebSocketController extends GetxController {
 
   // 여기는 모터
   motorWebSocketConnect() async {
-    motorChannel = IOWebSocketChannel.connect(ip + ':25001');
+    return IOWebSocketChannel.connect(ip + ':25001');
   }
 
   motorWebSocketDisconnect() async {
@@ -49,14 +49,14 @@ class WebSocketController extends GetxController {
   }
 
   sendFood() async {
-    motorWebSocketConnect().then((value) => value.value.sink.add('food'));
+    motorWebSocketConnect().then((value) => value.sink.add('ball'));
 
     DBHelper().createData(
         History(date: DBHelper().getCurDateTime(), activity: '밥주기'));
   }
 
   sendWater() async {
-    motorWebSocketConnect().then((value) => value.value.sink.add('water'));
+    motorWebSocketConnect().then((value) => value.sink.add('water'));
 
     DBHelper().createData(
         History(date: DBHelper().getCurDateTime(), activity: '물주기'));

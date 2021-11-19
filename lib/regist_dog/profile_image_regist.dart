@@ -68,7 +68,7 @@ class ProfileImageRegist extends StatelessWidget {
                           height: 150,
                           clipBehavior: Clip.hardEdge,
                           decoration: BoxDecoration(
-                            color: Colors.white,
+                            color: Color(0xFFCCCCCC),
                             shape: BoxShape.circle,
                           ),
                           child: profileImageScreenController.isImage.value

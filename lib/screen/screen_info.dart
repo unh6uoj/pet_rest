@@ -33,12 +33,8 @@ class InfoScreen extends StatelessWidget {
   final HomeScreenController homeScreenController =
       Get.put(HomeScreenController());
 
-  // final WebSocketController webSocketController =
-  //     Get.put(WebSocketController());
-
   @override
   Widget build(BuildContext context) {
-    // webSocketController.disConnectAllWebSocket();
     infoScreenController.getProfileData();
     return MyPage(
         title: '정보',

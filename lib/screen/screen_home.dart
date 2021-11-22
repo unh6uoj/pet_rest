@@ -31,7 +31,10 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 화면 전환 시 stream 구독 에러 방지를 위해 초기화
+    webSocketController.isVideoOn.value = false;
     webSocketController.dataOn();
+
     return MyPage(
         title: '홈',
         body: SingleChildScrollView(

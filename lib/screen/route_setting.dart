@@ -1,16 +1,35 @@
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
+import 'package:get/get.dart';
 
 class SettingScreen extends StatelessWidget {
-  const SettingScreen({Key? key}) : super(key: key);
+  SettingScreen({Key? key}) : super(key: key);
+
+  final GetStorage box = GetStorage();
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Color(0xFF049A5B),
-        title: Text('설정'),
-      ),
-      body: SizedBox(),
-    );
+        appBar: AppBar(
+          backgroundColor: Color(0xFF049A5B),
+          title: Text('설정'),
+        ),
+        body: Padding(
+          padding: EdgeInsets.all(10),
+          child: Column(
+            children: <Widget>[
+              TextField(
+                onSubmitted: (value) async {
+                  await box.write('ip', value);
+                  Get.snackbar('IP를 변경했어요', value);
+                },
+                decoration: InputDecoration(
+                    labelText: 'IP 변경하기',
+                    labelStyle: TextStyle(color: Color(0xFF505050)),
+                    hintText: '192.168.1.40'),
+              )
+            ],
+          ),
+        ));
   }
 }

@@ -27,7 +27,7 @@ class WebSocketController extends GetxController {
   var loadCellDataWater = 0.0.obs;
 
   setIp() async {
-    ip = await box.read('ip');
+    ip = 'ws://' + await box.read('ip');
     print(ip);
   }
 

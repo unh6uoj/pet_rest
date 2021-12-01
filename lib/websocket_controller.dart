@@ -9,9 +9,12 @@ import 'package:get/get.dart';
 // sqlite
 import '../sqlite.dart';
 
-String ip = 'ws://192.168.1.135';
+import 'package:get_storage/get_storage.dart';
 
 class WebSocketController extends GetxController {
+  final GetStorage box = GetStorage();
+  String ip = '';
+
   var dataChannel;
   var motorChannel;
   var videoChannel;
@@ -23,7 +26,12 @@ class WebSocketController extends GetxController {
   var loadCellDataFood = 0.0.obs;
   var loadCellDataWater = 0.0.obs;
 
-  dataWebSocketConntect() {
+  setIp() async {
+    ip = await box.read('ip');
+    print(ip);
+  }
+
+  dataWebSocketConntect() async {
     dataChannel = IOWebSocketChannel.connect(ip + ':25002');
   }
 
@@ -34,9 +42,10 @@ class WebSocketController extends GetxController {
 
   dataOn() async {
     dataWebSocketConntect();
-    dataChannel.sink.add('data done');
-
-    isData.value = true;
+    if (dataChannel != null) {
+      dataChannel.sink.add('data done');
+      isData.value = true;
+    }
   }
 
   // 여기는 모터
@@ -63,7 +72,7 @@ class WebSocketController extends GetxController {
   }
 
   sendBall() async {
-    motorWebSocketConnect().then((value) => value.value.sink.add('ball'));
+    motorWebSocketConnect().then((value) => value.sink.add('ball'));
 
     DBHelper().createData(
         History(date: DBHelper().getCurDateTime(), activity: '공던지기'));

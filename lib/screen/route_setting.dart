@@ -25,7 +25,7 @@ class SettingScreen extends StatelessWidget {
               TextField(
                 onSubmitted: (value) async {
                   await box.write('ip', value);
-                  Get.snackbar('IP를 변경했어요', value);
+                  Get.snackbar('IP를 변경했어요', value.toString());
                   webSocketController.setIp();
                 },
                 decoration: InputDecoration(

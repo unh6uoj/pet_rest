@@ -13,8 +13,7 @@ import 'package:get_storage/get_storage.dart';
 
 class WebSocketController extends GetxController {
   final GetStorage box = GetStorage();
-
-  String ip = 'ws://192.168.1.40';
+  String ip = '';
 
   var dataChannel;
   var motorChannel;
@@ -26,6 +25,11 @@ class WebSocketController extends GetxController {
 
   var loadCellDataFood = 0.0.obs;
   var loadCellDataWater = 0.0.obs;
+
+  setIp() async {
+    ip = await box.read('ip');
+    print(ip);
+  }
 
   dataWebSocketConntect() async {
     dataChannel = IOWebSocketChannel.connect(ip + ':25002');
@@ -68,7 +72,7 @@ class WebSocketController extends GetxController {
   }
 
   sendBall() async {
-    motorWebSocketConnect().then((value) => value.value.sink.add('ball'));
+    motorWebSocketConnect().then((value) => value.sink.add('ball'));
 
     DBHelper().createData(
         History(date: DBHelper().getCurDateTime(), activity: '공던지기'));

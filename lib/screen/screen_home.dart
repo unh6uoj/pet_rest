@@ -26,7 +26,7 @@ class HomeScreen extends StatelessWidget {
       Get.put(WebSocketController());
 
   HomeScreen({Key? key}) : super(key: key) {
-    // homeScreenController.dataWebSocketConntect();
+    webSocketController.setIp();
   }
 
   @override

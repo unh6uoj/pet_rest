@@ -9,7 +9,7 @@ import 'package:get/get.dart';
 // sqlite
 import '../sqlite.dart';
 
-String ip = 'ws://192.168.1.126';
+String ip = 'ws://192.168.1.135';
 
 class WebSocketController extends GetxController {
   var dataChannel;
@@ -49,7 +49,7 @@ class WebSocketController extends GetxController {
   }
 
   sendFood() async {
-    motorWebSocketConnect().then((value) => value.sink.add('ball'));
+    motorWebSocketConnect().then((value) => value.sink.add('food'));
 
     DBHelper().createData(
         History(date: DBHelper().getCurDateTime(), activity: '밥주기'));

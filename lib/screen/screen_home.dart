@@ -34,6 +34,7 @@ class HomeScreen extends StatelessWidget {
     // 화면 전환 시 stream 구독 에러 방지를 위해 초기화
     webSocketController.isVideoOn.value = false;
     webSocketController.dataOn();
+    homeScreenController.getChartData();
 
     return MyPage(
         title: '홈',
@@ -328,8 +329,8 @@ class BallCard extends StatelessWidget {
                       BottomSheetForSendData(name: '공', sendFunc: sendFunc))
                   : Get.snackbar('공이 없어요', 'pet station에 공을 넣어주세요',
                       snackPosition: SnackPosition.BOTTOM,
-                      colorText: Colors.white,
-                      backgroundColor: Color(0xFF17D282));
+                      colorText: Colors.black,
+                      backgroundColor: Color(0xFF758f2));
             },
             child: Container(
               height: 200,
@@ -448,11 +449,39 @@ class HomeScreenController extends GetxController {
   getChartData() {
     List<BarChartGroupData> tempList = [];
 
+    momentDataList = RxList([
+      '3.4',
+      '2.2',
+      '4.3',
+      '1.1',
+      '4.9',
+      '6.3',
+      '5.5',
+      '4.4',
+      '0.0',
+      '4.4',
+      '0.0',
+      '0.0',
+      '0.0',
+      '0.0',
+      '0.0',
+      '0.0',
+      '0.0',
+      '0.0',
+      '0.0',
+      '0.0',
+      '1.8',
+      '0.5',
+      '1.2',
+      '4.4'
+    ]);
     // barChartDataList에 값 넣기
-    this.momentDataList.asMap().forEach((key, value) {
+    momentDataList.asMap().forEach((key, value) {
       tempList.add(BarChartGroupData(x: key - 1, barRods: [
         BarChartRodData(
-            y: double.parse(value) * 5.5, width: 10, colors: [Colors.white])
+            y: (double.parse(value) * 5.5).roundToDouble(),
+            width: 10,
+            colors: [Colors.white])
       ]));
     });
 

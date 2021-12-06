@@ -20,11 +20,11 @@ class WebSocketController extends GetxController {
   var videoChannel;
 
   var isData = false.obs;
-  var isBall = false.obs;
+  var isBall = true.obs;
   var isVideoOn = false.obs;
 
-  var loadCellDataFood = 0.0.obs;
-  var loadCellDataWater = 0.0.obs;
+  var loadCellDataFood = 0.342.obs;
+  var loadCellDataWater = 0.769.obs;
 
   setIp() async {
     ip = 'ws://' + await box.read('ip');

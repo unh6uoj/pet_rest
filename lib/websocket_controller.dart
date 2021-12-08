@@ -19,7 +19,7 @@ class WebSocketController extends GetxController {
   var motorChannel;
   var videoChannel;
 
-  var isData = false.obs;
+  var isData = true.obs;
   var isBall = true.obs;
   var isVideoOn = false.obs;
 

@@ -46,47 +46,43 @@ class HomeScreen extends StatelessWidget {
                     children: <Widget>[
                       VideoArea(),
                       webSocketController.isData.value
-                          ? StreamBuilder(
-                              stream: webSocketController.dataChannel.stream,
-                              builder: (context, snapshot) {
-                                if (snapshot.hasData) {
-                                  homeScreenController.setData(snapshot.data);
-                                }
-                                return Column(children: <Widget>[
-                                  Row(
-                                      mainAxisAlignment:
-                                          MainAxisAlignment.center,
-                                      children: <Widget>[
-                                        WavePercent(
-                                          name: '밥',
-                                          percent: webSocketController
-                                              .loadCellDataFood,
-                                          sendFunc:
-                                              webSocketController.sendFood,
-                                        ),
-                                        SizedBox(width: 10),
-                                        WavePercent(
-                                          name: '물',
-                                          percent: webSocketController
-                                              .loadCellDataWater,
-                                          sendFunc:
-                                              webSocketController.sendWater,
-                                        ),
-                                      ]),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  BallCard(
-                                      sendFunc: webSocketController.sendBall),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                  MoveCheckCard(),
-                                  SizedBox(
-                                    height: 10,
-                                  ),
-                                ]);
-                              })
+                          ?
+                          // ? StreamBuilder(
+                          //     stream: webSocketController.dataChannel.stream,
+                          //     builder: (context, snapshot) {
+                          //       if (snapshot.hasData) {
+                          //         homeScreenController.setData(snapshot.data);
+                          //       }
+                          Column(children: <Widget>[
+                              Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    WavePercent(
+                                      name: '밥',
+                                      percent:
+                                          webSocketController.loadCellDataFood,
+                                      sendFunc: webSocketController.sendFood,
+                                    ),
+                                    SizedBox(width: 10),
+                                    WavePercent(
+                                      name: '물',
+                                      percent:
+                                          webSocketController.loadCellDataWater,
+                                      sendFunc: webSocketController.sendWater,
+                                    ),
+                                  ]),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              BallCard(sendFunc: webSocketController.sendBall),
+                              SizedBox(
+                                height: 10,
+                              ),
+                              MoveCheckCard(),
+                              SizedBox(
+                                height: 10,
+                              ),
+                            ])
                           : SizedBox(),
                     ]))));
   }

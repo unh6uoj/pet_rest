@@ -11,11 +11,15 @@ import 'package:get/get.dart';
 import 'package:get_storage/get_storage.dart';
 
 // firebase
-// import 'package:firebase_core/firebase_core.dart';
-// import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> main() async {
   await GetStorage.init();
+  await Firebase.initializeApp();
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+  messaging.getToken().then((value) => {print(value)});
+
   runApp(MyApp());
 }
 

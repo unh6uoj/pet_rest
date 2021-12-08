@@ -16,6 +16,10 @@ import 'package:get_storage/get_storage.dart';
 
 Future<void> main() async {
   await GetStorage.init();
+  // await Firebase.initializeApp();
+  // FirebaseMessaging messaging = FirebaseMessaging.instance;
+  // messaging.getToken().then((value) => {print(value)});
+
   runApp(MyApp());
 }
 

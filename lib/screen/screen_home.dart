@@ -104,7 +104,8 @@ class VideoArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-        height: 305,
+        // height: 305,
+        height: 260,
         child: Padding(
             padding: const EdgeInsets.fromLTRB(5, 10, 5, 10),
             child: FractionallySizedBox(
@@ -126,31 +127,35 @@ class VideoArea extends StatelessWidget {
                                         gaplessPlayback:
                                             true, // gaplessPlayback을 true로 하지 않으면 이미지 변경 될 때 마다 깜빡깜빡 한다.
                                       )
-                                    : Column(
-                                        mainAxisAlignment:
-                                            MainAxisAlignment.center,
-                                        children: <Widget>[
-                                            Image.asset(
-                                              'images/peterest_logo.png',
-                                              width: 150,
-                                            ),
-                                            Text(
-                                              '서버 상태가 좋지 않아요ㅠㅠ',
-                                              style: TextStyle(
-                                                  fontSize: 18,
-                                                  color: Colors.white),
-                                            ),
-                                            SizedBox(
-                                              height: 20,
-                                            ),
-                                            IconButton(
-                                              onPressed: () =>
-                                                  webSocketController.videoOn,
-                                              icon:
-                                                  Icon(Icons.replay, size: 35),
-                                              color: Colors.white,
-                                            ),
-                                          ]);
+                                    : Image.asset(
+                                        'images/2.png',
+                                        width: 150,
+                                      );
+                                // : Column(
+                                //     mainAxisAlignment:
+                                //         MainAxisAlignment.center,
+                                //     children: <Widget>[
+                                //         Image.asset(
+                                //           'images/peterest_logo.png',
+                                //           width: 150,
+                                //         ),
+                                //         Text(
+                                //           '서버 상태가 좋지 않아요ㅠㅠ',
+                                //           style: TextStyle(
+                                //               fontSize: 18,
+                                //               color: Colors.white),
+                                //         ),
+                                //         SizedBox(
+                                //           height: 20,
+                                //         ),
+                                //         IconButton(
+                                //           onPressed: () =>
+                                //               webSocketController.videoOn,
+                                //           icon:
+                                //               Icon(Icons.replay, size: 35),
+                                //           color: Colors.white,
+                                //         ),
+                                //       ]);
                               }))
                       : IconButton(
                           onPressed: webSocketController.videoOn,
@@ -449,32 +454,6 @@ class HomeScreenController extends GetxController {
   getChartData() {
     List<BarChartGroupData> tempList = [];
 
-    momentDataList = RxList([
-      '3.4',
-      '2.2',
-      '4.3',
-      '1.1',
-      '4.9',
-      '6.3',
-      '5.5',
-      '4.4',
-      '0.0',
-      '4.4',
-      '0.0',
-      '0.0',
-      '0.0',
-      '0.0',
-      '0.0',
-      '0.0',
-      '0.0',
-      '0.0',
-      '0.0',
-      '0.0',
-      '1.8',
-      '0.5',
-      '1.2',
-      '4.4'
-    ]);
     // barChartDataList에 값 넣기
     momentDataList.asMap().forEach((key, value) {
       tempList.add(BarChartGroupData(x: key - 1, barRods: [

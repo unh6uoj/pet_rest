@@ -16,9 +16,9 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 
 Future<void> main() async {
   await GetStorage.init();
-  await Firebase.initializeApp();
-  FirebaseMessaging messaging = FirebaseMessaging.instance;
-  messaging.getToken().then((value) => {print(value)});
+  // await Firebase.initializeApp();
+  // FirebaseMessaging messaging = FirebaseMessaging.instance;
+  // messaging.getToken().then((value) => {print(value)});
 
   runApp(MyApp());
 }

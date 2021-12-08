@@ -23,8 +23,8 @@ class WebSocketController extends GetxController {
   var isBall = true.obs;
   var isVideoOn = false.obs;
 
-  var loadCellDataFood = 0.342.obs;
-  var loadCellDataWater = 0.769.obs;
+  var loadCellDataFood = 0.0.obs;
+  var loadCellDataWater = 0.0.obs;
 
   setIp() async {
     ip = 'ws://' + await box.read('ip');
@@ -92,7 +92,9 @@ class WebSocketController extends GetxController {
 
   videoOn() async {
     videoWebSocketConnect();
+
     videoChannel.sink.add('on');
+    print('object');
     isVideoOn.value = true;
   }
 

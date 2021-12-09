@@ -20,7 +20,7 @@ class WebSocketController extends GetxController {
   var videoChannel;
   var micChannel;
 
-  var isData = false.obs;
+  var isData = true.obs;
   var isBall = true.obs;
   var isVideoOn = false.obs;
 
@@ -108,7 +108,9 @@ class WebSocketController extends GetxController {
 
   videoOn() async {
     videoWebSocketConnect();
+
     videoChannel.sink.add('on');
+    print('object');
     isVideoOn.value = true;
   }
 

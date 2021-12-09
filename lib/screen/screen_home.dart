@@ -57,7 +57,7 @@ class HomeScreen extends StatelessWidget {
                                 if (snapshot.hasData) {
                                   homeScreenController.setData(snapshot.data);
                                 }
-                                return Column(children: <Widget>[
+                                return (Column(children: <Widget>[
                                   Row(
                                       mainAxisAlignment:
                                           MainAxisAlignment.center,
@@ -90,9 +90,9 @@ class HomeScreen extends StatelessWidget {
                                   SizedBox(
                                     height: 10,
                                   ),
-                                ]);
+                                ]));
                               })
-                          : SizedBox(),
+                          : SizedBox()
                     ]))));
   }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 import 'dart:typed_data';
@@ -17,6 +19,8 @@ import 'package:wave/wave.dart';
 
 // fl_chart
 import 'package:fl_chart/fl_chart.dart';
+
+import 'package:sound_stream/sound_stream.dart';
 
 class HomeScreen extends StatelessWidget {
   final HomeScreenController homeScreenController =
@@ -45,6 +49,7 @@ class HomeScreen extends StatelessWidget {
                     crossAxisAlignment: CrossAxisAlignment.center,
                     children: <Widget>[
                       VideoArea(),
+                      MicButton(),
                       webSocketController.isData.value
                           ? StreamBuilder(
                               stream: webSocketController.dataChannel.stream,
@@ -127,35 +132,31 @@ class VideoArea extends StatelessWidget {
                                         gaplessPlayback:
                                             true, // gaplessPlayback을 true로 하지 않으면 이미지 변경 될 때 마다 깜빡깜빡 한다.
                                       )
-                                    : Image.asset(
-                                        'images/2.png',
-                                        width: 150,
-                                      );
-                                // : Column(
-                                //     mainAxisAlignment:
-                                //         MainAxisAlignment.center,
-                                //     children: <Widget>[
-                                //         Image.asset(
-                                //           'images/peterest_logo.png',
-                                //           width: 150,
-                                //         ),
-                                //         Text(
-                                //           '서버 상태가 좋지 않아요ㅠㅠ',
-                                //           style: TextStyle(
-                                //               fontSize: 18,
-                                //               color: Colors.white),
-                                //         ),
-                                //         SizedBox(
-                                //           height: 20,
-                                //         ),
-                                //         IconButton(
-                                //           onPressed: () =>
-                                //               webSocketController.videoOn,
-                                //           icon:
-                                //               Icon(Icons.replay, size: 35),
-                                //           color: Colors.white,
-                                //         ),
-                                //       ]);
+                                    : Column(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.center,
+                                        children: <Widget>[
+                                            Image.asset(
+                                              'images/peterest_logo.png',
+                                              width: 150,
+                                            ),
+                                            Text(
+                                              '서버 상태가 좋지 않아요ㅠㅠ',
+                                              style: TextStyle(
+                                                  fontSize: 18,
+                                                  color: Colors.white),
+                                            ),
+                                            SizedBox(
+                                              height: 20,
+                                            ),
+                                            IconButton(
+                                              onPressed: () =>
+                                                  webSocketController.videoOn,
+                                              icon:
+                                                  Icon(Icons.replay, size: 35),
+                                              color: Colors.white,
+                                            ),
+                                          ]);
                               }))
                       : IconButton(
                           onPressed: webSocketController.videoOn,
@@ -164,6 +165,80 @@ class VideoArea extends StatelessWidget {
                           iconSize: 72,
                         ))),
             )));
+  }
+}
+
+class MicButton extends StatelessWidget {
+  MicButton({Key? key}) : super(key: key) {}
+
+  WebSocketController webSocketController = Get.put(WebSocketController());
+
+  RecorderStream _recorder = RecorderStream();
+  PlayerStream _player = PlayerStream();
+
+  List<Uint8List> _micChunks = [];
+  bool _isRecording = false;
+  bool _isPlaying = false;
+
+  late StreamSubscription _recorderStatus;
+  late StreamSubscription _playerStatus;
+  late StreamSubscription _audioStream;
+
+  final HomeScreenController homeScreenController =
+      Get.put(HomeScreenController());
+
+  @override
+  Widget build(BuildContext context) {
+    return Obx(() => Padding(
+        padding: EdgeInsets.all(10),
+        child: FractionallySizedBox(
+            widthFactor: 1,
+            child: Container(
+                height: 120,
+                padding: EdgeInsets.all(20),
+                decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.all(Radius.circular(15))),
+                child:
+                    Row(mainAxisAlignment: MainAxisAlignment.center, children: [
+                  GestureDetector(
+                      onTapDown: (details) async {
+                        homeScreenController.isMic.value = true;
+                      },
+                      onTapUp: (details) async {
+                        homeScreenController.isMic.value = false;
+                        webSocketController.sendMic();
+                        // print(_micChunks);
+                        // await _player.start();
+
+                        // if (_micChunks.isNotEmpty) {
+                        //   for (var chunk in _micChunks) {
+                        //     await _player.writeChunk(chunk);
+                        //   }
+                        //   _micChunks.clear();
+                        // }
+                      },
+                      child: Container(
+                          width: 100,
+                          height: 100,
+                          decoration: BoxDecoration(
+                              color: Color(0xFF17D282),
+                              shape: BoxShape.circle,
+                              boxShadow: [
+                                BoxShadow(
+                                    spreadRadius: 0.5,
+                                    blurRadius: 0.5,
+                                    offset: Offset(0, 3),
+                                    color: Colors.grey.withOpacity(0.4))
+                              ]),
+                          child:
+                              Icon(Icons.mic, color: Colors.white, size: 32))),
+                  SizedBox(width: 45),
+                  homeScreenController.isMic.value
+                      ? Container(width: 130, child: Text('마이크 작동 중'))
+                      : Container(
+                          width: 130, child: Text('버튼을 눌러 강아지에게\n목소리를 들려주세요'))
+                ])))));
   }
 }
 
@@ -448,6 +523,8 @@ class HomeScreenController extends GetxController {
 
   var momentDataList = [].obs;
   var barChartList = RxList<BarChartGroupData>();
+
+  var isMic = false.obs;
 
   WebSocketController webSocketController = Get.put(WebSocketController());
 

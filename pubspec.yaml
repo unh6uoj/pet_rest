@@ -43,6 +43,7 @@ dependencies:
   get_storage: ^2.0.3
   fl_chart: ^0.40.2
   numberpicker: ^2.1.1
+  sound_stream: ^0.3.0
 
 dev_dependencies:
   flutter_native_splash: ^1.2.3

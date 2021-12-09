@@ -18,17 +18,33 @@ class WebSocketController extends GetxController {
   var dataChannel;
   var motorChannel;
   var videoChannel;
+  var micChannel;
 
   var isData = false.obs;
   var isBall = true.obs;
   var isVideoOn = false.obs;
 
-  var loadCellDataFood = 0.342.obs;
-  var loadCellDataWater = 0.769.obs;
+  var loadCellDataFood = 0.0.obs;
+  var loadCellDataWater = 0.0.obs;
 
   setIp() async {
     ip = 'ws://' + await box.read('ip');
     print(ip);
+  }
+
+  micWebSocketConnect() {
+    micChannel = IOWebSocketChannel.connect(ip + ':25003');
+  }
+
+  sendMic() {
+    micWebSocketConnect();
+    if (micChannel != null) {
+      micChannel.sink.add('play');
+    }
+  }
+
+  micWebSocketDisConnect() {
+    micChannel.disConnect();
   }
 
   dataWebSocketConntect() async {
